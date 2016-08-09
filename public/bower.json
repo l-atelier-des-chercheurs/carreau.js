@@ -1,0 +1,34 @@
+{
+  "name": "dodoc",
+  "description": "Dodoc is a documentation tool for children",
+  "main": "",
+  "authors": [
+    "sarah garcin <sarah@g-u-i.me>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sarahgarcin/dodoc",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "foundation": "~5.5.3",
+    "velocity": "~1.2.3",
+    "jquery-ui": "~1.11.4",
+    "tooltip": "*"
+  },
+  "dependencies": {
+    "recordrtc": "^5.2.7",
+    "dragula.js": "dragula#^3.6.6",
+    "moment": "^2.12.0",
+    "store-js": "store.js#^1.3.20"
+  }
+}

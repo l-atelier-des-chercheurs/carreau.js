@@ -1,0 +1,32 @@
+include templates/buttons.jade
+
+doctype html
+html
+  head
+    include templates/head.jade
+  body.index
+
+    .navbar-container.is--opened
+      header.navbar
+        +logo()
+        +button('nouveauDossier')
+
+    #container.row.mainContent
+      ul.dossier-list
+
+
+
+
+
+
+    //- MODAL WINDOWS
+    include templates/modals/addFolder
+    include templates/modals/editFolder
+
+    .js--templates
+      include templates/js_templates
+
+    include templates/footer.jade
+    script(src='/js/index.js')
+
+

@@ -1,0 +1,174 @@
+include templates/buttons.jade
+
+doctype html
+html
+  head
+    include templates/head.jade
+  body.capture
+    .navbar-container
+
+      header.navbar
+        +logo()
+        +button( 'dossier', 'isNav')
+        +button( 'projet', 'isNav')
+        +button( 'capture', 'isNav')
+        +button('bibli', '', 'isCollapsed')
+        +button('publications', '', 'isCollapsed')
+
+
+    div#container.row.mainContent
+      div.container-inner
+        div.media-choice
+          div.btn-choice
+            div
+              button#photo.js--modeSelector(data-mediatype="photo")
+                | !{dodoc.lang.photo}
+              button#video-btn.js--modeSelector(data-mediatype="video")
+                | !{dodoc.lang.video}
+              button#stopmotion.js--modeSelector(data-mediatype="stopmotion")
+                | !{dodoc.lang.stopmotion}
+              button#audio.js--modeSelector(data-mediatype="audio")
+                | !{dodoc.lang.audio}
+
+        .feedSettings
+          .openCloseSettings
+            +button( 'settings', '', 'isCollapsed')
+          .feedSettings--scrollWindow
+            form.sourceSelector
+              .selectField.audioSource
+                label(for="audioSource")
+                  | !{dodoc.lang.audioInputSource}
+                select#audioSource.js--audioSource
+              .selectField.audioOutput
+                label(for="audioOutput")
+                  | !{dodoc.lang.audioOutputDestination}
+                select#audioOutput.js--audioOutput
+              .selectField.videoSource
+                label(for="videoSource")
+                  | !{dodoc.lang.videoInputSource}
+                select#videoSource.js--videoSource
+            form.resolutionSelector.js--resolutionSelector
+              | !{dodoc.lang.chooseCameraResolution}
+              fieldset
+                input(type="radio" name="videoRes" id="qvga" value="qvga" data-width="320" data-height="240")
+                label(for="qvga")
+                  | 320*240
+              fieldset
+                input(type="radio" name="videoRes" id="vga" value="vga" data-width="640" data-height="480" checked)
+                label(for="vga")
+                  | 640*480
+              fieldset
+                input(type="radio" name="videoRes" id="hd" value="hd" data-width="1280" data-height="720")
+                label(for="hd")
+                  | 1280*720
+              fieldset
+                input(type="radio" name="videoRes" id="fhd" value="fhd" data-width="1920" data-height="1080")
+                label(for="fhd")
+                  | 1920*1080
+
+        div.content-wrapper
+          div.captureLeft
+            div.video-view
+              //- display camera
+              video(id="video" autoplay)
+              //- display audio vizualizer
+              canvas(id="canvas-audio" width="720" height="256")
+
+              div.btn-capture-wrapper
+                div.photo-capture
+                  button#capture-btn.btn.icon
+                    include templates/images/record.svg
+                div.video-capture
+                  div.video-save
+                    button#start-record-btn.btn.icon
+                      include templates/images/record.svg
+                    button(id='stop-record-btn' class="btn icon" disabled)
+                      include templates/images/stop.svg
+                  span#elasped-time
+                div.stopmotion-capture
+                  button#start-sm-btn.btn.icon
+                    include templates/images/record.svg
+                  button#capture-sm-btn.btn.icon
+                    include templates/images/record.svg
+                div.audio-capture
+                  button#start-recording-btn.btn.icon
+                    include templates/images/record.svg
+                  button(id='stop-recording-btn' class='btn icon' disabled)
+                    include templates/images/stop.svg
+
+              div.display-choice.small-12
+                div.choices.image-choice
+                  .caption
+                    | !{dodoc.lang.photo}
+                div.choices.video-choice
+                  .caption
+                    | !{dodoc.lang.video}
+                div.choices.stopmotion-choice
+                  .caption
+                    | !{dodoc.lang.stopmotion}
+                div.choices.audio-choice
+                  .caption
+                    | !{dodoc.lang.audio}
+
+            div.full-screen-wrapper
+              +button( 'fullscreen', '', 'isCollapsed')
+              +button( 'nofullscreen', '', 'isCollapsed')
+
+          div.captureRight.small-5.columns
+            div.flash.small-12
+
+            .preview.preview_image
+              img.output
+              +button( 'deleteMediaCapture', '', 'isCollapsed')
+
+            .preview.preview_video
+              video.output(controls autoplay loop)
+              +button( 'deleteMediaCapture', '', 'isCollapsed')
+
+            .preview.preview_stopmotion
+              video.output(controls autoplay loop)
+              .preview_stopmotion--container
+              .mode-instructions
+                img.icone-stopmotion(src="/images/stopmotion.svg")
+                h4
+                  | !{dodoc.lang.createNewStopmotion}
+              +button( 'finishStopmotion', '', '')
+              +button( 'deleteMediaCapture', '', 'isCollapsed')
+
+            .preview.preview_audio
+              img.output
+              audio(controls).output
+              +button( 'deleteMediaCapture', '', 'isCollapsed')
+
+
+       //- ALERT CHANGER DE MEDIA
+      div(id="modal-change-alert" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog")
+        p
+          | !{dodoc.lang.changingMediaWhileStopmotion}
+        a(class="close-reveal-modal" aria-label="Close")
+          button.ok
+            | !{dodoc.lang.continueStopmotion}
+        button.supprimer-stop-motion
+          | !{dodoc.lang.removeStopmotion}
+        a(class="close-reveal-modal" aria-label="Close") &#215;
+
+    .js--templates
+      .stopmotion_lastImagePreview
+        img
+        .meta-stopmotion
+          .image_count
+          +button( 'deleteLastMedia', '', 'isCollapsed')
+
+
+
+    //- scripts
+    include templates/footer.jade
+
+    script(src="/bower_components/recordrtc/RecordRTC.min.js")
+    script(src="/js/libs/screenfull.min.js")
+    script(src='/js/capture-boitier.js')
+    script(src='/js/capture/audio.js')
+    script(src='/js/capture/photo.js')
+    script(src='/js/capture/video.js')
+    script(src='/js/capture/stopmotion.js')
+    script(src='/js/capture.js')
