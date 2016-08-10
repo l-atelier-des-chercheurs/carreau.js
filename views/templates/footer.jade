@@ -4,10 +4,6 @@ script
   | app.currentFolder = "#{slugFolderName}";
   | app.currentProject = "#{slugProjectName}";
   | app.currentPubli = "#{slugPubliName}";
-script(src='/bower_components/jquery/dist/jquery.min.js')
-script(src='/bower_components/moment/min/moment-with-locales.js')
-script moment.locale("#{strings.codelang}");
-script(src='/bower_components/store-js/store.min.js')
-script( src='/dodoc.js')
-script( src='/js/common.js')
+script( src='/strings.js')
 script( src='/js/_global.js')
+script moment.locale("#{strings.codelang}");

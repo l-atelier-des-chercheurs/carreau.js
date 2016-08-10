@@ -39,6 +39,6 @@ router(app, io, m);
 
 httpServer.listen(
   app.get("port"), function() {
-    console.log("Server up and running. Go to https://localhost:" + app.get("port"));
+    console.log("Server up and running. Go to http://localhost:" + app.get("port"));
   }
 );

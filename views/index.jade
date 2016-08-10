@@ -4,11 +4,17 @@ html
     include templates/head
   body.index
 
-    .navbar-container.is--opened
-      header.navbar
+    h1 Conf tool
 
-    #container.row.mainContent
-      ul.dossier-list
+    .slide
+      .image_item
+        img.shadowed(src='1-couvertures_generatives/1-relire.jpg')
+    .slide
+      .image_item
+        img.shadowed(src='1-couvertures_generatives/2-relire.png')
+    .slide
+      .image_item
+        img.shadowed(src='1-couvertures_generatives/3-bookcoverunavailable.png')
 
     include templates/footer
     script(src='/js/index.js')

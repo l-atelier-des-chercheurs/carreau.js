@@ -4,7 +4,6 @@
  * 2. Prevent iOS and IE text size adjust after device orientation change,
  *    without disabling user zoom.
  */
-@import url(../fonts/Fira/fira.css);
 html {
   font-family: sans-serif;
   /* 1 */
@@ -355,50 +354,3 @@ th {
   padding: 0; }
 
 /*# sourceMappingURL=normalize.css.map */
-html {
-  margin: 0; }
-
-body, html {
-  height: 100%; }
-
-p {
-  font-size: 1em;
-  margin-bottom: .5em;
-  line-height: 1.4; }
-
-li {
-  list-style: none; }
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Fira Sans', sans-serif; }
-
-/******************
-  Mixins
-  ********************/
-body {
-  margin: 0;
-  background-color: white;
-  color: #000;
-  font-size: 1em;
-  font-family: 'Fira Sans', sans-serif; }
-
-a {
-  color: #000;
-  text-decoration: none; }
-
-a:hover {
-  color: #000;
-  text-decoration: none; }
-
-ul {
-  margin: 0; }
-
-img, video, audio, svg {
-  display: block;
-  min-width: 100%;
-  width: 100%; }
-
-.slide {
-  max-width: 800px; }
-  .slide .shadowed {
-    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.5); }
