@@ -8,7 +8,6 @@ var fs = require('fs-extra'),
 	moment = require('moment'),
 	exec = require('child_process').exec,
 // 	phantom = require('phantom'),
-	ffmpeg = require('fluent-ffmpeg'),
 	sprintf = require('sprintf-js').sprintf,
 	vsprintf = require('sprintf-js').vsprintf,
 	flags = require('flags'),
@@ -19,7 +18,7 @@ var fs = require('fs-extra'),
   gm = require('gm').subClass({imageMagick: true})
 ;
 
-var dodoc  = require('./public/dodoc.js');
+var dodoc  = require('./public/strings');
 
 module.exports = function(app, io){
 

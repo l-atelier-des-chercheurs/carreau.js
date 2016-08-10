@@ -1,6 +1,5 @@
 var express = require("express"),
   http    = require('http'),
-  https = require('https'),
   fs = require('fs'),
   io = require('socket.io')
 ;
@@ -12,10 +11,10 @@ var certificate = fs.readFileSync('file.crt', 'utf8');
 
 //create https server
 var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
-var io      = require("socket.io").listen(httpsServer);
+var httpServer = http.createServer(app);
+var io      = require("socket.io").listen(httpServer);
 
-var dodoc  = require('./public/dodoc.js');
+var strings  = require('./public/strings');
 var main    = require('./main');
 var config  = require('./config');
 var router  = require('./router');
@@ -38,7 +37,7 @@ router(app, io, m);
 * Start the http server at port and IP defined before
 */
 
-httpsServer.listen(
+httpServer.listen(
   app.get("port"), function() {
     console.log("Server up and running. Go to https://localhost:" + app.get("port"));
   }
