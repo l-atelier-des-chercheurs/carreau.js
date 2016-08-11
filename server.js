@@ -5,12 +5,6 @@ var express = require("express"),
 ;
 
 var app     = express();
-
-var privateKey  = fs.readFileSync('file.pem', 'utf8');
-var certificate = fs.readFileSync('file.crt', 'utf8');
-
-//create https server
-var credentials = {key: privateKey, cert: certificate};
 var httpServer = http.createServer(app);
 var io      = require("socket.io").listen(httpServer);
 

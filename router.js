@@ -9,114 +9,96 @@ var strings  = require('./public/strings'),
   parsedown = require('woods-parsedown')
 ;
 
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+
 module.exports = function(app,io,m){
 
   /**
   * routing event
   */
   app.get("/", getIndex);
+  app.get("/:conf", getConf);
+  app.post("/file-upload", multipartMiddleware, postFile);
 
   /**
   * routing functions
   */
-  function getFullPath( path) {
-    return strings.contentDir + "/" + path;
-  }
-
-  function getMetaFileOfFolder( slugFolderName) {
-    return getFullPath( slugFolderName) + '/' + strings.folderMetafilename + strings.metaFileext;
-  }
-  function getCurrentDate() {
-    return moment().format( strings.metaDateFormat);
-  }
-  function eventAndContent( sendEvent, objectJson) {
-    var eventContentJSON =
-    {
-      "socketevent" : sendEvent,
-      "content" : objectJson
-    };
-    return eventContentJSON;
-  }
-
-
-  function generatePageData( req, pageTitle) {
-
-    var pageDataJSON = [];
-
-    var slugFolderName = req.param('folder');
-    if( slugFolderName !== undefined) {
-      var jsonFileOfFolder = getMetaFileOfFolder( slugFolderName);
-      var folderData = readMetaFile( jsonFileOfFolder);
-
-      pageDataJSON.slugFolderName = slugFolderName;
-      pageDataJSON.folderName = folderData.name;
-      pageDataJSON.statut = folderData.statut;
-
-      var slugProjectName = req.param('project');
-      if( slugProjectName !== undefined) {
-        var projectPath = getProjectPath( slugFolderName, slugProjectName)
-        var jsonFileOfProject = getMetaFileOfProject( projectPath);
-        var projectData = readMetaFile( jsonFileOfProject);
-
-        pageDataJSON.slugProjectName = slugProjectName;
-        pageDataJSON.projectName = projectData.name;
-
-        var slugPubliName = req.param('publi');
-        if( slugPubliName !== undefined) {
-          var jsonFileOfPubli = getPathToPubli( slugFolderName, slugProjectName, slugPubliName) + strings.metaFileext;
-          var fullPathToJsonFileOfPubli = makePathToPubliFull( jsonFileOfPubli);
-          var publiData = readMetaFile( fullPathToJsonFileOfPubli);
-
-          pageDataJSON.slugPubliName = slugPubliName;
-          pageDataJSON.publiName = publiData.name;
-        }
-      }
-    }
-
-    if( publiData !== undefined)
-      pageTitle += " | " + publiData.name;
-    else if( projectData !== undefined)
-      pageTitle += " | " + projectData.name;
-    else if( folderData !== undefined)
-      pageTitle += " | " + folderData.name;
-
-    if( pageTitle !== undefined)
-      pageDataJSON.pageTitle = pageTitle;
-
-    pageDataJSON.url = req.path;
-
-    pageDataJSON.strings = strings;
-
-    return pageDataJSON;
-  }
-
 
   // GET
   function getIndex(req, res) {
-    var pageTitle = "Do.Doc";
-    var generatePageDataJSON = generatePageData(req, pageTitle);
-    res.render("index", generatePageDataJSON);
+    var pageTitle = "Baking Projects";
+    // console.log(req);
+    res.render("index", {title : pageTitle});
+  };
+
+  function getConf(req, res) {
+    var pageTitle = "Baking Projects";
+    // console.log(req);
+    res.render("conf", {title : pageTitle});
+    // res.render("index", {title : pageTitle});
+  };
+
+  // function getIndex(req, res) {
+  //   res.render("index", {title : "elif - 29 mars 2016"});
+  // };
+
+  function postFile(req, res) {
+    console.log("------ Requête reçue ! -----");
+    console.log(req.files);
+    for(var i= 0; i<req.files.files.length; i++){
+      if(req.files.files[i].size > 0){
+        var name = req.files.files[i].name;
+        var id = convertToSlug(name);
+        var newPath = __dirname + "/uploads/"+name;
+        console.log(name);
+        fs.readFile(req.files.files[i].path, function (err, data) {
+          fs.writeFile(newPath, data, function (err) {
+            //write Json File to save data
+            var jsonFile = 'uploads/lyon.json';
+            var data = fs.readFileSync(jsonFile,"UTF-8");
+            var jsonObj = JSON.parse(data);
+            var jsonAdd = { "name" : name, "id":id};
+            jsonObj["files"].push(jsonAdd);
+            var jsonString = JSON.stringify(jsonObj, null, 4);
+            fs.writeFile(jsonFile, jsonString, function(err) {
+              if(err) {
+                console.log(err);
+              } else {
+                console.log("New file -> The file was saved!");
+                io.sockets.emit("newMedia", {path: newPath, name:name, id: id});
+              }
+            });
+          });
+        });
+      }
+    }
   };
 
 
-  function readMetaFile( metaFile){
-    var metaFileContent = fs.readFileSync( metaFile, 'utf8');
-    var metaFileContentParsed = parseData( metaFileContent);
-    return metaFileContentParsed;
+  function convertToSlug(Text){
+    // converti le texte en minuscule
+    var s = Text.toLowerCase();
+    // remplace les a accentué
+    s = s.replace(/[àâäáã]/g, 'a');
+    // remplace les e accentué
+    s = s.replace(/[èêëé]/g, 'e');
+    // remplace les i accentué
+    s = s.replace(/[ìîïí]/g, 'i');
+    // remplace les u accentué
+    s = s.replace(/[ùûüú]/g, 'u');
+    // remplace les o accentué
+    s = s.replace(/[òôöó]/g, 'o');
+    // remplace le c cédille
+    s = s.replace(/[ç]/g, 'c');
+    // remplace le ene tilde espagnol
+    s = s.replace(/[ñ]/g, 'n');
+    // remplace tous les caractères qui ne sont pas alphanumérique en tiret
+    s = s.replace(/\W/g, '-');
+    // remplace les double tirets en tiret unique
+    s = s.replace(/\-+/g, '-');
+    // renvoi le texte modifié
+    return s;
   }
 
-	function parseData(d) {
-  	var parsed = parsedown(d);
-  	// if there is a field called medias, this one has to be made into an array
-  	if( parsed.hasOwnProperty('medias'))
-  	  parsed.medias = parsed.medias.split(',');
-    // the fav field is a boolean, so let's convert it
-  	if( parsed.hasOwnProperty('fav'))
-  	  parsed.fav = (parsed.fav === 'true');
-		return parsed;
-	}
-
-  function getPhotoPathOfProject() {
-    return strings.projectPhotosFoldername;
-  }
 };

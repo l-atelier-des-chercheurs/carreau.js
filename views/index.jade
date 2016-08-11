@@ -4,19 +4,20 @@ html
     include templates/head
   body.index
 
-    h1 Conf tool
+    #intro
+      h1 Conf tool
 
-    .slide
-      .image_item
+    .slide.js--fixedslide
+      .image_item.js--draggable
         img.shadowed(src='1-couvertures_generatives/1-relire.jpg')
-    .slide
-      .image_item
+
+    .slide.js--fixedslide
+      .image_item.js--draggable
         img.shadowed(src='1-couvertures_generatives/2-relire.png')
-    .slide
-      .image_item
+
+    .slide.js--fixedslide
+      .image_item.js--draggable
         img.shadowed(src='1-couvertures_generatives/3-bookcoverunavailable.png')
 
     include templates/footer
-    script(src='/js/index.js')
-
 
