@@ -37,10 +37,9 @@ if( lang === 'fr') {
 var settings = {
 
   "codelang" : lang,
-  "contentDir" : "sessions",
+  "contentDir" : "conferences",
   "metaFileext" : ".txt",
-  "folderMetafilename" : "dossier",
-  "projectMetafilename" : "projet",
+  "confMetafilename" : "meta",
 
   "projectPublisFoldername" : "publications",
   "projectPhotosFoldername" : "01-photos",
@@ -57,6 +56,9 @@ var settings = {
 
   "mediaThumbWidth" : 320,
   "mediaThumbHeight" : 240,
+
+  "startingPosX" : 0,
+  "startingPosY" : 0,
 
   "_comment" : "// see http://regexr.com/3d4t8",
   "regexpMatchFolderNames" : "^([^.]+)$",

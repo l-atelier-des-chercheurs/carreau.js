@@ -8,7 +8,7 @@ var app     = express();
 var httpServer = http.createServer(app);
 var io      = require("socket.io").listen(httpServer);
 
-var strings  = require('./public/strings');
+var settings  = require('./public/settings');
 var main    = require('./main');
 var config  = require('./config');
 var router  = require('./router');

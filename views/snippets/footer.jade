@@ -1,8 +1,8 @@
 script(src='/socket.io/socket.io.js')
 script
   | var app = {};
-//  | app.currentFolder = "#{slugFolderName}";
-script( src='/strings.js')
+  | app.slugConfName = "#{slugConfName}";
+script( src='/settings.js')
 script( src='/js/_plugins.js')
 script( src='/js/_global.js')
-script moment.locale("#{strings.codelang}");
+script moment.locale("#{settings.codelang}");

@@ -1,23 +1,36 @@
 doctype html
 html
-  head
-    include templates/head
-  body.index
+  include snippets/head
+  body
 
     #intro
       h1 Conf tool
 
-    .slide.js--fixedslide
-      .image_item.js--draggable
-        img.shadowed(src='1-couvertures_generatives/1-relire.jpg')
+    div.container
+      div.row
+        div.left.large-6.columns
+          div.text
+        div.right.large-6.columns
+          div.add-new-conf-wrapper
+            form(onsubmit='return false;' class='add-new-conf-form')
+              input(type="text" class="lieu" placeholder='Lieu')
+              input(type="date" class="date" placeholder='Date')
+              input(type="text" class="titre" placeholder='Titre')
+              input(type="text" class="auteur" placeholder='Auteur(s)')
+              input(type='submit' class='js-add-conf' value='Ajouter une nouvelle conférence')
+          ul.dossier-list
 
-    .slide.js--fixedslide
-      .image_item.js--draggable
-        img.shadowed(src='1-couvertures_generatives/2-relire.png')
+    .js--templates
+      li.dossier.small-6.medium-4.large-4.columns(data-nom)
+        .dossier-inside
+          .content
+            a.folder-link(href title)
+              h2.title
+          .meta-data.row
+            .lieu
+            .date
+            .auteur
 
-    .slide.js--fixedslide
-      .image_item.js--draggable
-        img.shadowed(src='1-couvertures_generatives/3-bookcoverunavailable.png')
-
-    include templates/footer
+    include snippets/footer
+    script( src='/js/pages/index.js')
 
