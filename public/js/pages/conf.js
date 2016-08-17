@@ -26,6 +26,8 @@ jQuery(document).ready(function($) {
 
 function init(){
 
+	socket.emit('listSlides', { "slugConfName" : app.slugConfName});
+
 	$(window).on('dragover',function(e){
 		$(".drop-files-container").css("z-index","9999");
 		e.preventDefault();

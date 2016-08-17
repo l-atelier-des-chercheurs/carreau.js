@@ -30,10 +30,9 @@ module.exports = function main(app, io){
 
 		// I N D E X
 		socket.on('newConf', onNewConf);
-		socket.on( 'listConf', function (data){ onListConf(socket); });
+		socket.on('listConf', function (data){ onListConf(socket); });
 
-		listMedias(socket);
-
+		socket.on('listSlides', function (data){ onListSlides(socket, data); });
 		socket.on('dropPosition', onDropPosition);
 
 
@@ -104,21 +103,31 @@ module.exports = function main(app, io){
 	}
 	// F I N      I N D E X
 
+	function onListSlides( socket, dataFolder) {
+		dev.logfunction( "EVENT - onListSlides");
+    readConfMeta(dataFolder.slugConfName).then(function(confMeta) {
+      var confSlides = confMeta.slides;
 
-	function listMedias(socket){
-		// var jsonFile = 'uploads/lyon.json';
-		// var data = fs.readFileSync(jsonFile,"UTF-8");
-		// var jsonObj = JSON.parse(data);
-		// for (var i = 0; i < jsonObj["files"].length; i++){
-		// 	var name = jsonObj['files'][i].name;
-		// 	var id = jsonObj['files'][i].id;
-		// 	var xPos = jsonObj['files'][i].xPos;
-		// 	var yPos = jsonObj['files'][i].yPos;
-		// 	var zPos = jsonObj['files'][i].zPos;
-		// 	var random = jsonObj['files'][i].random;
-		// 	socket.emit("listMedias", {name:name, id:id, xPos:xPos, yPos:yPos, zPos:zPos, random:random});
-		// }
+      var confSlidesData = new Object();
+      for( var confSlide of confSlides) {
+        getSlidesMeta(confSlide).then( function() {
+
+        });
+      }
+      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
+    }, function(error) {
+      console.error("Failed to list projects! Error: ", error);
+    });
 	}
+
+
+  function getSlidesMeta(confSlideName) {
+    return new Promise(function(resolve, reject) {
+      var mediaMeta = getMediaMeta( slugConfName, confSlideName);
+      resolve(mediaMeta);
+    });
+  }
+
 
 	function onDropPosition(mouse){
 /*
@@ -177,6 +186,9 @@ module.exports = function main(app, io){
           storeData( getMetaFileOfFolder(confPath), fmeta, "create").then(function( meta) {
           	console.log('sucess ' + meta)
             resolve( meta);
+          }, function(err) {
+            console.log( gutil.colors.red('--> Couldn\'t create conf meta.'));
+            reject( 'Couldn\'t create conf meta ' + err);
           });
 
         } else {
@@ -249,6 +261,12 @@ module.exports = function main(app, io){
     return settings.contentDir + "/" + path;
   }
 
+
+
+
+
+
+
   function getFolderMeta( slugFolderName) {
 		console.log( "COMMON — getFolderMeta");
 
@@ -261,31 +279,9 @@ module.exports = function main(app, io){
     return folderMetadata;
   }
 
-  function textifyObj( obj) {
-    var str = '';
-    console.log( '1. will prepare string for storage');
-    for (var prop in obj) {
-      var value = obj[prop];
-      console.log('2. value ? ' + value);
-      // if value is a string, it's all good
-      // but if it's an array (like it is for medias in publications) we'll need to make it into a string
-      if( typeof value === 'array')
-        value = value.join(', ');
-      // check if value contains a delimiter
-      if( typeof value === 'string' && value.indexOf('\n----\n') >= 0) {
-        console.log( '2. WARNING : found a delimiter in string, replacing it with a backslash');
-        // prepend with a space to neutralize it
-        value = value.replace('\n----\n', '\n ----\n');
-      }
-      str += prop + ': ' + value + settings.textFieldSeparator;
-    }
-    console.log( '3. textified object : ' + str);
-    return str;
-  }
-
-	function storeData( mpath, d, e) {
+  function storeData( mpath, d, e) {
     return new Promise(function(resolve, reject) {
-      console.log('Will store data', mpath);
+      console.log('Will store data');
       var textd = textifyObj(d);
       if( e === "create") {
         fs.appendFile( mpath, textd, function(err) {
@@ -293,24 +289,114 @@ module.exports = function main(app, io){
           resolve(parseData(textd));
         });
       }
-		  if( e === "update") {
+  	  if( e === "update") {
         fs.writeFile( mpath, textd, function(err) {
-        if (err) reject( err);
+          if (err) reject( err);
           resolve(parseData(textd));
         });
       }
     });
-	}
-
-	function parseData(d) {
-  	var parsed = parsedown(d);
-		return parsed;
-	}
+  }
+  function textifyObj( obj) {
+    var str = '';
+    dev.logverbose( '1. will prepare string for storage');
+    for (var prop in obj) {
+      var value = obj[prop];
+      dev.logverbose('2. prop ? ' + prop + ' and value ? ' + value);
+      // if value is a string, it's all good
+      // but if it's an array (like it is for medias in publications) we'll need to make it into a string
+      if( typeof value === 'array' || typeof value === 'object') {
+        dev.logverbose('this is an array');
+        value = value.join('\n');
+      // check if value contains a delimiter
+      } else if( typeof value === 'string' && value.indexOf('\n----\n') >= 0) {
+        dev.logverbose( '2. WARNING : found a delimiter in string, replacing it with a backslash');
+        // prepend with a space to neutralize it
+        value = value.replace('\n----\n', '\n ----\n');
+      }
+      str += prop + ': ' + value + settings.textFieldSeparator;
+  //       dev.logverbose('Current string output : ' + str);
+    }
+  //     dev.logverbose( '3. textified object : ' + str);
+    return str;
+  }
 
   function getCurrentDate() {
     return moment().format( settings.metaDateFormat);
+  }
+  function parseData(d) {
+  	dev.logverbose("Will parse data");
+  	var parsed = parsedown(d);
+  	// if there is a field called medias, this one has to be made into an array
+  	if( parsed.hasOwnProperty('slides'))
+  	  parsed.slides = parsed.slides.split('\n');
+  	return parsed;
+  }
+
+  function readConfMeta( slugConfName) {
+    return new Promise(function(resolve, reject) {
+  		dev.logfunction( "COMMON — readConfMeta");
+  		var metaConfPath = getMetaFileOfConf(slugConfName);
+  		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
+  		var folderMetadata = parseData( folderData);
+  		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
+      resolve(folderMetadata);
+    });
+  }
+
+  function getMetaFileOfConf( slugConfName) {
+  	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+  	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
+    return metaPath;
+  }
+
+  function getMediaMeta( slugConfName, fileNameWithoutExtension) {
+
+  	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
+
+  	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+    var mediaMetaPath = path.join(confPath, metaName + settings.metaFileext);
+
+  	var mediaData = fs.readFileSync(mediaMetaPath, dodoc.textEncoding);
+  	var mediaMetaData = parseData(mediaData);
+
+    return mediaMetaData;
+
+  }
+
+
+  function findFirstFilenameNotTaken( confPath, fileName) {
+    return new Promise(function(resolve, reject) {
+      // let's find the extension
+      var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( fileName)[0];
+      var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( fileName)[1];
+      dev.logverbose("Looking for existing file with name : " + fileNameWithoutExtension + " in confPath : " + confPath);
+      try {
+        var newFileName = fileNameWithoutExtension + fileExtension;
+        var newMetaFileName = fileNameWithoutExtension + settings.metaFileext;
+        var index = 0;
+        var newPathToFile = path.join(confPath, newFileName);
+        var newPathToMeta = path.join(confPath, newMetaFileName);
+        dev.logverbose( "2. about to look for existing files.");
+        // check si le nom du fichier et le nom du fichier méta sont déjà pris
+        while( (!fs.accessSync( newPathToFile, fs.F_OK) && !fs.accessSync( newPathToMeta, fs.F_OK))){
+          dev.logverbose("- - following path is already taken : newPathToFile = " + newPathToFile + " or newPathToMeta = " + newPathToMeta);
+          index++;
+
+          newFileName = fileNameWithoutExtension + "-" + index + fileExtension;
+          newMetaFileName = fileNameWithoutExtension + "-" + index + settings.metaFileext;
+          newPathToFile = path.join(confPath, newFileName);
+          newPathToMeta = path.join(confPath, newMetaFileName);
+        }
+      } catch(err) {
+
+      }
+      dev.logverbose( "3. this filename is not taken : " + newFileName);
+      resolve(newFileName);
+    });
   }
 
 // - - - END FUNCTIONS - - -
 
 };
+

@@ -35,8 +35,8 @@ module.exports = function(app,io,m){
 
   function getConf(req, res) {
     var pageTitle = "Diapo.js";
-    res.render("conf", {title : pageTitle, "slugConfName": req.param('conf')});
-    // res.render("index", {title : pageTitle});
+    var slugConfName = req.param('conf');
+    res.render("conf", {title : pageTitle, "slugConfName": slugConfName});
   };
 
   function postFile2(req, res){
@@ -52,7 +52,7 @@ module.exports = function(app,io,m){
     // store all uploads in the conf directory
     form.uploadDir = path.join(__dirname, settings.contentDir, slugConfName);
 
-    var allFilesMeta = {};
+    var allFilesMeta = [];
 
     // every time a file has been uploaded successfully,
     form.on('file', function(field, file) {
@@ -61,15 +61,39 @@ module.exports = function(app,io,m){
       findFirstFilenameNotTaken(form.uploadDir, file.name).then(function(newFileName){
         var newPathToNewFileName = path.join(form.uploadDir, newFileName);
         fs.rename(file.path, newPathToNewFileName);
+
         createMediaMeta( form.uploadDir, newFileName).then(function(fileMeta){
+          dev.logverbose("Pushing file meta to all files meta");
           allFilesMeta.push(fileMeta);
+          dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
+          readConfMeta(slugConfName).then(function(confMeta) {
+
+            var curSlides = [];
+            if( confMeta.hasOwnProperty('slides')) {
+              curSlides = confMeta.slides;
+            }
+
+            // we just store a filename without the format
+            var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(newFileName)[1];
+            curSlides.push(fileNameWithoutExtension);
+            confMeta['slides'] = curSlides;
+
+            dev.logverbose('New Slides array ' + typeof confMeta.slides);
+
+            var metaConfPath = getMetaFileOfConf(slugConfName);
+            storeData(metaConfPath, confMeta, 'update');
+
+          }, function(err) {
+            console.log('fail readConfMeta ' + err);
+            reject(err);
+          });
         }, function(err) {
-          console.log(err);
-          reject();
+          console.log('fail createMediaMeta ' + err);
+          reject(err);
         });
       }, function(err) {
-        console.log(err);
-        reject();
+        console.log('fail findFirstFilenameNotTaken ' + err);
+        reject(err);
       });
 
     });
@@ -96,11 +120,11 @@ module.exports = function(app,io,m){
     form.parse(req);
   }
 
+
   function createMediaMeta(confPath, mediaFileName) {
     return new Promise(function(resolve, reject) {
       console.log( "Will create a new meta file for media " + mediaFileName + " for conf " + confPath);
-
-//       var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( mediaFileName)[0];
+  //       var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( mediaFileName)[0];
       var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( mediaFileName)[1];
 
       var newMetaFileName = fileNameWithoutExtension + settings.metaFileext;
@@ -119,17 +143,20 @@ module.exports = function(app,io,m){
       };
       dev.logverbose("Saving JSON string " + JSON.stringify(mdata, null, 4));
       storeData( newPathToMeta, mdata, 'create').then(function( meta) {
-        console.log( "New media meta file created at path " + newPathToMeta);
-        resolve( meta);
-      }, function() {
+        console.log( "New media meta file created at path " + newPathToMeta + " with meta : " + meta);
+        resolve(meta);
+      }, function(err) {
         console.log( gutil.colors.red('--> Couldn\'t create media meta.'));
-        reject( 'Couldn\'t create media meta');
+        reject( 'Couldn\'t create media meta ' + err);
       });
     });
   }
 
 
-	function storeData( mpath, d, e) {
+
+
+
+  function storeData( mpath, d, e) {
     return new Promise(function(resolve, reject) {
       console.log('Will store data');
       var textd = textifyObj(d);
@@ -139,24 +166,25 @@ module.exports = function(app,io,m){
           resolve(parseData(textd));
         });
       }
-		  if( e === "update") {
+  	  if( e === "update") {
         fs.writeFile( mpath, textd, function(err) {
-        if (err) reject( err);
+          if (err) reject( err);
           resolve(parseData(textd));
         });
       }
     });
-	}
+  }
   function textifyObj( obj) {
     var str = '';
     dev.logverbose( '1. will prepare string for storage');
     for (var prop in obj) {
       var value = obj[prop];
-      dev.logverbose('2. value ? ' + value);
+      dev.logverbose('2. prop ? ' + prop + ' and value ? ' + value);
       // if value is a string, it's all good
       // but if it's an array (like it is for medias in publications) we'll need to make it into a string
-      if( typeof value === 'array') {
-        value = value.join(', ');
+      if( typeof value === 'array' || typeof value === 'object') {
+        dev.logverbose('this is an array');
+        value = value.join('\n');
       // check if value contains a delimiter
       } else if( typeof value === 'string' && value.indexOf('\n----\n') >= 0) {
         dev.logverbose( '2. WARNING : found a delimiter in string, replacing it with a backslash');
@@ -164,19 +192,40 @@ module.exports = function(app,io,m){
         value = value.replace('\n----\n', '\n ----\n');
       }
       str += prop + ': ' + value + settings.textFieldSeparator;
-//       dev.logverbose('Current string output : ' + str);
+  //       dev.logverbose('Current string output : ' + str);
     }
-//     dev.logverbose( '3. textified object : ' + str);
+  //     dev.logverbose( '3. textified object : ' + str);
     return str;
   }
 
   function getCurrentDate() {
     return moment().format( settings.metaDateFormat);
   }
-	function parseData(d) {
+  function parseData(d) {
+  	dev.logverbose("Will parse data");
   	var parsed = parsedown(d);
-		return parsed;
-	}
+  	// if there is a field called medias, this one has to be made into an array
+  	if( parsed.hasOwnProperty('slides'))
+  	  parsed.slides = parsed.slides.split('\n');
+  	return parsed;
+  }
+
+  function readConfMeta( slugConfName) {
+    return new Promise(function(resolve, reject) {
+  		dev.logfunction( "COMMON — readConfMeta");
+  		var metaConfPath = getMetaFileOfConf(slugConfName);
+  		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
+  		var folderMetadata = parseData( folderData);
+  		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
+      resolve(folderMetadata);
+    });
+  }
+
+  function getMetaFileOfConf( slugConfName) {
+  	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+  	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
+    return metaPath;
+  }
 
   function findFirstFilenameNotTaken( confPath, fileName) {
     return new Promise(function(resolve, reject) {
@@ -190,7 +239,6 @@ module.exports = function(app,io,m){
         var index = 0;
         var newPathToFile = path.join(confPath, newFileName);
         var newPathToMeta = path.join(confPath, newMetaFileName);
-
         dev.logverbose( "2. about to look for existing files.");
         // check si le nom du fichier et le nom du fichier méta sont déjà pris
         while( (!fs.accessSync( newPathToFile, fs.F_OK) && !fs.accessSync( newPathToMeta, fs.F_OK))){
@@ -203,12 +251,16 @@ module.exports = function(app,io,m){
           newPathToMeta = path.join(confPath, newMetaFileName);
         }
       } catch(err) {
+
       }
       dev.logverbose( "3. this filename is not taken : " + newFileName);
       resolve(newFileName);
     });
   }
+
+
 };
+
 
 var dev = (function() {
   // VARIABLES
