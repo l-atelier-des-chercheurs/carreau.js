@@ -93,9 +93,9 @@ module.exports = function main(app, io){
       dev.logverbose('just read conf meta');
       var confSlides = confMeta.slides;
       var confSlidesData = new Array();
-      for(var confSlide of confSlides) {
-        dev.logverbose('Slide : ' + confSlide);
-        var mediaMeta = getMediaMeta(dataFolder.slugConfName, confSlide);
+      for(var slideName of confSlides) {
+        dev.logverbose('Slide : ' + slideName);
+        var mediaMeta = getMediaMeta(dataFolder.slugConfName, slideName);
         confSlidesData.push(mediaMeta);
         dev.logverbose('new media meta added');
       }
@@ -106,8 +106,14 @@ module.exports = function main(app, io){
     });
 	}
 
-  function onMediaNewPos() {
-
+  function onMediaNewPos(slidePos) {
+    var slideNameWE = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(slidePos.mediaName)[1];
+    var mediaMeta = getMediaMeta(slidePos.slugConfName, slideNameWE);
+    mediaMeta.posX = slidePos.posX;
+    mediaMeta.posY = slidePos.posY;
+    updateMediaMeta(slidePos.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
+//      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
+    });
   }
 
 	// CONF METHOD !!
@@ -313,6 +319,19 @@ module.exports = function main(app, io){
     return mediaMetaData;
   }
 
+  function updateMediaMeta( slugConfName, fileNameWithoutExtension, newMediaMeta) {
+    return new Promise(function(resolve, reject) {
+    	dev.logfunction( "COMMON — updateMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
+    	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+      var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
+      storeData( mediaMetaPath, newMediaMeta, 'update').then(function( meta) {
+        resolve(meta);
+      }, function(err) {
+        console.log( gutil.colors.red('--> Couldn\'t update media meta.'));
+        reject( 'Couldn\'t update media meta ' + err);
+      });
+    });
+  }
 
   function findFirstFilenameNotTaken( confPath, fileName) {
     return new Promise(function(resolve, reject) {

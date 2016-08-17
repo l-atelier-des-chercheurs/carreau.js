@@ -8,17 +8,20 @@
 var socket = io.connect();
 var zIndex = 0;
 
+
 /* sockets */
 socket.on('connect', onSocketConnect);
 socket.on('error', onSocketError);
 
-/*
-socket.on('listMedias', onListMedias);
-socket.on('newMedia', onNewMedia);
-*/
-socket.on('mediaPosition', onMediaPosition);
-socket.on('mediaDragPosition', onMediaDragPosition);
-socket.on('mediaDragPositionForAll', onMediaDragPositionForAll);
+function onSocketConnect() {
+	sessionId = socket.io.engine.id;
+	console.log('Connected ' + sessionId);
+};
+
+function onSocketError(reason) {
+	console.log('Unable to connect to server', reason);
+};
+
 
 socket.on('listAllSlides', onListAllSlides);
 
@@ -58,19 +61,6 @@ function onListAllSlides(d) {
   d.forEach(function(s) {
     listOneSlide(s);
   });
-
-/*
-  var slides = document.querySelectorAll('.js--fixedslide');
-  // create scene for every slide
-  for (var i=0; i<slides.length; i++) {
-  	new ScrollMagic.Scene({
-  			triggerElement: slides[i]
-  		})
-  		.setPin(slides[i])
-  		.addIndicators() // add indicators (requires plugin)
-  		.addTo(controller);
-  }
-*/
 }
 
 
@@ -103,15 +93,20 @@ function listOneSlide(d) {
     pxWidth = pxHeight / d.ratio;
   }
 
+  var posX = d.posX * window.innerWidth;
+  var posY = d.posY * window.innerHeight;
+
 	mediaItem
 	  .attr('data-fileName', d.name)
 	  .find('.slide--item')
   	  .css({
-  	  	'transform': 'translate(' + d.posX + '%, ' + d.posY + '%)',
+  	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
   	  	'width': pxWidth,
   	  	'height': pxHeight,
   	  	'display':'block'
   	  })
+  	  .attr('data-x', posX)
+  	  .attr('data-y', posY)
   	.end()
     ;
 
@@ -119,230 +114,6 @@ function listOneSlide(d) {
   setSceneForSlide(mediaItem[0]);
   initInteractForSlide(mediaItem.find('.js--interactevents')[0]);
 }
-
-function onListMedias(data){
-	var path = "../"+data.name;
-	var id = data.id;
-	zIndex = data.zPos;
-	var ext = data.name.split('.').pop();
-	var mediaItem;
-
-	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG"){
-		mediaItem = $(".js--templates .image").clone(false);
-		mediaItem
-		  .find( 'img')
-		    .attr('src', path)
-		  .end()
-		  .attr('id', id)
-		  .css({
-		  	"top":data.yPos,
-		  	"left":data.xPos,
-		  	"z-index":data.zPos,
-		  	"transform":"rotate("+data.random+"deg)",
-		  	"display":"block"
-		  });
-	}
-
-	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "mov" || ext == "webm"){
-		mediaItem = $(".js--templates .video").clone(false);
-		mediaItem
-		  .find( 'source')
-		    .attr('src', path)
-		  .end()
-		  .attr('id', id)
-		  .css({
-		  	"top":data.yPos,
-		  	"left":data.xPos,
-		  	"z-index":data.zPos,
-		  	"transform":"rotate("+data.random+"deg)",
-		  	"display":"block"
-		  });
-	}
-
-	if(ext == 'pdf'){
-		mediaItem = $(".js--templates .pdf").clone(false);
-		mediaItem
-		  .find('a')
-		    .attr('href', path)
-		    .attr('title', data.name)
-		    .attr('target', '_blank')
-		    .append(data.name)
-		  .end()
-			.attr('id', id)
-		  .css({
-		  	"top":data.yPos,
-		  	"left":data.xPos,
-		  	"z-index":data.zPos,
-		  	"transform":"rotate("+data.random+"deg)",
-		  	"display":"block"
-		  });
-	}
-
-  $('.medias-list').prepend(mediaItem);
-
-  // ajouter un attribut paysage ou portrait pour définir une taille rationnelle
-  setTimeout(function(){
-	  //console.log(mediaItem.find('img')[0].naturalWidth, mediaItem.find('img')[0].naturalHeight);
-		var mediaW = mediaItem.find('img')[0].naturalWidth;
-		var mediaH = mediaItem.find('img')[0].naturalHeight;
-		//console.log(mediaW, mediaH);
-		var orientation;
-		if(mediaW > mediaH){
-			orientation = "paysage";
-		}
-		else{
-			orientation = "portrait";
-		}
-		mediaItem.attr("data-orientation", orientation);
-  }, 500);
-
-
-
-  //draggable media
-  mediaItem.draggable({
-    start: function() {
-    	zIndex ++;
-	    // console.log(zIndex);
-    },
-    drag: function(event) {
-    	// console.log(event);
-    	var offset = $(this).offset();
-      var posX = offset.left;
-      var posY = offset.top;
-    	socket.emit("dragMediaPos", {x: posX, y:posY, id:id, z:zIndex});
-    },
-    stop: function() {
-    	socket.emit('takeScreenShot');
-    }
-  });
-}
-
-function onNewMedia(data){
-	var path = "../"+data.name;
-	var id = data.id;
-	var ext = data.name.split('.').pop();
-	var mediaItem;
-
-	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG"){
-		mediaItem = $(".js--templates .image").clone(false);
-		mediaItem
-		  .find( 'img')
-		    .attr('src', path)
-		  .end()
-		  .addClass('no-position')
-		  .attr('id', id)
-		  .css({
-		  	"zIndex": zIndex
-		  });
-	}
-
-	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "mov" || ext == "webm"){
-		mediaItem = $(".js--templates .video").clone(false);
-		mediaItem
-		  .find('source')
-		    .attr('src', path)
-		  .end()
-		  .addClass('no-position')
-		  .attr('id', id)
-		  .css({
-		  	"zIndex": zIndex
-		  });
-	}
-
-	if(ext == 'pdf'){
-		mediaItem = $(".js--templates .pdf").clone(false);
-		mediaItem
-		  .find('a')
-		    .attr('href', path)
-		    .attr('title', data.name)
-		    .attr('target', '_blank')
-		    .append(data.name)
-		  .end()
-		  .addClass('no-position')
-		  .attr('id', id)
-		  .css({
-		  	"zIndex": zIndex
-		  });
-	}
-
-
-	$('.medias-list').prepend(mediaItem);
-
-  //draggable media
-/*
-  mediaItem.draggable({
-    start: function() {
-    	zIndex ++;
-    },
-    drag: function(event) {
-    	// console.log(event);
-    	var offset = $(this).offset();
-      var posX = offset.left;
-      var posY = offset.top;
-    	socket.emit("dragMediaPos", {x: posX, y:posY,  z:zIndex, id:id});
-    },
-    stop: function() {
-    	socket.emit('takeScreenShot');
-    }
-  });
-*/
-}
-
-function onMediaPosition(mouse){
-	$(".drop-files-container").css("z-index", -1);
-	var mediaW = $(".medias-list li.no-position").width();
-	var mediaH = $(".medias-list li.no-position").height();
-	var orientation;
-
-	if(mediaW > mediaH){
-		orientation = "paysage";
-	}
-	else{
-		orientation = "portrait";
-	}
-
-	$(".medias-list li.no-position")
-		.css({
-			"top": mouse.mediaY,
-	  	"left":mouse.mediaX,
-	  	"transform":"rotate("+mouse.random+"deg)",
-	  	"z-index": mouse.mediaZ,
-	  	"display":"block"
-		})
-		.removeClass('no-position')
-		.attr("data-index", mouse.mediaZ)
-		.attr("data-orientation", orientation)
-	;
-	socket.emit('takeScreenShot');
-
-}
-
-function onMediaDragPosition(pos){
-	$(".medias-list li#"+pos.id)
-		.css({
-			"top": pos.y,
-	  	"left":pos.x,
-	  	"z-index":pos.z
-		});
-}
-
-function onMediaDragPositionForAll(pos){
-	$(".medias-list li#"+pos.id)
-	.css({
-  	"z-index":pos.z,
-	});
-}
-
-
-/* sockets */
-function onSocketConnect() {
-	sessionId = socket.io.engine.id;
-	console.log('Connected ' + sessionId);
-};
-
-function onSocketError(reason) {
-	console.log('Unable to connect to server', reason);
-};
 
 
 function uploadDroppedFiles(droppedFiles) {
@@ -409,35 +180,6 @@ function uploadDroppedFiles(droppedFiles) {
 
   }
 }
-
-
-function convertToSlug(Text){
-  // converti le texte en minuscule
-	var s = Text.toLowerCase();
-	// remplace les a accentué
-	s = s.replace(/[àâäáã]/g, 'a');
-	// remplace les e accentué
-	s = s.replace(/[èêëé]/g, 'e');
-	// remplace les i accentué
-	s = s.replace(/[ìîïí]/g, 'i');
-	// remplace les u accentué
-	s = s.replace(/[ùûüú]/g, 'u');
-	// remplace les o accentué
-	s = s.replace(/[òôöó]/g, 'o');
-	// remplace le c cédille
-	s = s.replace(/[ç]/g, 'c');
-	// remplace le ene tilde espagnol
-	s = s.replace(/[ñ]/g, 'n');
-	// remplace tous les caractères qui ne sont pas alphanumérique en tiret
-	s = s.replace(/\W/g, '-');
-	// remplace les double tirets en tiret unique
-	s = s.replace(/\-+/g, '-');
-	// renvoi le texte modifié
-	return s;
-}
-
-
-
 
 /***************************************************************************
                   ScrollMagic logic (fixed slides)
@@ -509,9 +251,10 @@ function initInteractForSlide(s) {
         var relativeY = y / window.innerHeight;
 
         var mediaPos = {
-          "mediaName" : target.parentElement.getAttribute('data-filename'),
-          "posX" : relativeX,
-          "posY" : relativeY
+          'mediaName' : target.parentElement.getAttribute('data-filename'),
+          'slugConfName' : app.slugConfName,
+          'posX' : relativeX,
+          'posY' : relativeY
         }
         socket.emit('mediaNewPos', mediaPos);
       }
