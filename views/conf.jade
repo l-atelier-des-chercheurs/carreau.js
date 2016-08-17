@@ -7,6 +7,11 @@ html
 
     input(id="upload-input" type="file" name="uploads[]" multiple="multiple")
 
+    .presentation-slide
+      .titre
+        .titre-wrapper
+          h1 #{confName}
+
     .popover_upload
       h3 Envoi de fichiers en cours
       .progress-bar
@@ -14,10 +19,6 @@ html
 
     .slides-list
 
-
-    .titre
-      .titre-wrapper
-        h1 #{confName}
 
     .js--templates
       .slide.js--fixedslide.js--imageSlide

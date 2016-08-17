@@ -34,6 +34,7 @@ module.exports = function main(app, io){
 
 		socket.on('listSlides', function (data){ onListSlides(socket, data); });
 		socket.on('mediaNewPos', onMediaNewPos);
+		socket.on('mediaNewWidth', onMediaNewWidth);
 
 
 		socket.on('dragMediaPos', function(pos){
@@ -115,6 +116,17 @@ module.exports = function main(app, io){
 //      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     });
   }
+
+  function onMediaNewWidth(slideWidth) {
+    var slideNameWE = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(slideWidth.mediaName)[1];
+    var mediaMeta = getMediaMeta(slideWidth.slugConfName, slideNameWE);
+    mediaMeta.width = slideWidth.width;
+    updateMediaMeta(slideWidth.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
+//      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
+    });
+  }
+
+
 
 	// CONF METHOD !!
 	function createNewConf( confData) {

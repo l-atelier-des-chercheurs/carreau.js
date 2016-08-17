@@ -76,11 +76,17 @@ img, video, audio, svg {
 
 // conf
 
+#upload-input {
+  display: none;
+}
+
 .drop-files-container{
 	height:100%;
 	width:100%;
 	position:fixed;
-	//z-index:9999;
+  background-color: #ff00ff;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .medias-list{
@@ -105,17 +111,14 @@ img, video, audio, svg {
 
 .slides-list {
   position: relative;
-
 }
 .slide {
 
   position: relative;
   z-index:  1;
   width:  100%;
-  height:   100%;
+  height:   70%;
   overflow: visible;
-
-  border-top:   1px solid grey;
 
   -webkit-user-select: none;
     -moz-user-select: none;
@@ -124,6 +127,9 @@ img, video, audio, svg {
     user-select: none;
 
   pointer-events: none;
+  background-color: transparent;
+
+  transition: background-color .6s ease;
 
   .slide--item {
     position: absolute;
@@ -140,7 +146,7 @@ img, video, audio, svg {
   }
 
   &.is--dragged {
-    background-color: grey;
+    background-color: fade-out(#0A997F,0.10);
   }
 }
 

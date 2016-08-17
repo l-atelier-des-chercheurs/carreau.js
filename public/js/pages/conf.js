@@ -86,7 +86,7 @@ function listOneSlide(d) {
 		  .end()
 	}
 
-	var pxWidth = (d.width/100) * window.innerWidth;
+	var pxWidth = d.width * window.innerWidth;
 	var pxHeight = pxWidth * d.ratio;
 	if( pxHeight > window.innerHeight) {
 	  pxHeight = window.innerHeight;
@@ -216,33 +216,40 @@ function initInteractForSlide(s) {
         targets: [
           interact.createSnapGrid({ x: 30, y: 30 })
         ],
+        range: Infinity,
+        relativePoints: [ { x: 0, y: 0 } ]
 */
-//         range: Infinity,
-//         relativePoints: [ { x: 0, y: 0 } ]
       },
       // keep the element within the area of it's parent
       restrict: {
-/*         restriction: "parent", */
+/*
+        restriction: "parent",
         endOnly: true,
         elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+*/
       },
-      // enable autoScroll
-      autoScroll: false,
 
       // call this function on every dragmove event
-      onmove: dragMoveListener,
+      onmove: function(event) {
+        $(event.target.parentElement).addClass('is--dragged');
+
+        var target = event.target,
+            // keep the dragged position in the data-x/data-y attributes
+            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+        // translate the element
+        target.style.webkitTransform =
+        target.style.transform =
+          'translate(' + x + 'px, ' + y + 'px)';
+
+        // update the posiion attributes
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+      },
       // call this function on every dragend event
       onend: function (event) {
         $(event.target.parentElement).removeClass('is--dragged');
-/*         var pxWidth = (d.width/100) * window.innerWidth; */
-/*
-
-        textEl && (textEl.textContent =
-          'moved a distance of '
-          + (Math.sqrt(event.dx * event.dx +
-                       event.dy * event.dy)|0) + 'px');
-*/
-        // send new drag position to server
         var target = event.target,
             x = (parseFloat(target.getAttribute('data-x')) || 0),
             y = (parseFloat(target.getAttribute('data-y')) || 0);
@@ -257,7 +264,7 @@ function initInteractForSlide(s) {
           'posY' : relativeY
         }
         socket.emit('mediaNewPos', mediaPos);
-      }
+      },
     })
     .resizable({
       preserveAspectRatio: true,
@@ -282,28 +289,22 @@ function initInteractForSlide(s) {
       target.setAttribute('data-x', x);
       target.setAttribute('data-y', y);
 //       target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
-    });
+    })
+    .on('resizeend', function (event) {
 
-  function dragMoveListener (event) {
+      var target = event.target;
+      var w = target.offsetWidth;
 
-    $(event.target.parentElement).addClass('is--dragged');
+      var relativeW = w / window.innerWidth;
 
-    var target = event.target,
-        // keep the dragged position in the data-x/data-y attributes
-        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-    // translate the element
-    target.style.webkitTransform =
-    target.style.transform =
-      'translate(' + x + 'px, ' + y + 'px)';
-
-    // update the posiion attributes
-    target.setAttribute('data-x', x);
-    target.setAttribute('data-y', y);
-  }
-
-  window.dragMoveListener = dragMoveListener;
+      var mediaWidth = {
+        'mediaName' : target.parentElement.getAttribute('data-filename'),
+        'slugConfName' : app.slugConfName,
+        'width' : relativeW,
+      }
+      socket.emit('mediaNewWidth', mediaWidth);
+    })
+    ;
 
 /*
   interact(element)

@@ -57,8 +57,8 @@ var settings = {
   "mediaThumbWidth" : 320,
   "mediaThumbHeight" : 240,
 
-  "startingPosX" : 50,
-  "startingPosY" : 50,
+  "startingPosX" : .50,
+  "startingPosY" : .50,
 
   "_comment" : "// see http://regexr.com/3d4t8",
   "regexpMatchFolderNames" : "^([^.]+)$",
