@@ -18,6 +18,7 @@
     "gm": "^1.22.0",
     "gulp-util": "^3.0.7",
     "i18n": "^0.5.0",
+    "image-size": "^0.5.0",
     "jade": "^1.11.0",
     "markdown-it": "^6.0.1",
     "markdown-parse": "^0.2.1",

@@ -6,38 +6,30 @@ html
     .drop-files-container
 
     input(id="upload-input" type="file" name="uploads[]" multiple="multiple")
-    .progress-bar
 
-    .medias-list
-      ul
+    .popover_upload
+      h3 Envoi de fichiers en cours
+      .progress-bar
+
+
+    .slides-list
+
 
     .titre
       .titre-wrapper
-        h1 Baking
-        h1 Projects
-    .elif
-      h3 elif - 29 mars 2016
-      h3 Angeline Ostinelli & Sarah Garcin
+        h1 #{confName}
 
     .js--templates
-      li.image
-        img
-      li.video
-        video(controls)
-          source()
-      li.pdf
-        a
+      .slide.js--fixedslide.js--imageSlide
+        .slide--item.slide--item_image.js--interactevents
+          img.shadowed
+      .slide.js--fixedslide.js--videoSlide
+        .slide--item.slide--item_video.js--interactevents
+          video(controls)
+            source()
 
-    .slide.js--fixedslide
-      .image_item.js--interactevents
-        img.shadowed(src='11-relire.jpg')
 
-    .slide.js--fixedslide
-      .image_item.js--interactevents
-        img.shadowed(src='9782130682301_cover.png')
 
-    .slide.js--fixedslide
-      .image_item.js--interactevents
         img.shadowed(src='9782234105225_cover.png')
 
 

@@ -33,7 +33,7 @@ module.exports = function main(app, io){
 		socket.on('listConf', function (data){ onListConf(socket); });
 
 		socket.on('listSlides', function (data){ onListSlides(socket, data); });
-		socket.on('dropPosition', onDropPosition);
+		socket.on('mediaNewPos', onMediaNewPos);
 
 
 		socket.on('dragMediaPos', function(pos){
@@ -60,22 +60,6 @@ module.exports = function main(app, io){
 			}
 		});
 
-		socket.on("clearPad", function(){
-			var jsonFile = 'uploads/lyon.json';
-			var data = fs.readFileSync(jsonFile,"UTF-8");
-			var jsonObj = JSON.parse(data);
-			jsonObj["files"].length = 0;
-			var jsonString = JSON.stringify(jsonObj, null, 4);
-      fs.writeFile(jsonFile, jsonString, function(err) {
-        if(err) {
-            console.log(err);
-        }
-        else {
-          console.log("remove all files");
-          io.sockets.emit("padCleared");
-        }
-      });
-		});
 	});
 
 
@@ -106,56 +90,25 @@ module.exports = function main(app, io){
 	function onListSlides( socket, dataFolder) {
 		dev.logfunction( "EVENT - onListSlides");
     readConfMeta(dataFolder.slugConfName).then(function(confMeta) {
+      dev.logverbose('just read conf meta');
       var confSlides = confMeta.slides;
-
-      var confSlidesData = new Object();
-      for( var confSlide of confSlides) {
-        getSlidesMeta(confSlide).then( function() {
-
-        });
+      var confSlidesData = new Array();
+      for(var confSlide of confSlides) {
+        dev.logverbose('Slide : ' + confSlide);
+        var mediaMeta = getMediaMeta(dataFolder.slugConfName, confSlide);
+        confSlidesData.push(mediaMeta);
+        dev.logverbose('new media meta added');
       }
+      dev.logverbose('sending data : ' + JSON.stringify(confSlidesData));
       sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     }, function(error) {
       console.error("Failed to list projects! Error: ", error);
     });
 	}
 
+  function onMediaNewPos() {
 
-  function getSlidesMeta(confSlideName) {
-    return new Promise(function(resolve, reject) {
-      var mediaMeta = getMediaMeta( slugConfName, confSlideName);
-      resolve(mediaMeta);
-    });
   }
-
-
-	function onDropPosition(mouse){
-/*
-		io.sockets.emit("mediaPosition", mouse);
-		//Save position in json
-	  var jsonFile = 'uploads/lyon.json';
-    var data = fs.readFileSync(jsonFile,"UTF-8");
-    var jsonObj = JSON.parse(data);
-    for (var i = 0; i < jsonObj["files"].length; i++){
-		  if (jsonObj["files"][i].id == mouse.id){
-		  	jsonObj["files"][i]["xPos"] = mouse.mediaX;
-		  	jsonObj["files"][i]["yPos"] = mouse.mediaY;
-		  	jsonObj["files"][i]["zPos"] = mouse.mediaZ;
-		  	jsonObj["files"][i]["random"] = mouse.random;
-		  	console.log(jsonObj);
-		  	var jsonString = JSON.stringify(jsonObj, null, 4);
-	      fs.writeFile(jsonFile, jsonString, function(err) {
-	        if(err) {
-	            console.log(err);
-	        } else {
-	            console.log("file drop -> The file was saved!");
-	        }
-	      });
-		  }
-		}
-*/
-	}
-
 
 	// CONF METHOD !!
 	function createNewConf( confData) {
@@ -351,17 +304,13 @@ module.exports = function main(app, io){
   }
 
   function getMediaMeta( slugConfName, fileNameWithoutExtension) {
-
   	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
-
   	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
-    var mediaMetaPath = path.join(confPath, metaName + settings.metaFileext);
-
-  	var mediaData = fs.readFileSync(mediaMetaPath, dodoc.textEncoding);
+    var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
+  	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
   	var mediaMetaData = parseData(mediaData);
-
+  	dev.logverbose( "COMMON — getMediaMeta : data was parsed " + JSON.stringify(mediaMetaData, null, 4));
     return mediaMetaData;
-
   }
 
 

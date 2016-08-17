@@ -12,12 +12,15 @@ var zIndex = 0;
 socket.on('connect', onSocketConnect);
 socket.on('error', onSocketError);
 
+/*
 socket.on('listMedias', onListMedias);
 socket.on('newMedia', onNewMedia);
+*/
 socket.on('mediaPosition', onMediaPosition);
 socket.on('mediaDragPosition', onMediaDragPosition);
 socket.on('mediaDragPositionForAll', onMediaDragPositionForAll);
-socket.on('padCleared', padCleared);
+
+socket.on('listAllSlides', onListAllSlides);
 
 jQuery(document).ready(function($) {
 	init();
@@ -45,31 +48,76 @@ function init(){
 		console.log("DROP FILE");
 
     var files = e.originalEvent.dataTransfer.files;
-//     processFileUpload(files);
     uploadDroppedFiles(files);
 
+	});
+
+}
+
+function onListAllSlides(d) {
+  d.forEach(function(s) {
+    listOneSlide(s);
+  });
+
 /*
-    //file data to display it correctly
-    var mediaX = e.offsetX;
- 		var mediaY = e.offsetY;
- 		var id = convertToSlug(files[0].name);
- 		zIndex ++;
- 		var randomRot = Math.floor((Math.random() * 40) - 15);
- 		console.log(mediaX, mediaY, id, zIndex, randomRot);
-    setTimeout(function(){
-			socket.emit("dropPosition", {mediaX:mediaX, mediaY:mediaY, id:id, mediaZ: zIndex, random:randomRot});
-  	},200);
-  	// forward the file object to your ajax upload method
-    return false;
+  var slides = document.querySelectorAll('.js--fixedslide');
+  // create scene for every slide
+  for (var i=0; i<slides.length; i++) {
+  	new ScrollMagic.Scene({
+  			triggerElement: slides[i]
+  		})
+  		.setPin(slides[i])
+  		.addIndicators() // add indicators (requires plugin)
+  		.addTo(controller);
+  }
 */
-	});
+}
 
-	// ctrl + f -> Clear le pad -> supprime toutes les images
-	$(document).keypress("f",function(e) {
-	  if(e.ctrlKey)
-	    socket.emit("clearPad");
-	});
 
+function listOneSlide(d) {
+
+  var path = d.name;
+	var ext = d.name.split('.').pop();
+	var mediaItem;
+
+	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG"){
+		mediaItem = $(".js--templates > .js--imageSlide").clone(false);
+    mediaItem
+		  .find( 'img')
+		    .attr('src', path)
+		  .end()
+  }
+
+	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "mov" || ext == "webm"){
+		mediaItem = $(".js--templates > .js--videoSlide").clone(false);
+		mediaItem
+		  .find( 'source')
+		    .attr('src', path)
+		  .end()
+	}
+
+	var pxWidth = (d.width/100) * window.innerWidth;
+	var pxHeight = pxWidth * d.ratio;
+	if( pxHeight > window.innerHeight) {
+	  pxHeight = window.innerHeight;
+    pxWidth = pxHeight / d.ratio;
+  }
+
+	mediaItem
+	  .attr('data-fileName', d.name)
+	  .find('.slide--item')
+  	  .css({
+  	  	'transform': 'translate(' + d.posX + '%, ' + d.posY + '%)',
+  	  	'width': pxWidth,
+  	  	'height': pxHeight,
+  	  	'display':'block'
+  	  })
+  	.end()
+    ;
+
+  $('body').append(mediaItem);
+  setSceneForSlide(mediaItem[0]);
+  initInteractForSlide(mediaItem.find('.js--interactevents')[0]);
 }
 
 function onListMedias(data){
@@ -129,7 +177,6 @@ function onListMedias(data){
 		  	"display":"block"
 		  });
 	}
-
 
   $('.medias-list').prepend(mediaItem);
 
@@ -286,9 +333,6 @@ function onMediaDragPositionForAll(pos){
 	});
 }
 
-function padCleared(){
-	location.reload();
-}
 
 /* sockets */
 function onSocketConnect() {
@@ -300,36 +344,6 @@ function onSocketError(reason) {
 	console.log('Unable to connect to server', reason);
 };
 
-
-
-function processFileUpload(droppedFiles) {
-  // add your files to the regular upload form
-//   var uploadFormData = new FormData($("#form")[0]);
-  var newMediaJsonData = new Array;
-  if(droppedFiles.length > 0) { // checks if any files were dropped
-    for(var f = 0; f < droppedFiles.length; f++) { // for-loop for each file dropped
-//       droppedFiles[f]['slugConfName'] = app.slugConfName;
-//       uploadFormData.append("files[]",);  // adding every file to the form so you could upload multiple files
-    	newMediaJsonData.push(droppedFiles[f]);
-    	console.log(droppedFiles[f]);
-    }
-  }
-
-  // the final ajax call
-  $.ajax({
-    url : "/file-upload", // use your target
-    type : "POST",
-    data : newMediaJsonData,
-    cache : false,
-    contentType : false,
-    processData : false,
-    success : function(ret) {
-      // callback function
-      console.log(ret);
-    }
-  });
-
-}
 
 function uploadDroppedFiles(droppedFiles) {
 
@@ -348,6 +362,9 @@ function uploadDroppedFiles(droppedFiles) {
       formData.append('uploads[]', file, file.name);
     }
 
+    $popoverUpload =     $('.popover_upload');
+    $popoverUpload.show();
+
     $.ajax({
       url: './file-upload',
       type: 'POST',
@@ -356,7 +373,11 @@ function uploadDroppedFiles(droppedFiles) {
       processData: false,
       contentType: false,
       success: function(data){
-          console.log('upload successful!\n' + data);
+        console.log('upload successful!\n' + data);
+        $popoverUpload.html('Rechargement de la conférence…');
+        setTimeout(function() {
+          location.reload();
+        }, 500);
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -370,12 +391,12 @@ function uploadDroppedFiles(droppedFiles) {
             percentComplete = parseInt(percentComplete * 100);
 
             // update the Bootstrap progress bar with the new percentage
-            $('.progress-bar').text(percentComplete + '%');
-            $('.progress-bar').width(percentComplete + '%');
+            $popoverUpload.find('.progress-bar').text(percentComplete + '%');
+            $popoverUpload.find('.progress-bar').width(percentComplete + '%');
 
             // once the upload reaches 100%, set the progress bar text to done
             if (percentComplete === 100) {
-              $('.progress-bar').html('Done');
+              $popoverUpload.html('Done');
             }
 
           }
@@ -430,14 +451,12 @@ var controller = new ScrollMagic.Controller({
 });
 
 // get all slides
-var slides = document.querySelectorAll('.js--fixedslide');
 
-// create scene for every slide
-for (var i=0; i<slides.length; i++) {
+function setSceneForSlide(s) {
 	new ScrollMagic.Scene({
-			triggerElement: slides[i]
+			triggerElement: s
 		})
-		.setPin(slides[i])
+		.setPin(s)
 		.addIndicators() // add indicators (requires plugin)
 		.addTo(controller);
 }
@@ -446,10 +465,9 @@ for (var i=0; i<slides.length; i++) {
                   Interactjs logic (dragging slides objects, etc.)
 ***************************************************************************/
 
-(function initInteract(){
-
+function initInteractForSlide(s) {
   // target elements with the "draggable" class
-  interact('.js--interactevents')
+  interact(s)
     .draggable({
       snap: {
 /*
@@ -462,23 +480,40 @@ for (var i=0; i<slides.length; i++) {
       },
       // keep the element within the area of it's parent
       restrict: {
-        restriction: "parent",
+/*         restriction: "parent", */
         endOnly: true,
         elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
       },
       // enable autoScroll
-      autoScroll: true,
+      autoScroll: false,
 
       // call this function on every dragmove event
       onmove: dragMoveListener,
       // call this function on every dragend event
       onend: function (event) {
-        var textEl = event.target.querySelector('p');
+        $(event.target.parentElement).removeClass('is--dragged');
+/*         var pxWidth = (d.width/100) * window.innerWidth; */
+/*
 
         textEl && (textEl.textContent =
           'moved a distance of '
           + (Math.sqrt(event.dx * event.dx +
                        event.dy * event.dy)|0) + 'px');
+*/
+        // send new drag position to server
+        var target = event.target,
+            x = (parseFloat(target.getAttribute('data-x')) || 0),
+            y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+        var relativeX = x / window.innerWidth;
+        var relativeY = y / window.innerHeight;
+
+        var mediaPos = {
+          "mediaName" : target.parentElement.getAttribute('data-filename'),
+          "posX" : relativeX,
+          "posY" : relativeY
+        }
+        socket.emit('mediaNewPos', mediaPos);
       }
     })
     .resizable({
@@ -506,25 +541,26 @@ for (var i=0; i<slides.length; i++) {
 //       target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
     });
 
+  function dragMoveListener (event) {
 
-    function dragMoveListener (event) {
-      var target = event.target,
-          // keep the dragged position in the data-x/data-y attributes
-          x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-          y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+    $(event.target.parentElement).addClass('is--dragged');
 
-      // translate the element
-      target.style.webkitTransform =
-      target.style.transform =
-        'translate(' + x + 'px, ' + y + 'px)';
+    var target = event.target,
+        // keep the dragged position in the data-x/data-y attributes
+        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-      // update the posiion attributes
-      target.setAttribute('data-x', x);
-      target.setAttribute('data-y', y);
-    }
+    // translate the element
+    target.style.webkitTransform =
+    target.style.transform =
+      'translate(' + x + 'px, ' + y + 'px)';
 
-    window.dragMoveListener = dragMoveListener;
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  }
 
+  window.dragMoveListener = dragMoveListener;
 
 /*
   interact(element)
@@ -552,4 +588,4 @@ for (var i=0; i<slides.length; i++) {
           'translate(' + x + 'px, ' + y + 'px)';
     });
 */
-})();
+}

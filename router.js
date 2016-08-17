@@ -10,7 +10,8 @@ var settings  = require('./public/settings'),
   formidable = require('formidable'),
   main = require('./main'),
 	flags = require('flags'),
-  gutil = require('gulp-util')
+  gutil = require('gulp-util'),
+  sizeOf = require('image-size')
 ;
 
 module.exports = function(app,io,m){
@@ -36,7 +37,9 @@ module.exports = function(app,io,m){
   function getConf(req, res) {
     var pageTitle = "Diapo.js";
     var slugConfName = req.param('conf');
-    res.render("conf", {title : pageTitle, "slugConfName": slugConfName});
+    readConfMeta(slugConfName).then(function(confMeta) {
+      res.render("conf", {title : pageTitle, "slugConfName": slugConfName, "confName": confMeta.name});
+    });
   };
 
   function postFile2(req, res){
@@ -77,8 +80,6 @@ module.exports = function(app,io,m){
             var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(newFileName)[1];
             curSlides.push(fileNameWithoutExtension);
             confMeta['slides'] = curSlides;
-
-            dev.logverbose('New Slides array ' + typeof confMeta.slides);
 
             var metaConfPath = getMetaFileOfConf(slugConfName);
             storeData(metaConfPath, confMeta, 'update');
@@ -130,6 +131,14 @@ module.exports = function(app,io,m){
       var newMetaFileName = fileNameWithoutExtension + settings.metaFileext;
       var newPathToMeta = path.join(confPath, newMetaFileName);
 
+      // essayer d'avoir la taille du media
+      var newPathToImage = path.join(confPath, mediaFileName);
+      try {
+        var dimension = sizeOf(newPathToImage);
+        if(typeof dimension !== undefined)
+          var mediaRatio = dimension.height / dimension.width;
+      } catch(err) {}
+
       var mdata =
       {
         "name" : mediaFileName,
@@ -139,8 +148,11 @@ module.exports = function(app,io,m){
         "posX" : settings.startingPosX,
         "posY" : settings.startingPosY,
         "width" : 50,
-        "height" : 50
       };
+      if(mediaRatio !== undefined) {
+        mdata['ratio'] = mediaRatio;
+      }
+
       dev.logverbose("Saving JSON string " + JSON.stringify(mdata, null, 4));
       storeData( newPathToMeta, mdata, 'create').then(function( meta) {
         console.log( "New media meta file created at path " + newPathToMeta + " with meta : " + meta);
@@ -262,7 +274,7 @@ module.exports = function(app,io,m){
 };
 
 
-var dev = (function() {
+global.dev = (function() {
   // VARIABLES
   flags.defineBoolean('debug');
   flags.defineBoolean('verbose');
