@@ -220,7 +220,25 @@ function setSceneForSlide(s) {
 		.setPin(s)
 //   	.setTween(TweenMax.from(s, 1, {y: "120%", ease:Power0.easeNone}))
 // 		.addIndicators() // add indicators (requires plugin)
-		.addTo(controller);
+		.addTo(controller)
+// 		.setClassToggle('.slides-list .slide', 'is--pinned')
+		.on("progress", function (event) {
+  		// ajouter la class "is--hidden" à la slide 3 parents plus haut
+  		$(s).toggleClass('is--pinned');
+/*
+  		$(s).parent().prevAll()
+  		  .eq(10)
+  		    .find('> .slide')
+  		      .addClass('is--far')
+  		    .end()
+  		  .end()
+  		  .eq(9)
+  		    .find('> .slide')
+  		      .removeClass('is--far')
+  		    .end()
+        .end()
+*/
+    });
 }
 
 /***************************************************************************
