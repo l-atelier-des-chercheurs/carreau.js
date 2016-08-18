@@ -50,7 +50,7 @@ module.exports = function(app,io,m){
     var form = new formidable.IncomingForm();
 
     // specify that we want to allow the user to upload multiple files in a single request
-    form.multiples = true;
+    form.multiples = false;
 
     // store all uploads in the conf directory
     form.uploadDir = path.join(__dirname, settings.contentDir, slugConfName);
@@ -58,26 +58,33 @@ module.exports = function(app,io,m){
     var allFilesMeta = [];
 
     var index = 0;
-    var uniqueFilesnames;
+    var filesToAddToMeta = [];
+    var processed;
 
+/*
+  // for multiples
     form.parse(req, function(err, fields, files) {
       dev.logverbose('fields ' + JSON.stringify(fields, null, 4));
       dev.logverbose('file ' + JSON.stringify(files, null, 4));
       dev.logverbose('number of files ' + files['uploads[]'].length);
       // get all names
       var allFiles = files['uploads[]'];
+      var uniqueFilesnames;
       if( allFiles.length > 1) {
         var allFilenames = allFiles.map(function(a) {return a.name;});
         uniqueFilesnames = allFilenames.filter((elem, pos, arr) => arr.indexOf(elem) == pos);
       } else {
         uniqueFilesnames = allFiles.name;
       }
+      filesToAddToMeta = uniqueFilesnames;
       dev.logverbose('uniqueFilesnames : ' + uniqueFilesnames);
     });
+*/
 
     // every time a file has been uploaded successfully,
     form.on('file', function(field, file) {
       console.log('File uploaded.');
+      console.log('field data : ' + JSON.stringify(field));
       console.log('file data : ' + JSON.stringify(file));
       // rename it to it's original name prepended by a number
       findFirstFilenameNotTaken(form.uploadDir, file.name).then(function(newFileName){
@@ -85,24 +92,18 @@ module.exports = function(app,io,m){
         fs.rename(file.path, newPathToNewFileName);
 
         createMediaMeta( form.uploadDir, newFileName).then(function(fileMeta){
-          dev.logverbose("Pushing file meta to all files meta");
+          dev.logverbose("Pushing file meta to all files meta, fileMeta : " + JSON.stringify(fileMeta, null, 4));
           allFilesMeta.push(fileMeta);
-dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
-          readConfMeta(slugConfName).then(function(confMeta) {
-            var curSlides = [];
-            if( confMeta.hasOwnProperty('slides')) {
-              curSlides = confMeta.slides;
-            }
-            // we just store a filename without the format
-            var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(newFileName)[1];
-            curSlides.push(fileNameWithoutExtension);
-            confMeta['slides'] = curSlides;
-            var metaConfPath = getMetaFileOfConf(slugConfName);
-            storeData(metaConfPath, confMeta, 'update');
-          }, function(err) {
-            console.log('fail readConfMeta ' + err);
-            reject(err);
-          });
+
+          addMediasToMetaConf(slugConfName, newFileName);
+/*
+// for multi files upload
+//        filesToAddToMeta = filesToAddToMeta.map(function(x){ return x.replace( file.name, newFileName) });
+          processed++;
+          if( processed === filesToAddToMeta.length) {
+            addMediasToMetaConf(slugConfName, filesToAddToMeta);
+          }
+*/
         }, function(err) {
           console.log('fail createMediaMeta ' + err);
           reject(err);
@@ -121,12 +122,13 @@ dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
+
       console.log('Finished packet, will send medias info : ' + JSON.stringify(allFilesMeta));
       var msg = {
         "msg" : "success",
         "medias" : JSON.stringify(allFilesMeta)
       }
-      // not using those packets
+      // not using those packets actually
       res.end(JSON.stringify(msg));
     });
 
@@ -179,6 +181,38 @@ dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
 
 
 
+  function addMediasToMetaConf(slugConfName, filesToAddToMeta) {
+
+    dev.logverbose('Finished adding media files, let’s add those to the conf meta');
+    dev.logverbose('filesToAddToMeta : ' + JSON.stringify(filesToAddToMeta, null, 4));
+
+    readConfMeta(slugConfName).then(function(confMeta) {
+      var curSlides = [];
+      if( confMeta.hasOwnProperty('slides')) {
+        curSlides = confMeta.slides;
+      }
+      // we just store a filename without the format
+      dev.logverbose('filesToAddToMeta is of type ' + typeof filesToAddToMeta);
+      if( typeof filesToAddToMeta === 'array' || typeof filesToAddToMeta === 'object') {
+        for(var i in filesToAddToMeta) {
+          dev.logverbose('acting on slide ' + filesToAddToMeta[i]);
+          var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(filesToAddToMeta[i])[1];
+          curSlides.push(fileNameWithoutExtension);
+        }
+      } else if( typeof filesToAddToMeta === 'string'){
+        var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(filesToAddToMeta)[1];
+        curSlides.push(fileNameWithoutExtension);
+      }
+      dev.logverbose('new slides for meta ' + JSON.stringify(curSlides, null, 4))
+      confMeta['slides'] = curSlides;
+      var metaConfPath = getMetaFileOfConf(slugConfName);
+      storeData(metaConfPath, confMeta, 'update');
+    }, function(err) {
+      console.log('fail readConfMeta ' + err);
+      reject(err);
+    });
+
+  }
 
 
   function storeData( mpath, d, e) {

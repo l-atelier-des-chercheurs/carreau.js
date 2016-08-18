@@ -177,7 +177,7 @@ img, video, audio, svg {
 // conf
 
 body[data-page='conf']::after {
-  content: 'a';
+//   content: '.';
   margin-top: 100vh;
   display: block;
 }
@@ -218,6 +218,7 @@ body[data-page='conf']::after {
 
 .slides-list {
   position: relative;
+  margin-bottom:  20vh;
 }
 .slide {
 
@@ -267,10 +268,12 @@ body[data-page='conf']::after {
 .popover_upload {
   display: none;
   position: fixed;
-  top: 0; left: 0;  right: 0; bottom: 0;
+  top: 0; left: 0;
+  width:150px;
+  height: 50px;
   padding: 30px;
   z-index:  15000;
-  color: white;
+  background-color: white;
 }
 
 .js--interactevents {

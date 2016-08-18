@@ -45,8 +45,8 @@ function init(){
 	$(".drop-files-container")
   	.on("drop", function(e) {
   		e.preventDefault();
+  		$(".drop-files-container").removeClass('is--visible');
   		console.log("DROP FILE");
-
       var files = e.originalEvent.dataTransfer.files;
       uploadDroppedFiles(files);
 
@@ -78,7 +78,15 @@ function listOneSlide(d) {
 	var ext = d.name.split('.').pop();
 	var mediaItem;
 
-	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG"){
+
+  var $existingSlide = $('.slides-list .slide').filter(function() {
+    return $(this).attr('data-filename') === d.name;
+  });
+  if( $existingSlide.length > 0)
+    return;
+
+
+	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
 		mediaItem = $(".js--templates > .js--imageSlide").clone(false);
     mediaItem
 		  .find( 'img')
@@ -96,10 +104,12 @@ function listOneSlide(d) {
 
 	var pxWidth = d.width * window.innerWidth;
 	var pxHeight = pxWidth * d.ratio;
+/*
 	if( pxHeight > window.innerHeight) {
 	  pxHeight = window.innerHeight;
     pxWidth = pxHeight / d.ratio;
   }
+*/
 
   var posX = d.posX * window.innerWidth;
   var posY = d.posY * window.innerHeight;
@@ -118,9 +128,10 @@ function listOneSlide(d) {
   	.end()
     ;
 
-  $('body').append(mediaItem);
+  $('.slides-list').append(mediaItem);
   setSceneForSlide(mediaItem[0]);
   initInteractForSlide(mediaItem.find('.js--interactevents')[0]);
+
 }
 
 
@@ -139,9 +150,10 @@ function uploadDroppedFiles(droppedFiles) {
       // add the files to formData object for the data payload
       formData.append('uploads[]', file, file.name);
     }
-
+/*
     $popoverUpload = $('.popover_upload');
     $popoverUpload.show();
+*/
 
     $.ajax({
       url: './file-upload',
@@ -152,10 +164,8 @@ function uploadDroppedFiles(droppedFiles) {
       contentType: false,
       success: function(data){
         console.log('upload successful!\n' + data);
-        $popoverUpload.html('Upload et rechargement de la conférence…');
-        setTimeout(function() {
-          location.reload();
-        }, 500);
+//         $popoverUpload.html('Upload et rechargement de la conférence…');
+        socket.emit('listSlides', { "slugConfName" : app.slugConfName});
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -168,6 +178,7 @@ function uploadDroppedFiles(droppedFiles) {
             var percentComplete = evt.loaded / evt.total;
             percentComplete = parseInt(percentComplete * 100);
 
+/*
             // update the Bootstrap progress bar with the new percentage
             $popoverUpload.find('.progress-bar').text(percentComplete + '%');
             $popoverUpload.find('.progress-bar').width(percentComplete + '%');
@@ -176,6 +187,7 @@ function uploadDroppedFiles(droppedFiles) {
             if (percentComplete === 100) {
               $popoverUpload.html('Done');
             }
+*/
 
           }
 
@@ -207,7 +219,7 @@ function setSceneForSlide(s) {
 		})
 		.setPin(s)
 //   	.setTween(TweenMax.from(s, 1, {y: "120%", ease:Power0.easeNone}))
-		.addIndicators() // add indicators (requires plugin)
+// 		.addIndicators() // add indicators (requires plugin)
 		.addTo(controller);
 }
 
@@ -219,6 +231,7 @@ function initInteractForSlide(s) {
   // target elements with the "draggable" class
   interact(s)
     .draggable({
+      inertia: true,
       snap: {
 /*
         targets: [
@@ -230,18 +243,16 @@ function initInteractForSlide(s) {
       },
       // keep the element within the area of it's parent
       restrict: {
-/*
         restriction: "parent",
         endOnly: true,
-        elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-*/
+        elementRect: { top: true, left: false, bottom: false, right: true }
       },
 
       // call this function on every dragmove event
       onmove: function(event) {
 
-        $(event.target.parentElement).addClass('is--dragged');
 
+        $(event.target.parentElement).addClass('is--dragged');
         var target = event.target,
             // keep the dragged position in the data-x/data-y attributes
             x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
@@ -307,18 +318,16 @@ function initInteractForSlide(s) {
 //       target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
     })
     .on('resizeend', function (event) {
-
       var target = event.target;
-      var w = target.offsetWidth;
+      updateMediaWidth(target);
+    })
+    .on('doubletap', function (event) {
+      var target = event.target;
+      var tparent = target.parentElement;
 
-      var relativeW = w / window.innerWidth;
-
-      var mediaWidth = {
-        'mediaName' : target.parentElement.getAttribute('data-filename'),
-        'slugConfName' : app.slugConfName,
-        'width' : relativeW,
-      }
-      socket.emit('mediaNewWidth', mediaWidth);
+      var baseWidth = settings.startingWidth * window.innerWidth;
+      tparent.style.width  = baseWidth + 'px';
+      updateMediaWidth(tparent);
     })
     ;
 
@@ -348,4 +357,16 @@ function initInteractForSlide(s) {
           'translate(' + x + 'px, ' + y + 'px)';
     });
 */
+
+  function updateMediaWidth(t) {
+    var w = t.offsetWidth;
+    var relativeW = w / window.innerWidth;
+    var mediaWidth = {
+      'mediaName' : t.parentElement.getAttribute('data-filename'),
+      'slugConfName' : app.slugConfName,
+      'width' : relativeW,
+    }
+    socket.emit('mediaNewWidth', mediaWidth);
+    return;
+  }
 }

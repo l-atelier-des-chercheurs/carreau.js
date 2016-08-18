@@ -84,8 +84,8 @@ module.exports = function main(app, io){
   function onMediaNewPos(slidePos) {
     var slideNameWE = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(slidePos.mediaName)[1];
     var mediaMeta = getMediaMeta(slidePos.slugConfName, slideNameWE);
-    mediaMeta.posX = slidePos.posX;
-    mediaMeta.posY = slidePos.posY;
+    mediaMeta.posX = Math.max(slidePos.posX,0);
+    mediaMeta.posY = Math.max(slidePos.posY,0);
     updateMediaMeta(slidePos.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
 //      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     });
@@ -302,6 +302,14 @@ module.exports = function main(app, io){
   	dev.logverbose( 'confPath = ' + confPath);
     var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
   	dev.logverbose( 'mediaMetaPath = ' + mediaMetaPath);
+
+    try{
+      fs.accessSync( mediaMetaPath, fs.F_OK);
+    } catch(err) {
+      console.log( gutil.colors.red('-->Couldn’t find media metafile at path ' + mediaMetaPath));
+      return new Error('Couldn’t find media metafile');
+    }
+
   	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
   	dev.logverbose( 'mediaData = ' + mediaData);
   	var mediaMetaData = parseData(mediaData);
