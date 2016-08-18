@@ -58,10 +58,27 @@ module.exports = function(app,io,m){
     var allFilesMeta = [];
 
     var index = 0;
+    var uniqueFilesnames;
+
+    form.parse(req, function(err, fields, files) {
+      dev.logverbose('fields ' + JSON.stringify(fields, null, 4));
+      dev.logverbose('file ' + JSON.stringify(files, null, 4));
+      dev.logverbose('number of files ' + files['uploads[]'].length);
+      // get all names
+      var allFiles = files['uploads[]'];
+      if( allFiles.length > 1) {
+        var allFilenames = allFiles.map(function(a) {return a.name;});
+        uniqueFilesnames = allFilenames.filter((elem, pos, arr) => arr.indexOf(elem) == pos);
+      } else {
+        uniqueFilesnames = allFiles.name;
+      }
+      dev.logverbose('uniqueFilesnames : ' + uniqueFilesnames);
+    });
 
     // every time a file has been uploaded successfully,
     form.on('file', function(field, file) {
       console.log('File uploaded.');
+      console.log('file data : ' + JSON.stringify(file));
       // rename it to it's original name prepended by a number
       findFirstFilenameNotTaken(form.uploadDir, file.name).then(function(newFileName){
         var newPathToNewFileName = path.join(form.uploadDir, newFileName);
@@ -70,8 +87,7 @@ module.exports = function(app,io,m){
         createMediaMeta( form.uploadDir, newFileName).then(function(fileMeta){
           dev.logverbose("Pushing file meta to all files meta");
           allFilesMeta.push(fileMeta);
-
-          dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
+dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
           readConfMeta(slugConfName).then(function(confMeta) {
             var curSlides = [];
             if( confMeta.hasOwnProperty('slides')) {
@@ -87,7 +103,6 @@ module.exports = function(app,io,m){
             console.log('fail readConfMeta ' + err);
             reject(err);
           });
-
         }, function(err) {
           console.log('fail createMediaMeta ' + err);
           reject(err);

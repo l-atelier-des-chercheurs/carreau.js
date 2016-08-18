@@ -92,6 +92,11 @@ img, video, audio, svg {
 }
 
 
+.dossier-list {
+  @include clearfix;
+  margin: 0 -10px;
+}
+
 .dossier {
   width: 250px;
   float: left;
@@ -100,17 +105,23 @@ img, video, audio, svg {
 
   background-color: hsl(0, 0%, 94%);
   border-bottom:  2px solid #0A997F;
+  border-radius: 2px;
 
   transition: background-color .4s ease-out, transform .4s ease-out;;
 
   &:hover {
-    background-color: hsl(0, 0%, 96%);
+    background-color: hsl(0, 0%, 98%);
   }
 
   h6 {
     color: #999;
     margin: 0;
     margin-bottom: 15px;
+  }
+
+  &_newconfform {
+    background-color: transparent;
+    border: 2px solid hsl(0, 0%, 94%);
   }
 
   .title {
@@ -213,7 +224,8 @@ body[data-page='conf']::after {
   position: relative;
   z-index:  1;
   width:  100%;
-  height: 80vh;
+  width:  100vw;
+  height: 56.25vw;
 /*
   height:   0%;
   padding-bottom:   56.25%;
@@ -234,11 +246,12 @@ body[data-page='conf']::after {
   .slide--item {
     position: absolute;
     pointer-events: auto;
-
+    padding: 10px;
+    background-color: transparent;
   }
 
-  img {
-    pointer-events: none;
+  img, video {
+
   }
 
   .shadowed {
@@ -246,7 +259,7 @@ body[data-page='conf']::after {
   }
 
   &.is--dragged {
-    background-color: fade-out(#0A997F,0.90);
+    background-color: fade-out(#0A997F,0.70);
   }
 }
 

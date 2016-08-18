@@ -67,7 +67,10 @@ function onListAllSlides(d) {
     listOneSlide(s);
   });
 }
-
+function onListOneSlide(d) {
+  console.log('Listing all slides');
+  listOneSlide(d);
+}
 
 function listOneSlide(d) {
 
@@ -133,7 +136,6 @@ function uploadDroppedFiles(droppedFiles) {
     // loop through all the selected files and add them to the formData object
     for (var i = 0; i < droppedFiles.length; i++) {
       var file = droppedFiles[i];
-      file.slugConfName = app.slugConfName;
       // add the files to formData object for the data payload
       formData.append('uploads[]', file, file.name);
     }
@@ -145,7 +147,7 @@ function uploadDroppedFiles(droppedFiles) {
       url: './file-upload',
       type: 'POST',
       data: formData,
-      datatype: "json", // expecting JSON to be returned
+      datatype: 'json', // expecting JSON to be returned
       processData: false,
       contentType: false,
       success: function(data){
@@ -204,7 +206,8 @@ function setSceneForSlide(s) {
 			triggerElement: s
 		})
 		.setPin(s)
-// 		.addIndicators() // add indicators (requires plugin)
+//   	.setTween(TweenMax.from(s, 1, {y: "120%", ease:Power0.easeNone}))
+		.addIndicators() // add indicators (requires plugin)
 		.addTo(controller);
 }
 
@@ -275,6 +278,10 @@ function initInteractForSlide(s) {
     .resizable({
       preserveAspectRatio: true,
       edges: { left: true, right: true, bottom: true, top: true },
+      restrict: {
+          restriction: {
+          },
+      },
     })
     .on('resizemove', function (event) {
       var target = event.target,
@@ -282,8 +289,11 @@ function initInteractForSlide(s) {
           y = (parseFloat(target.getAttribute('data-y')) || 0);
 
       // update the element's style
-      target.style.width  = event.rect.width + 'px';
-      target.style.height = event.rect.height + 'px';
+      var rectWidth = event.rect.width > 100 ? event.rect.width : 100;
+      var rectHeight = event.rect.height > 100 ? event.rect.height : 100;
+
+      target.style.width  = rectWidth + 'px';
+      target.style.height = rectHeight + 'px';
 
       // translate when resizing from top or left edges
       x += event.deltaRect.left;
