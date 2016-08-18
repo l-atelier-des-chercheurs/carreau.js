@@ -34,30 +34,35 @@ function init(){
 
 	socket.emit('listSlides', { "slugConfName" : app.slugConfName});
 
-	$(window).on('dragover',function(e){
-		$(".drop-files-container").css("z-index","9999");
-		e.preventDefault();
-		e.stopPropagation();
-		return false;
-	});
-	$(window).on('dragleave',function(e){
-		e.preventDefault();
-		e.stopPropagation();
-		return false;
-	});
+	$(window)
+	  .on('dragover',function(e){
+  		$(".drop-files-container").addClass('is--visible');
+  		e.preventDefault();
+  		e.stopPropagation();
+  		return false;
+  	})
+    ;
+	$(".drop-files-container")
+  	.on("drop", function(e) {
+  		e.preventDefault();
+  		console.log("DROP FILE");
 
-	$(".drop-files-container").on("drop", function(e) {
-		e.preventDefault();
-		console.log("DROP FILE");
+      var files = e.originalEvent.dataTransfer.files;
+      uploadDroppedFiles(files);
 
-    var files = e.originalEvent.dataTransfer.files;
-    uploadDroppedFiles(files);
-
-	});
+  	})
+  	.on('dragleave',function(e){
+  		$(".drop-files-container").removeClass('is--visible');
+  		e.preventDefault();
+  		e.stopPropagation();
+  		return false;
+  	})
+  	;
 
 }
 
 function onListAllSlides(d) {
+  console.log('Listing all slides');
   d.forEach(function(s) {
     listOneSlide(s);
   });
@@ -133,7 +138,7 @@ function uploadDroppedFiles(droppedFiles) {
       formData.append('uploads[]', file, file.name);
     }
 
-    $popoverUpload =     $('.popover_upload');
+    $popoverUpload = $('.popover_upload');
     $popoverUpload.show();
 
     $.ajax({
@@ -145,7 +150,7 @@ function uploadDroppedFiles(droppedFiles) {
       contentType: false,
       success: function(data){
         console.log('upload successful!\n' + data);
-        $popoverUpload.html('Rechargement de la conférence…');
+        $popoverUpload.html('Upload et rechargement de la conférence…');
         setTimeout(function() {
           location.reload();
         }, 500);
@@ -199,7 +204,7 @@ function setSceneForSlide(s) {
 			triggerElement: s
 		})
 		.setPin(s)
-		.addIndicators() // add indicators (requires plugin)
+// 		.addIndicators() // add indicators (requires plugin)
 		.addTo(controller);
 }
 
@@ -231,6 +236,7 @@ function initInteractForSlide(s) {
 
       // call this function on every dragmove event
       onmove: function(event) {
+
         $(event.target.parentElement).addClass('is--dragged');
 
         var target = event.target,
@@ -268,7 +274,7 @@ function initInteractForSlide(s) {
     })
     .resizable({
       preserveAspectRatio: true,
-      edges: { left: true, right: true, bottom: true, top: true }
+      edges: { left: true, right: true, bottom: true, top: true },
     })
     .on('resizemove', function (event) {
       var target = event.target,

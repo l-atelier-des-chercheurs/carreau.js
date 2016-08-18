@@ -19,12 +19,12 @@ socket.on('listAllFolders', onListAllFolders);
 
 (function init(){
 	$('body').on('click', '.js-add-conf', function(){
+		var newConfTitre = $('input.title').val();
 		var newConfLieu = $('input.lieu').val();
 		var newConfDate= $('input.date').val();
-		var newConfTitre = $('input.titre').val();
 		var newConfAuth = $('input.auteur').val();
 		console.log('hey');
-		socket.emit( 'newConf', { "lieu" : newConfLieu, "date": newConfDate, "titre":newConfTitre, "auteur":newConfAuth  });
+		socket.emit( 'newConf', { "titre":newConfTitre, "lieu" : newConfLieu, "date": newConfDate,  "auteur":newConfAuth });
   });
 })();
 
@@ -54,7 +54,11 @@ function makeFolderContent( projectData){
 	var name = projectData.name;
 	var slugFolderName = projectData.slugFolderName;
 	var lieu = projectData.lieu;
-	var date = new Date(projectData.date);
+	var date = '';
+  if(projectData.date !== '') {
+    date = new Date(projectData.date);
+    date = date.getDate() + '/' + (date.getMonth() + 1) + '/' +  date.getFullYear();
+  }
 
 	var auteur = projectData.auteur;
 
@@ -69,13 +73,19 @@ function makeFolderContent( projectData){
 	    .attr('title', name)
 	  .end()
 
-	  .find( '.title').text(name).end()
-	  .find( '.lieu').text(lieu).end()
-	  .find( '.date').text(date.getDate() + '/' + (date.getMonth() + 1) + '/' +  date.getFullYear()).end()
-	  .find( '.auteur').text(auteur).end()
-
+	  .find( '.title')
+	    .text(name)
+	   .end()
+	  .find( '.lieu span')
+	    .text(lieu)
+	   .end()
+	  .find( '.date span')
+	    .text(date)
     .end()
-  ;
+	  .find( '.auteur span')
+	    .text(auteur)
+    .end()
+    ;
 
 		return newFolder;
 }

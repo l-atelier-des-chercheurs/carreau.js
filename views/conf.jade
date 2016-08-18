@@ -1,16 +1,21 @@
 doctype html
 html
   include snippets/head
-  body
+  body(data-page='conf')
 
     .drop-files-container
+      .instructions Déposez ici les slides à ajouter à la fin de la conférence
 
     input(id="upload-input" type="file" name="uploads[]" multiple="multiple")
 
-    .presentation-slide
+    .container
       .titre
         .titre-wrapper
           h1 #{confName}
+      p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam maximus erat eu arcu suscipit, eu volutpat odio cursus. Etiam scelerisque sit amet nulla eu accumsan. Quisque nec mi nec sapien scelerisque facilisis rhoncus sit amet eros. Integer et est non sem eleifend varius. Sed congue turpis risus, ut auctor magna sagittis quis. Curabitur placerat luctus eros, a pulvinar risus feugiat a. Nullam ac bibendum ipsum. Nulla mollis, nibh sed iaculis mollis, sem augue egestas sapien, vel faucibus mi dui sit amet tortor. Aenean lobortis mauris nec ornare porttitor. Aenean libero nunc, condimentum sed egestas pellentesque, suscipit feugiat metus.
+      p Suspendisse potenti. Donec dapibus maximus tortor sed mattis. Cras at elit blandit arcu sollicitudin consequat. Fusce sollicitudin eu leo et molestie. Sed quis aliquet tortor. Vivamus justo massa, viverra vitae tincidunt at, fermentum a elit. Curabitur vestibulum ipsum lorem, ut viverra urna mollis pharetra. Aliquam id dictum metus. Vivamus sed libero in justo pellentesque vulputate. Etiam eu consectetur erat, vitae posuere nulla. Duis ornare nisi vel libero viverra fermentum. Sed sed placerat quam, a commodo leo. Vestibulum vestibulum egestas nisi quis fringilla. Sed sagittis finibus lobortis. Curabitur sit amet elit malesuada, interdum mi sit amet, condimentum lectus.
+      p Proin ac enim eget nulla cursus ullamcorper a non enim. In ornare diam vel est aliquet, ut ultrices nunc dictum. Fusce vitae libero nisi. Ut ornare erat odio, nec placerat lectus rutrum sit amet. Quisque malesuada, libero nec porta cursus, sapien velit fermentum velit, sit amet hendrerit massa sem vitae nisi. Pellentesque pellentesque rutrum felis id finibus. Nullam vulputate urna et velit aliquam sagittis. Pellentesque ut ornare felis. Donec fermentum libero non metus aliquet lacinia. Suspendisse ultrices nunc mi, id tincidunt nunc eleifend ac. Nunc vel viverra erat.
+      p Maecenas vitae leo nisi. Integer mattis, augue at faucibus suscipit, purus ligula hendrerit orci, id porttitor felis orci e tortor. Mauris vel consectetur lorem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean accumsan odio massa, sit amet porta erat facilisis a. In in imperdiet metus, et congue felis. Nullam at congue massa. Aenean a sapien vitae odio dictum dignissim. Aliquam rutrum vel eros vel dignissim. Sed at elit risus.
 
     .popover_upload
       h3 Envoi de fichiers en cours
@@ -29,9 +34,6 @@ html
           video(controls)
             source()
 
-
-
-        img.shadowed(src='9782234105225_cover.png')
 
 
     include snippets/footer

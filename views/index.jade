@@ -3,33 +3,39 @@ html
   include snippets/head
   body
 
-    #intro
-      h1 Conf tool
 
-    div.container
-      div.row
-        div.left.large-6.columns
-          div.text
-        div.right.large-6.columns
-          div.add-new-conf-wrapper
-            form(onsubmit='return false;' class='add-new-conf-form')
+    .container
+      #intro
+        h1 diapojs
+
+      h2 Liste des conférences
+      .dossier-list
+        .dossier.dossier_newconfform
+          form(onsubmit='return false;' class='add-new-conf-form')
+            h6 créer une conférence
+            .title
+              input(type="text" class="title" placeholder='Titre')
+            .meta-data
               input(type="text" class="lieu" placeholder='Lieu')
               input(type="date" class="date" placeholder='Date')
-              input(type="text" class="titre" placeholder='Titre')
               input(type="text" class="auteur" placeholder='Auteur(s)')
-              input(type='submit' class='js-add-conf' value='Ajouter une nouvelle conférence')
-          ul.dossier-list
+              input(type='submit' class='js-add-conf' value='ajouter')
 
     .js--templates
-      li.dossier.small-6.medium-4.large-4.columns(data-nom)
+      .dossier(data-nom)
         .dossier-inside
-          .content
-            a.folder-link(href title)
-              h2.title
-          .meta-data.row
+          a.folder-link(href title)
+            .title
+          .meta-data
             .lieu
+              h4 lieu
+              span
             .date
+              h4 date
+              span
             .auteur
+              h4 auteur
+              span
 
     include snippets/footer
     script( src='/js/pages/index.js')

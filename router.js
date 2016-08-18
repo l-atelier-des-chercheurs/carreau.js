@@ -31,7 +31,7 @@ module.exports = function(app,io,m){
   function getIndex(req, res) {
     var pageTitle = "Baking Projects";
     // console.log(req);
-    res.render("index", {title : pageTitle});
+    res.render("index", {title : pageTitle, "settings" : settings});
   };
 
   function getConf(req, res) {
@@ -57,6 +57,8 @@ module.exports = function(app,io,m){
 
     var allFilesMeta = [];
 
+    var index = 0;
+
     // every time a file has been uploaded successfully,
     form.on('file', function(field, file) {
       console.log('File uploaded.');
@@ -68,26 +70,24 @@ module.exports = function(app,io,m){
         createMediaMeta( form.uploadDir, newFileName).then(function(fileMeta){
           dev.logverbose("Pushing file meta to all files meta");
           allFilesMeta.push(fileMeta);
+
           dev.logverbose("append the file to the conf.txt file of conf " + slugConfName);
           readConfMeta(slugConfName).then(function(confMeta) {
-
             var curSlides = [];
             if( confMeta.hasOwnProperty('slides')) {
               curSlides = confMeta.slides;
             }
-
             // we just store a filename without the format
             var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(newFileName)[1];
             curSlides.push(fileNameWithoutExtension);
             confMeta['slides'] = curSlides;
-
             var metaConfPath = getMetaFileOfConf(slugConfName);
             storeData(metaConfPath, confMeta, 'update');
-
           }, function(err) {
             console.log('fail readConfMeta ' + err);
             reject(err);
           });
+
         }, function(err) {
           console.log('fail createMediaMeta ' + err);
           reject(err);
@@ -98,8 +98,6 @@ module.exports = function(app,io,m){
       });
 
     });
-
-    console.log('Checkup');
 
     // log any errors that occur
     form.on('error', function(err) {
@@ -147,7 +145,7 @@ module.exports = function(app,io,m){
         "informations" : "",
         "posX" : settings.startingPosX,
         "posY" : settings.startingPosY,
-        "width" : 50,
+        "width" : settings.startingWidth,
       };
       if(mediaRatio !== undefined) {
         mdata['ratio'] = mediaRatio;

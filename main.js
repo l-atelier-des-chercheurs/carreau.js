@@ -35,32 +35,6 @@ module.exports = function main(app, io){
 		socket.on('listSlides', function (data){ onListSlides(socket, data); });
 		socket.on('mediaNewPos', onMediaNewPos);
 		socket.on('mediaNewWidth', onMediaNewWidth);
-
-
-		socket.on('dragMediaPos', function(pos){
-			socket.broadcast.emit("mediaDragPosition", pos);
-			io.sockets.emit("mediaDragPositionForAll", pos);
-			//Save position in json
-		  var jsonFile = 'uploads/lyon.json';
-	    var data = fs.readFileSync(jsonFile,"UTF-8");
-	    var jsonObj = JSON.parse(data);
-	    for (var i = 0; i < jsonObj["files"].length; i++){
-			  if (jsonObj["files"][i].id == pos.id){
-			  	jsonObj["files"][i]["xPos"] = pos.x;
-			  	jsonObj["files"][i]["yPos"] = pos.y;
-			  	jsonObj["files"][i]["zPos"] = pos.z;
-			  	var jsonString = JSON.stringify(jsonObj, null, 4);
-		      fs.writeFile(jsonFile, jsonString, function(err) {
-		        if(err) {
-		            console.log(err);
-		        } else {
-
-		        }
-		      });
-			  }
-			}
-		});
-
 	});
 
 
@@ -103,7 +77,7 @@ module.exports = function main(app, io){
       dev.logverbose('sending data : ' + JSON.stringify(confSlidesData));
       sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     }, function(error) {
-      console.error("Failed to list projects! Error: ", error);
+      console.error("Failed to list slides! Error: ", error);
     });
 	}
 
@@ -133,9 +107,9 @@ module.exports = function main(app, io){
     return new Promise(function(resolve, reject) {
     	console.log("COMMON — createNewFolder");
 
+    	var confName = confData.titre;
     	var confLieu = confData.lieu;
     	var confDate= confData.date;
-    	var confName = confData.titre;
     	var confAuth = confData.auteur;
     	var slugConfName = slugg(confName);
     	var confPath = getFullPath( slugConfName);
@@ -308,6 +282,7 @@ module.exports = function main(app, io){
     return new Promise(function(resolve, reject) {
   		dev.logfunction( "COMMON — readConfMeta");
   		var metaConfPath = getMetaFileOfConf(slugConfName);
+  		dev.logverbose('metaConfPath : ' + metaConfPath);
   		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
   		var folderMetadata = parseData( folderData);
   		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
@@ -324,8 +299,11 @@ module.exports = function main(app, io){
   function getMediaMeta( slugConfName, fileNameWithoutExtension) {
   	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
   	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+  	dev.logverbose( 'confPath = ' + confPath);
     var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
+  	dev.logverbose( 'mediaMetaPath = ' + mediaMetaPath);
   	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
+  	dev.logverbose( 'mediaData = ' + mediaData);
   	var mediaMetaData = parseData(mediaData);
   	dev.logverbose( "COMMON — getMediaMeta : data was parsed " + JSON.stringify(mediaMetaData, null, 4));
     return mediaMetaData;

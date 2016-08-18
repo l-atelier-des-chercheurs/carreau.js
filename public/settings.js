@@ -59,6 +59,7 @@ var settings = {
 
   "startingPosX" : .50,
   "startingPosY" : .50,
+  "startingWidth" : .50,
 
   "_comment" : "// see http://regexr.com/3d4t8",
   "regexpMatchFolderNames" : "^([^.]+)$",
@@ -69,10 +70,10 @@ var settings = {
 };
 
 // should work in ES6
-var dodoc = Object.assign( localize, settings);
+var settings = Object.assign( localize, settings);
 
 try {
-  module.exports = dodoc;
+  module.exports = settings;
 } catch( err) {
 
 }
