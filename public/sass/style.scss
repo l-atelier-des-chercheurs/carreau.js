@@ -189,7 +189,7 @@ body[data-page='conf']::after {
 .drop-files-container{
 	position:fixed;
   top: 0; left: 0;  right: 0; bottom: 0;
-  background-color: #03a9f4;
+  background-color: #0A997F;
   opacity: 0;
   z-index:  -1;
   transition: opacity .4s ease-out;
@@ -212,6 +212,8 @@ body[data-page='conf']::after {
     background-color: rgba(255,255,255,.1);
     border-radius: 15px;
     margin-top: 30vh;
+
+    pointer-events: none;
   }
 }
 

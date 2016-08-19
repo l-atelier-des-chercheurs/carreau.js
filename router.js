@@ -122,7 +122,6 @@ module.exports = function(app,io,m){
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
-
       console.log('Finished packet, will send medias info : ' + JSON.stringify(allFilesMeta));
       var msg = {
         "msg" : "success",

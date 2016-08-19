@@ -75,15 +75,17 @@ function onListOneSlide(d) {
 }
 
 function listOneSlide(d) {
-
+  console.log('Listing one slide');
 	var ext = d.name.split('.').pop();
 	var mediaItem;
 
   var $existingSlide = $('.slides-list .slide').filter(function() {
     return $(this).attr('data-filename') === d.name;
   });
-  if( $existingSlide.length > 0)
+  if( $existingSlide.length > 0) {
+    console.log('Slide already exists');
     return;
+  }
 
 
 	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
@@ -174,7 +176,8 @@ function uploadDroppedFiles(droppedFiles) {
       success: function(data){
         console.log('upload successful!\n' + data);
 //         $popoverUpload.html('Upload et rechargement de la conférence…');
-        socket.emit('listSlides', { "slugConfName" : app.slugConfName});
+        // let's wait a bit that the media has been added before we ask for a refreshed list of medias
+        setTimeout(function() { socket.emit('listSlides', { "slugConfName" : app.slugConfName}); }, 500)
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -363,8 +366,8 @@ function initInteractForSlide(s) {
       var tparent = target.parentElement;
 
       var baseWidth = settings.startingWidth * window.innerWidth;
-      tparent.style.width  = baseWidth + 'px';
-      updateMediaWidth(tparent);
+      target.style.width  = baseWidth + 'px';
+      updateMediaWidth(target);
     })
     ;
 
