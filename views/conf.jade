@@ -4,7 +4,7 @@ html
   body(data-page='conf')
 
     .drop-files-container
-      .instructions Déposez ici les slides à ajouter à la fin de la conférence
+      .instructions déposez ici les slides à ajouter
 
     input(id="upload-input" type="file" name="uploads[]" multiple="multiple")
 
@@ -33,6 +33,11 @@ html
         .slide--item.slide--item_video.js--interactevents
           video(controls).shadowed
             source()
+      .slide.js--fixedslide.js--iframeSlide
+        .slide--item.slide--item_iframe.js--interactevents.shadowed
+          h6.pageUrl
+          button.toggleIframe.js--startIframe activer/désactiver
+          iframe
 
 
 

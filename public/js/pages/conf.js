@@ -77,18 +77,48 @@ function onListOneSlide(d) {
 function listOneSlide(d) {
   console.log('Listing one slide');
 	var ext = d.name.split('.').pop();
+	var isUrl = d.name.indexOf('http://') >= 0 ? true : false;
+
 	var mediaItem;
+  var preserveRatio = true;
 
   var $existingSlide = $('.slides-list .slide').filter(function() {
-    return $(this).attr('data-filename') === d.name;
+    return $(this).attr('data-filename') === d.metaName;
   });
   if( $existingSlide.length > 0) {
     console.log('Slide already exists');
     return;
   }
 
+  if( isUrl ) {
+		mediaItem = $(".js--templates > .js--iframeSlide").clone(false);
+    mediaItem
+		  .find( 'iframe')
+		    .attr('data-src', d.name)
+		  .end()
+		  .find('.pageUrl')
+		    .text(d.name)
+		  .end()
+		  .find('.js--startIframe')
+		    .on('click', function() {
+  		    var ifr = mediaItem.find('iframe');
+  		    debugger;
+  		    if(ifr.attr('src') === undefined) {
+  		      ifr.attr('src', ifr.attr('data-src'));
+    		    $(this).addClass('is--active');
+    		    mediaItem.find('.slide--item_iframe').addClass('is--iframeOn');
+  		    } else {
+  		      ifr.removeAttr('src');
+    		    $(this).removeClass('is--active');
+    		    mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
+  		    }
+		    })
+		  .end()
+		  ;
+		preserveRatio = false;
+  }
 
-	if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
+	else if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
 		mediaItem = $(".js--templates > .js--imageSlide").clone(false);
     mediaItem
 		  .find( 'img')
@@ -96,13 +126,12 @@ function listOneSlide(d) {
 		  .end()
   }
 
-	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "webm"){
+	else if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "webm"){
 		mediaItem = $(".js--templates > .js--videoSlide").clone(false);
 		mediaItem
 		  .find('source')
 		    .attr('src', d.name)
 		  .end()
-
 		if(d.poster !== undefined)
 		  mediaItem
 		    .find('video')
@@ -110,11 +139,19 @@ function listOneSlide(d) {
           .attr('preload', 'none')
         .end()
         ;
-
 	}
+	if(ext == ''){
+
+  }
 
 	var pxWidth = d.width * window.innerWidth;
-	var pxHeight = pxWidth * d.ratio;
+
+	var pxHeight;
+	if(preserveRatio)
+	  pxHeight = pxWidth * d.ratio;
+	 else
+	  pxHeight = d.height * 0.5625 * window.innerWidth;
+
 /*
 	if( pxHeight > window.innerHeight) {
 	  pxHeight = window.innerHeight;
@@ -126,7 +163,7 @@ function listOneSlide(d) {
   var posY = d.posY * window.innerHeight;
 
 	mediaItem
-	  .attr('data-fileName', d.name)
+	  .attr('data-fileName', d.metaName)
 	  .find('.slide--item')
   	  .css({
   	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
@@ -140,8 +177,12 @@ function listOneSlide(d) {
     ;
 
   $('.slides-list').append(mediaItem);
+
   setSceneForSlide(mediaItem[0]);
-  initInteractForSlide(mediaItem.find('.js--interactevents')[0]);
+  initInteractForSlide({
+    'slide' : mediaItem.find('.js--interactevents')[0],
+    'preserveRatio' : preserveRatio
+  });
   return mediaItem;
 }
 
@@ -269,7 +310,7 @@ function setSceneForSlide(s) {
 
 function initInteractForSlide(s) {
   // target elements with the "draggable" class
-  interact(s)
+  interact(s.slide)
     .draggable({
       inertia: true,
       snap: {
@@ -290,8 +331,6 @@ function initInteractForSlide(s) {
 
       // call this function on every dragmove event
       onmove: function(event) {
-
-
         $(event.target.parentElement).addClass('is--dragged');
         var target = event.target,
             // keep the dragged position in the data-x/data-y attributes
@@ -327,7 +366,7 @@ function initInteractForSlide(s) {
       },
     })
     .resizable({
-      preserveAspectRatio: true,
+      preserveAspectRatio: s.preserveRatio,
       edges: { left: true, right: true, bottom: true, top: true },
       restrict: {
           restriction: {
@@ -335,6 +374,7 @@ function initInteractForSlide(s) {
       },
     })
     .on('resizemove', function (event) {
+      $(event.target.parentElement).addClass('is--resized');
       var target = event.target,
           x = (parseFloat(target.getAttribute('data-x')) || 0),
           y = (parseFloat(target.getAttribute('data-y')) || 0);
@@ -358,8 +398,9 @@ function initInteractForSlide(s) {
 //       target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
     })
     .on('resizeend', function (event) {
+      $(event.target.parentElement).removeClass('is--resized');
       var target = event.target;
-      updateMediaWidth(target);
+      updateMediaSize(target);
     })
     .on('doubletap', function (event) {
       var target = event.target;
@@ -367,7 +408,7 @@ function initInteractForSlide(s) {
 
       var baseWidth = settings.startingWidth * window.innerWidth;
       target.style.width  = baseWidth + 'px';
-      updateMediaWidth(target);
+      updateMediaSize(target);
     })
     ;
 
@@ -398,15 +439,21 @@ function initInteractForSlide(s) {
     });
 */
 
-  function updateMediaWidth(t) {
+  function updateMediaSize(t) {
     var w = t.offsetWidth;
-    var relativeW = w / window.innerWidth;
-    var mediaWidth = {
+    var h = t.offsetHeight;
+    var relativeW = w / t.parentElement.offsetWidth;
+    var relativeH = h / t.parentElement.offsetHeight;
+    var mediaSize = {
       'mediaName' : t.parentElement.getAttribute('data-filename'),
       'slugConfName' : app.slugConfName,
       'width' : relativeW,
     }
-    socket.emit('mediaNewWidth', mediaWidth);
+    // ajouter la height si pas de ratio
+    if( !s.preserveRatio)
+      mediaSize.height = relativeH;
+
+    socket.emit('mediaNewSize', mediaSize);
     return;
   }
 }

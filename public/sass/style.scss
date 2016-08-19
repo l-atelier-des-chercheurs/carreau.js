@@ -22,7 +22,7 @@ html {
     box-sizing: border-box;
 }
 *, *:before, *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 
@@ -212,6 +212,7 @@ body[data-page='conf']::after {
     background-color: rgba(255,255,255,.1);
     border-radius: 15px;
     margin-top: 30vh;
+    text-align: center;
 
     pointer-events: none;
   }
@@ -252,9 +253,90 @@ body[data-page='conf']::after {
 //     padding: 10px;
 //  problématique (marge sur les côtés)
     background-color: transparent;
+
+    &_iframe {
+      padding-top: 40px;
+      background-color: #dedcdc;
+
+      iframe {
+        pointer-events: none;
+        background-color: transparent;
+        transition: background-color .8s ease-out;
+      }
+      &.is--iframeOn iframe {
+        pointer-events: auto;
+        background-color: #fff;
+      }
+
+      &::before {
+        content: '...';
+        font-size: 70px;
+        line-height: 0;
+        display: block;
+        height: 40px;
+        width: 80px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin-left: 10px;
+        margin-top: 5px;
+        color: #cccbcb;
+      }
+
+      .pageUrl {
+        position: absolute;
+        top: 0;
+        left: 60px;
+        height: 30px;
+        margin: 20px;
+        width: calc(100% - 60px - 170px);
+        overflow: hidden;
+        margin: 10px;
+        background: #fff;
+        border-radius: 4px;
+        padding: 5px 5px 5px 10px;
+        color: #0A997F;
+        font-weight: 300;
+        line-height: 20px;
+        font-size: 20px;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+
+    .toggleIframe {
+      background: #0A997F;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: .8em;
+      border-radius: 5px;
+      width: auto;
+      float: right;
+      margin: 8px;
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      &.is--active {
+        background-color: #ff2719;
+      }
+    }
   }
 
   img {
+    pointer-events: none;
+  }
+
+  iframe {
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    margin:8px;
+    border: none;
+    background-color: #fff;
+    border-top: 1px solid #bbb;
     pointer-events: none;
   }
 
@@ -265,13 +347,8 @@ body[data-page='conf']::after {
   &.is--dragged {
     background-color: fade-out(#0A997F,0.70);
   }
-
   .is--far > & {
     opacity: 0;
-  }
-
-  .is--far > & {
-
   }
 
 

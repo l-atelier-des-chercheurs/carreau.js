@@ -34,7 +34,7 @@ module.exports = function main(app, io){
 
 		socket.on('listSlides', function (data){ onListSlides(socket, data); });
 		socket.on('mediaNewPos', onMediaNewPos);
-		socket.on('mediaNewWidth', onMediaNewWidth);
+		socket.on('mediaNewSize', onMediaNewSize);
 	});
 
 
@@ -71,6 +71,7 @@ module.exports = function main(app, io){
       for(var slideName of confSlides) {
         dev.logverbose('Slide : ' + slideName);
         var mediaMeta = getMediaMeta(dataFolder.slugConfName, slideName);
+        mediaMeta.metaName = slideName;
         confSlidesData.push(mediaMeta);
         dev.logverbose('new media meta added');
       }
@@ -85,16 +86,18 @@ module.exports = function main(app, io){
     var slideNameWE = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(slidePos.mediaName)[1];
     var mediaMeta = getMediaMeta(slidePos.slugConfName, slideNameWE);
     mediaMeta.posX = Math.max(slidePos.posX,0);
-    mediaMeta.posY = Math.max(slidePos.posY,0);
+    mediaMeta.posY = slidePos.posY;
     updateMediaMeta(slidePos.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
 //      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     });
   }
 
-  function onMediaNewWidth(slideWidth) {
+  function onMediaNewSize(slideWidth) {
     var slideNameWE = new RegExp( settings.regexpRemoveFileExtension, 'i').exec(slideWidth.mediaName)[1];
     var mediaMeta = getMediaMeta(slideWidth.slugConfName, slideNameWE);
     mediaMeta.width = slideWidth.width;
+    if(!mediaMeta.hasOwnProperty('ratio'))
+      mediaMeta.height = slideWidth.height;
     updateMediaMeta(slideWidth.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
 //      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
     });
@@ -311,9 +314,9 @@ module.exports = function main(app, io){
     }
 
   	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
-  	dev.logverbose( 'mediaData = ' + mediaData);
+/*   	dev.logverbose( 'mediaData = ' + mediaData); */
   	var mediaMetaData = parseData(mediaData);
-  	dev.logverbose( "COMMON — getMediaMeta : data was parsed " + JSON.stringify(mediaMetaData, null, 4));
+  	dev.logverbose( "COMMON — getMediaMeta : data was parsed");
     return mediaMetaData;
   }
 
