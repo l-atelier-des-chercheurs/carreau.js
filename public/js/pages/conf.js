@@ -63,10 +63,12 @@ function init(){
 
 function onListAllSlides(d) {
   console.log('Listing all slides');
+  var $allNewSlides = $();
   d.forEach(function(s) {
-    listOneSlide(s);
+    $allNewSlides.add(listOneSlide(s));
   });
 }
+
 function onListOneSlide(d) {
   console.log('Listing all slides');
   listOneSlide(d);
@@ -74,10 +76,8 @@ function onListOneSlide(d) {
 
 function listOneSlide(d) {
 
-  var path = d.name;
 	var ext = d.name.split('.').pop();
 	var mediaItem;
-
 
   var $existingSlide = $('.slides-list .slide').filter(function() {
     return $(this).attr('data-filename') === d.name;
@@ -90,16 +90,25 @@ function listOneSlide(d) {
 		mediaItem = $(".js--templates > .js--imageSlide").clone(false);
     mediaItem
 		  .find( 'img')
-		    .attr('src', path)
+		    .attr('src', d.name)
 		  .end()
   }
 
-	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "mov" || ext == "webm"){
+	if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "webm"){
 		mediaItem = $(".js--templates > .js--videoSlide").clone(false);
 		mediaItem
-		  .find( 'source')
-		    .attr('src', path)
+		  .find('source')
+		    .attr('src', d.name)
 		  .end()
+
+		if(d.poster !== undefined)
+		  mediaItem
+		    .find('video')
+		      .attr('poster', d.poster)
+          .attr('preload', 'none')
+        .end()
+        ;
+
 	}
 
 	var pxWidth = d.width * window.innerWidth;
@@ -131,7 +140,7 @@ function listOneSlide(d) {
   $('.slides-list').append(mediaItem);
   setSceneForSlide(mediaItem[0]);
   initInteractForSlide(mediaItem.find('.js--interactevents')[0]);
-
+  return mediaItem;
 }
 
 
@@ -214,17 +223,27 @@ var controller = new ScrollMagic.Controller({
 // get all slides
 
 function setSceneForSlide(s) {
-	new ScrollMagic.Scene({
+	var thisScene = new ScrollMagic.Scene({
 			triggerElement: s
 		})
 		.setPin(s)
 //   	.setTween(TweenMax.from(s, 1, {y: "120%", ease:Power0.easeNone}))
 // 		.addIndicators() // add indicators (requires plugin)
 		.addTo(controller)
+//     .loglevel(3)
 // 		.setClassToggle('.slides-list .slide', 'is--pinned')
 		.on("progress", function (event) {
   		// ajouter la class "is--hidden" à la slide 3 parents plus haut
-  		$(s).toggleClass('is--pinned');
+  		$(s)
+  		  .parent()
+  		    .prev()
+    		    .toggleClass('is--pinned')
+    		    .prev()
+    		      .toggleClass('is--far')
+    		    .end()
+    		  .end()
+    		.end()
+  		  ;
 /*
   		$(s).parent().prevAll()
   		  .eq(10)

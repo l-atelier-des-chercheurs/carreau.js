@@ -227,7 +227,6 @@ body[data-page='conf']::after {
   width:  100%;
   width:  100vw;
   height: 56.25vw;
-  padding-bottom:  30vh;
 /*
   height:   0%;
   padding-bottom:   56.25%;
@@ -243,17 +242,18 @@ body[data-page='conf']::after {
   pointer-events: none;
   background-color: transparent;
 
-  transition: background-color .3s ease;
+  transition: background-color .3s ease, opacity .3s;
 
   .slide--item {
     position: absolute;
     pointer-events: auto;
-    padding: 10px;
+//     padding: 10px;
+//  problématique (marge sur les côtés)
     background-color: transparent;
   }
 
-  img, video {
-
+  img {
+    pointer-events: none;
   }
 
   .shadowed {
@@ -263,16 +263,13 @@ body[data-page='conf']::after {
   &.is--dragged {
     background-color: fade-out(#0A997F,0.70);
   }
-  &.is--far {
-    display: none;
+
+  .is--far > & {
+    opacity: 0;
   }
 
-  &.is--pinned {
-    display: none;
-    &:nth-last-child(-n+4) {
-      display: block;
-      background: white;
-    }
+  .is--far > & {
+
   }
 
 
