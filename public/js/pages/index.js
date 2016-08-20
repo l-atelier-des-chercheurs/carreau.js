@@ -23,8 +23,15 @@ socket.on('listAllFolders', onListAllFolders);
 		var newConfLieu = $('input.lieu').val();
 		var newConfDate= $('input.date').val();
 		var newConfAuth = $('input.auteur').val();
+		var newConfIntro = $('.introduction').val();
 		console.log('hey');
-		socket.emit( 'newConf', { "titre":newConfTitre, "lieu" : newConfLieu, "date": newConfDate,  "auteur":newConfAuth });
+		socket.emit( 'newConf', {
+  		"titre":newConfTitre,
+  		"introduction": newConfIntro,
+  		"lieu" : newConfLieu,
+  		"date": newConfDate,
+  		"auteur":newConfAuth
+  });
   });
 })();
 
@@ -35,6 +42,7 @@ function onFolderCreated(data){
 function onListAllFolders( foldersData) {
 	console.log(foldersData);
   $.each( foldersData, function( index, fdata) {
+    fdata.folderIndex = index;
   	var $folderContent = makeFolderContent( fdata);
   	console.log($folderContent);
     return insertOrReplaceFolder( fdata.slugFolderName, $folderContent);
@@ -68,11 +76,16 @@ function makeFolderContent( projectData){
 	newFolder
 	  .attr( 'data-nom', name)
 	  .attr( 'data-slugFolderName', slugFolderName)
+	  .find( '.index')
+      .text(projectData.folderIndex)
+	  .end()
 	  .find( '.folder-link')
 	    .attr('href', '/' + slugFolderName)
 	    .attr('title', name)
 	  .end()
-
+	  .find( '.introduction')
+	    .text(projectData.introduction)
+    .end()
 	  .find( '.title')
 	    .text(name)
 	   .end()

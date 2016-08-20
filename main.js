@@ -114,6 +114,7 @@ module.exports = function main(app, io){
     	var confLieu = confData.lieu;
     	var confDate= confData.date;
     	var confAuth = confData.auteur;
+    	var confIntro = confData.introduction;
     	var slugConfName = slugg(confName);
     	var confPath = getFullPath( slugConfName);
     	var currentDateString = getCurrentDate();
@@ -126,6 +127,7 @@ module.exports = function main(app, io){
           var fmeta =
             {
               "name" : confName,
+              "introduction" : confIntro,
               "lieu" : confLieu,
               "date" : confDate,
               "auteur": confAuth,
@@ -167,7 +169,7 @@ module.exports = function main(app, io){
 
   		    if( new RegExp("^([^.]+)$", 'i').test( slugFolderName)
   		    && slugFolderName.indexOf( settings.deletedPrefix)){
-          	var fmeta = getFolderMeta( slugFolderName);
+    		    var fmeta = getFolderMeta( slugFolderName);
           	fmeta.slugFolderName = slugFolderName;
             allFoldersData.push( fmeta);
           }
@@ -214,7 +216,7 @@ module.exports = function main(app, io){
 
 
 
-
+  // should remove this function to replace with
   function getFolderMeta( slugFolderName) {
 		console.log( "COMMON — getFolderMeta");
 
@@ -285,9 +287,17 @@ module.exports = function main(app, io){
     return new Promise(function(resolve, reject) {
   		dev.logfunction( "COMMON — readConfMeta");
   		var metaConfPath = getMetaFileOfConf(slugConfName);
-  		dev.logverbose('metaConfPath : ' + metaConfPath);
   		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
   		var folderMetadata = parseData( folderData);
+
+  		if( folderMetadata.introduction !== undefined) {
+        try {
+          folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
+        } catch(err){
+          console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
+        }
+      }
+
   		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
       resolve(folderMetadata);
     });

@@ -34,7 +34,12 @@ p {
 
 li{list-style: none;}
 
-h1,h2,h3,h4,h5,h6{font-family: 'Fira Sans', sans-serif;}
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Fira Sans', sans-serif;
+  font-weight:  300;
+  margin: 0;
+
+}
 
 
 /******************
@@ -47,6 +52,34 @@ h1,h2,h3,h4,h5,h6{font-family: 'Fira Sans', sans-serif;}
 }
 
 
+
+@mixin container {
+  position: relative;
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1200px;
+}
+
+
+@mixin button {
+  display: inline-block;
+  background: #0A997F;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: .8em;
+  border-radius: 5px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+button, .btn {
+  @include button;
+
+  &_retour {
+    margin-top:   35px;
+  }
+}
 
 body {
   margin: 0;
@@ -77,20 +110,39 @@ img, video, audio, svg {
 }
 
 
-.container {
-  position: relative;
-  margin: 0 auto;
-  width: 90%;
-  max-width: 1200px;
-
-}
-
-
 // index
 
-#intro {
+.module--bandeau {
+  width:  100%;
+  min-height: 150px;
+  background-color: #0A997F;
+  color: white;
+
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
+#intro {
+  @include container;
+
+}
+
+
+.module--listePresentations {
+  @include container;
+
+  h2 {
+    margin-top: 25px;
+    margin-bottom:  15px;
+  }
+
+}
 
 .dossier-list {
   @include clearfix;
@@ -98,6 +150,7 @@ img, video, audio, svg {
 }
 
 .dossier {
+  position: relative;
   width: 250px;
   float: left;
   padding: 15px 20px 20px;
@@ -124,6 +177,21 @@ img, video, audio, svg {
     border: 2px solid hsl(0, 0%, 94%);
   }
 
+  .index{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: #0A997F;
+    color: #fff;
+    font-size: 15px;
+    line-height: 16px;
+    text-align: center;
+    padding: 2px;
+    font-weight: 300;
+    width: 20px;
+    height: 20px;
+  }
+
   .title {
     font-size:  2rem;
     margin-bottom:  30px;
@@ -134,6 +202,11 @@ img, video, audio, svg {
     &:hover {
       color: darken(#0A997F, 10%);
     }
+  }
+
+  // still shaky
+  .introduction {
+    display: none;
   }
   .meta-data {
     >* {
@@ -155,18 +228,14 @@ img, video, audio, svg {
   input {
     width:  100%;
     padding:5px;
+    border:2px solid #eee;
     &:focus {
       outline: 2px solid #0A997F;
     }
   }
 
   input[type="submit"] {
-      background: #0A997F;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      font-size: .8em;
-      border-radius: 5px;
+    @extend button;
       width: auto;
       float: right;
       margin-top: 15px;
@@ -181,6 +250,66 @@ body[data-page='conf']::after {
   margin-top: 100vh;
   display: block;
 }
+
+.module--stackIntro {
+  @include container;
+  width: 80%;
+  max-width: 1200px;
+  min-height: 100vh;
+  padding-bottom:   40px;
+  font-size: 1.8em;
+  line-height: 2;
+
+  .titre {
+    margin-top:20px;
+    margin-bottom: 20px;
+    font-size:  1.4em;
+    letter-spacing: -0.02em;
+    line-height:  1.2;
+  }
+
+  .meta {
+    font-weight:  600;
+    span {
+      margin-right: 15px;
+      &::before {
+        content:'•';
+        color: #0A997F;
+        margin-right: 8px;
+      }
+
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  .introduction {
+    margin-top: 80px;
+    margin-bottom: 80px;
+
+    h2 {
+      margin-top:20px;
+      margin-bottom: 20px;
+    }
+
+    hr {
+      margin-top: 80px;
+      margin-bottom: 80px;
+    }
+
+    ul,ol {
+
+
+    }
+
+
+  }
+
+}
+
+
+
 
 #upload-input {
   display: none;
@@ -222,6 +351,7 @@ body[data-page='conf']::after {
 .slides-list {
   position: relative;
   margin-bottom:  20vh;
+  overflow-x: hidden;
 }
 .slide {
 
@@ -234,8 +364,6 @@ body[data-page='conf']::after {
   height:   0%;
   padding-bottom:   56.25%;
 */
-  overflow: visible;
-
   -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

@@ -11,7 +11,8 @@ var settings  = require('./public/settings'),
   main = require('./main'),
 	flags = require('flags'),
   gutil = require('gulp-util'),
-  sizeOf = require('image-size')
+  sizeOf = require('image-size'),
+  mm = require('marky-mark')
 ;
 
 module.exports = function(app,io,m){
@@ -35,10 +36,24 @@ module.exports = function(app,io,m){
   };
 
   function getConf(req, res) {
-    var pageTitle = "Diapo.js";
+    var pageTitle = "carreau.js";
     var slugConfName = req.param('conf');
-    readConfMeta(slugConfName).then(function(confMeta) {
-      res.render("conf", {title : pageTitle, "slugConfName": slugConfName, "confName": confMeta.name});
+    readConfMeta(slugConfName).then(function(c) {
+      dev.logverbose('meta conf gotten. Sending back conf to client');
+      var confMeta = {
+        "title" : pageTitle,
+        "slugConfName": slugConfName,
+        "confName": c.name
+      };
+      if( c.lieu !== undefined)
+        confMeta.lieu = c.lieu;
+      if( c.date !== undefined)
+        confMeta.date = c.date;
+      if( c.auteur !== undefined)
+        confMeta.auteur = c.auteur;
+      if( c.introduction !== undefined)
+        confMeta.introduction = c.introduction;
+      res.render("conf", confMeta);
     });
   };
 
@@ -274,6 +289,15 @@ module.exports = function(app,io,m){
   		var metaConfPath = getMetaFileOfConf(slugConfName);
   		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
   		var folderMetadata = parseData( folderData);
+
+  		if( folderMetadata.introduction !== undefined) {
+        try {
+          folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
+        } catch(err){
+          console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
+        }
+      }
+
   		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
       resolve(folderMetadata);
     });
