@@ -77,7 +77,8 @@ button, .btn {
   @include button;
 
   &_retour {
-    margin-top:   35px;
+    margin-top:   15px;
+    margin-left:  15px;
   }
 }
 
@@ -113,10 +114,12 @@ img, video, audio, svg {
 // index
 
 .module--bandeau {
+  position: relative;
   width:  100%;
   min-height: 150px;
-  background-color: #0A997F;
+  background-color: fade-out(#0A997F, .2);
   color: white;
+  overflow: hidden;
 
   display: -webkit-box;
   display: -webkit-flex;
@@ -126,12 +129,45 @@ img, video, audio, svg {
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
+
+  &::before {
+    content: '';
+    z-index: 5;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: .3;
+    background: repeating-linear-gradient( -65deg, #0A997F, #0A997F 10px, fade-out(#0A997F,1) 10px, fade-out(#0A997F,1) 20px );
+  }
+  &::after {
+    content: '';
+    z-index: 3;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: -50%;
+    opacity: .3;
+    background: repeating-linear-gradient( 65deg, #0A997F, #0A997F 10px, fade-out(#0A997F,1) 10px, fade-out(#0A997F,1) 20px );
+
+  }
+
+
+  #intro {
+    @include container;
+    position: relative;
+    z-index: 999;
+    color: white;
+    font-size:  2em;
+    margin-bottom: 5px;
+  }
+
 }
 
-#intro {
-  @include container;
-
-}
 
 
 .module--listePresentations {
@@ -175,6 +211,11 @@ img, video, audio, svg {
   &_newconfform {
     background-color: transparent;
     border: 2px solid hsl(0, 0%, 94%);
+
+    .introduction {
+      display: block !important;
+    }
+
   }
 
   .index{
@@ -209,6 +250,7 @@ img, video, audio, svg {
     display: none;
   }
   .meta-data {
+    color: #999;
     >* {
       margin-bottom:  5px;
     }
@@ -220,12 +262,12 @@ img, video, audio, svg {
 
     span {
       font-weight:  600;
-      margin-left:  15px;
+      margin-left:  5px;
     }
 
   }
 
-  input {
+  input, textarea {
     width:  100%;
     padding:5px;
     border:2px solid #eee;
@@ -255,7 +297,7 @@ body[data-page='conf']::after {
   @include container;
   width: 80%;
   max-width: 1200px;
-  min-height: 100vh;
+  min-height: 40vh;
   padding-bottom:   40px;
   font-size: 1.8em;
   line-height: 2;
@@ -351,7 +393,6 @@ body[data-page='conf']::after {
 .slides-list {
   position: relative;
   margin-bottom:  20vh;
-  overflow-x: hidden;
 }
 .slide {
 

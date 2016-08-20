@@ -42,7 +42,7 @@ function onFolderCreated(data){
 function onListAllFolders( foldersData) {
 	console.log(foldersData);
   $.each( foldersData, function( index, fdata) {
-    fdata.folderIndex = index;
+    fdata.folderIndex = index+1;
   	var $folderContent = makeFolderContent( fdata);
   	console.log($folderContent);
     return insertOrReplaceFolder( fdata.slugFolderName, $folderContent);

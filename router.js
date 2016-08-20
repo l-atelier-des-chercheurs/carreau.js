@@ -30,18 +30,17 @@ module.exports = function(app,io,m){
 
   // GET
   function getIndex(req, res) {
-    var pageTitle = "Baking Projects";
+    var pageTitle = "carreau.js";
     // console.log(req);
-    res.render("index", {title : pageTitle, "settings" : settings});
+    res.render("index", {"pageTitle" : pageTitle, "settings" : settings});
   };
 
   function getConf(req, res) {
-    var pageTitle = "carreau.js";
     var slugConfName = req.param('conf');
     readConfMeta(slugConfName).then(function(c) {
       dev.logverbose('meta conf gotten. Sending back conf to client');
       var confMeta = {
-        "title" : pageTitle,
+        "pageTitle" : c.name + ' | carreau.js',
         "slugConfName": slugConfName,
         "confName": c.name
       };
