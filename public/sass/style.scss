@@ -187,7 +187,7 @@ img, video, audio, svg {
 
 .dossier {
   position: relative;
-  width: 250px;
+  width: 310px;
   float: left;
   padding: 15px 20px 20px;
   margin:10px;
@@ -341,7 +341,18 @@ body[data-page='conf']::after {
     }
 
     ul,ol {
+      padding-left: 0;  margin-left: 0;
+      list-style: none;
+      li {
 
+        padding-left: 0;  margin-left: 0;
+  			&::before {
+          content:'—';
+          color: #0A997F;
+  				display: inline-block;
+  				margin-right: 10px;
+  			}
+      }
 
     }
 
