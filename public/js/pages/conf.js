@@ -102,7 +102,6 @@ function listOneSlide(d) {
 		  .find('.js--startIframe')
 		    .on('click', function() {
   		    var ifr = mediaItem.find('iframe');
-  		    debugger;
   		    if(ifr.attr('src') === undefined) {
   		      ifr.attr('src', ifr.attr('data-src'));
     		    $(this).addClass('is--active');
@@ -113,6 +112,9 @@ function listOneSlide(d) {
     		    mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
   		    }
 		    })
+		  .end()
+		  .find('.js--openIframeNewTab')
+        .attr('href', d.name)
 		  .end()
 		  ;
 		preserveRatio = false;

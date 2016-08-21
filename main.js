@@ -200,7 +200,7 @@ module.exports = function main(app, io){
 
   function sendEventWithContent( sendEvent, objectContent, socket) {
     var eventAndContentJson = eventAndContent( sendEvent, objectContent);
-    console.log("eventAndContentJson " + JSON.stringify( eventAndContentJson, null, 4));
+    console.log("eventAndContentJson " + JSON.stringify( eventAndContentJson));
     if( socket === undefined)
       io.sockets.emit( eventAndContentJson["socketevent"], eventAndContentJson["content"]);
     else
@@ -310,7 +310,7 @@ module.exports = function main(app, io){
   }
 
   function getMediaMeta( slugConfName, fileNameWithoutExtension) {
-  	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
+  	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " n = " + fileNameWithoutExtension);
   	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
   	dev.logverbose( 'confPath = ' + confPath);
     var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);

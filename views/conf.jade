@@ -20,7 +20,7 @@ html
         span !{auteur}
 
       .introduction
-        !{introduction}
+        | !{introduction}
 
     .popover_upload
       h3 Envoi de fichiers en cours
@@ -40,8 +40,10 @@ html
             source()
       .slide.js--fixedslide.js--iframeSlide
         .slide--item.slide--item_iframe.js--interactevents.shadowed
-          h6.pageUrl
-          button.toggleIframe.js--startIframe activer/désactiver
+          .pageUrlField
+            h6.pageUrl
+            a.iframeNewTab.js--openIframeNewTab(target="_blank") ↗
+          button.toggleIframe.js--startIframe activer&nbsp;/&nbsp;désactiver
           iframe
 
 

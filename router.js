@@ -291,7 +291,7 @@ module.exports = function(app,io,m){
 
   		if( folderMetadata.introduction !== undefined) {
         try {
-          folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
+//           folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
         } catch(err){
           console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
         }
