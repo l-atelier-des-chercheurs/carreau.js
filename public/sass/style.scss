@@ -72,7 +72,23 @@ h1,h2,h3,h4,h5,h6{
   border-radius: 5px;
   margin: 5px;
   cursor: pointer;
+
+  &:focus {
+    outline: none;
+
+  }
 }
+
+@mixin small_button {
+  @include button;
+  padding: 0px;
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  line-height: 0;
+  border-radius: 50%;
+}
+
 
 button, .btn {
   @include button;
@@ -287,6 +303,55 @@ img, video, audio, svg {
 }
 
 
+/********************************************************************
+              POPUP
+********************************************************************/
+.module--popup {
+  position: fixed;
+  top:15px;
+  right: 15px;
+  width: 260px;
+
+  max-height: 100vh;
+  overflow: scroll;
+
+  display: none;
+  z-index:  15000;
+
+  .module--popup--textContent {
+    position: relative;
+    background-color: fade-out(#D1DF98, 0);
+    border-radius: 4px;
+    padding: 10px;
+    margin: 4px;
+    font-size:  .8em;
+
+    transition: padding .6s ease-out, font-size .4s;
+
+    p {
+      margin: 0;
+    }
+
+    .module--popup--closePopup {
+      @include small_button;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
+/*
+  &:hover  {
+    > .module--popup--textContent {
+      font-size:  .8em;
+      opacity: 1;
+    }
+  }
+*/
+}
+
+
+
 // conf
 
 body[data-page='conf']::after {
@@ -372,8 +437,6 @@ body[data-page='conf']::after {
 }
 
 
-
-
 #upload-input {
   display: none;
 }
@@ -390,26 +453,26 @@ body[data-page='conf']::after {
     opacity: 1;
     z-index:  1500;
   }
-
-  .instructions {
-    display: block;
-    margin: 0 auto;
-    max-width: 570px;
-    width: 80%;
-    color: white;
-    line-height: 1.5;
-    font-size: 2em;
-    font-weight: 200;
-    padding: 40px;
-    background-color: rgba(255,255,255,.1);
-    border-radius: 15px;
-    margin-top: 30vh;
-    text-align: center;
-
-    pointer-events: none;
-  }
 }
 
+
+.instructions {
+  display: block;
+  margin: 0 auto;
+  max-width: 570px;
+  width: 80%;
+  color: white;
+  line-height: 1.5;
+  font-size: 2em;
+  font-weight: 200;
+  padding: 40px;
+  background-color: rgba(255,255,255,.1);
+  border-radius: 15px;
+  margin-top: 30vh;
+  text-align: center;
+
+  pointer-events: none;
+}
 
 .slides-list {
   position: relative;
@@ -562,14 +625,14 @@ body[data-page='conf']::after {
 
 
 .popover_upload {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width:150px;
-  height: 50px;
-  padding: 30px;
+	position:fixed;
+  top: 0; left: 0;  right: 0; bottom: 0;
+  background-color: #0A997F;
   z-index:  15000;
-  background-color: white;
+  transition: opacity .4s ease-out;
+  pointer-events: none;
+
+  display: none;
 }
 
 .js--interactevents {

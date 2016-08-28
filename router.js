@@ -100,33 +100,7 @@ module.exports = function(app,io,m){
       console.log('File uploaded.');
       console.log('field data : ' + JSON.stringify(field));
       console.log('file data : ' + JSON.stringify(file));
-      // rename it to it's original name prepended by a number
-      findFirstFilenameNotTaken(form.uploadDir, file.name).then(function(newFileName){
-        var newPathToNewFileName = path.join(form.uploadDir, newFileName);
-        fs.rename(file.path, newPathToNewFileName);
-
-        createMediaMeta( form.uploadDir, newFileName).then(function(fileMeta){
-          dev.logverbose("Pushing file meta to all files meta, fileMeta : " + JSON.stringify(fileMeta, null, 4));
-          allFilesMeta.push(fileMeta);
-
-          addMediasToMetaConf(slugConfName, newFileName);
-/*
-// for multi files upload
-//        filesToAddToMeta = filesToAddToMeta.map(function(x){ return x.replace( file.name, newFileName) });
-          processed++;
-          if( processed === filesToAddToMeta.length) {
-            addMediasToMetaConf(slugConfName, filesToAddToMeta);
-          }
-*/
-        }, function(err) {
-          console.log('fail createMediaMeta ' + err);
-          reject(err);
-        });
-      }, function(err) {
-        console.log('fail findFirstFilenameNotTaken ' + err);
-        reject(err);
-      });
-
+      allFilesMeta.push(file);
     });
 
     // log any errors that occur
@@ -137,18 +111,49 @@ module.exports = function(app,io,m){
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
       console.log('Finished packet, will send medias info : ' + JSON.stringify(allFilesMeta));
-      var msg = {
-        "msg" : "success",
-        "medias" : JSON.stringify(allFilesMeta)
+
+      var m = [];
+      for(var i in allFilesMeta) {
+        m.push(renameMediaAndCreateMeta(form.uploadDir, slugConfName, allFilesMeta[i]));
       }
-      // not using those packets actually
-      res.end(JSON.stringify(msg));
+
+      dev.logverbose('Will promise all soon');
+
+      // rename the new media if necessary to it's original name prepended by a number
+      Promise.all(m).then(function(filesToAddToMeta) {
+        dev.logverbose('plip plop plip');
+        addMediasToMetaConf(slugConfName, filesToAddToMeta);
+        var msg = {
+          "msg" : "success",
+          "medias" : JSON.stringify(allFilesMeta)
+        }
+        // not using those packets actually
+        res.end(JSON.stringify(msg));
+      });
     });
 
     // parse the incoming request containing the form data
     form.parse(req);
   }
 
+  function renameMediaAndCreateMeta( uploadDir, slugConfName, file) {
+    return new Promise(function(resolve, reject) {
+      findFirstFilenameNotTaken( uploadDir, file.name).then(function(newFileName){
+        dev.logverbose('Found new name');
+        var newPathToNewFileName = path.join(uploadDir, newFileName);
+        fs.rename(file.path, newPathToNewFileName);
+        createMediaMeta( uploadDir, newFileName).then(function(fileMeta){
+          resolve(newFileName);
+        }, function(err) {
+          console.log('fail createMediaMeta ' + err);
+          reject(err);
+        });
+      }, function(err) {
+        console.log('fail findFirstFilenameNotTaken ' + err);
+        reject(err);
+      });
+    });
+  }
 
   function createMediaMeta(confPath, mediaFileName) {
     return new Promise(function(resolve, reject) {
@@ -224,7 +229,6 @@ module.exports = function(app,io,m){
       console.log('fail readConfMeta ' + err);
       reject(err);
     });
-
   }
 
 
@@ -238,7 +242,7 @@ module.exports = function(app,io,m){
           resolve(parseData(textd));
         });
       }
-  	  if( e === "update") {
+  	    if( e === "update") {
         fs.writeFile( mpath, textd, function(err) {
           if (err) reject( err);
           resolve(parseData(textd));
@@ -273,13 +277,16 @@ module.exports = function(app,io,m){
   function getCurrentDate() {
     return moment().format( settings.metaDateFormat);
   }
+
   function parseData(d) {
-  	dev.logverbose("Will parse data");
-  	var parsed = parsedown(d);
-  	// if there is a field called medias, this one has to be made into an array
-  	if( parsed.hasOwnProperty('slides'))
-  	  parsed.slides = parsed.slides.split('\n');
-  	return parsed;
+    	dev.logverbose("Will parse data");
+    	var parsed = parsedown(d);
+    	// if there is a field called medias, this one has to be made into an array
+    	if( parsed.hasOwnProperty('slides')) {
+      	parsed.slides = parsed.slides.trim();
+    	  parsed.slides = parsed.slides.split('\n');
+    }
+    	return parsed;
   }
 
   function readConfMeta( slugConfName) {
@@ -288,23 +295,21 @@ module.exports = function(app,io,m){
   		var metaConfPath = getMetaFileOfConf(slugConfName);
   		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
   		var folderMetadata = parseData( folderData);
-
   		if( folderMetadata.introduction !== undefined) {
-        try {
-//           folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
-        } catch(err){
-          console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
-        }
+      try {
+        folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
+      } catch(err){
+        console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
       }
-
+    }
   		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
       resolve(folderMetadata);
     });
   }
 
   function getMetaFileOfConf( slugConfName) {
-  	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
-  	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
+    	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+    	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
     return metaPath;
   }
 

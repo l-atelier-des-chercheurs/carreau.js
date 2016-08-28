@@ -65,10 +65,12 @@ module.exports = function main(app, io){
 	function onListSlides( socket, dataFolder) {
 		dev.logfunction( "EVENT - onListSlides");
     readConfMeta(dataFolder.slugConfName).then(function(confMeta) {
-      dev.logverbose('just read conf meta');
-      var confSlides = confMeta.slides;
+      dev.logverbose('just read conf meta, confMeta.slides.length = ' + confMeta.slides.length);
+      // if no slides to show, or one slide that's just empty text
+      if(confMeta.slides.length === 0 || (confMeta.slides.length === 1 && confMeta.slides[0] === ''))
+        return;
       var confSlidesData = new Array();
-      for(var slideName of confSlides) {
+      for(var slideName of confMeta.slides) {
         dev.logverbose('Slide : ' + slideName);
         var mediaMeta = getMediaMeta(dataFolder.slugConfName, slideName);
         mediaMeta.metaName = slideName;
@@ -275,12 +277,14 @@ module.exports = function main(app, io){
     return moment().format( settings.metaDateFormat);
   }
   function parseData(d) {
-  	dev.logverbose("Will parse data");
-  	var parsed = parsedown(d);
-  	// if there is a field called medias, this one has to be made into an array
-  	if( parsed.hasOwnProperty('slides'))
-  	  parsed.slides = parsed.slides.split('\n');
-  	return parsed;
+    	dev.logverbose("Will parse data");
+    	var parsed = parsedown(d);
+    	// if there is a field called medias, this one has to be made into an array
+    	if( parsed.hasOwnProperty('slides')) {
+      	parsed.slides = parsed.slides.trim();
+    	  parsed.slides = parsed.slides.split('\n');
+    }
+    	return parsed;
   }
 
   function readConfMeta( slugConfName) {
@@ -310,11 +314,11 @@ module.exports = function main(app, io){
   }
 
   function getMediaMeta( slugConfName, fileNameWithoutExtension) {
-  	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " n = " + fileNameWithoutExtension);
-  	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
-  	dev.logverbose( 'confPath = ' + confPath);
+    	dev.logfunction( "COMMON — getMediaMeta : slugConfName = " + slugConfName + " n = " + fileNameWithoutExtension);
+    	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+    	dev.logverbose( 'confPath = ' + confPath);
     var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
-  	dev.logverbose( 'mediaMetaPath = ' + mediaMetaPath);
+    	dev.logverbose( 'mediaMetaPath = ' + mediaMetaPath);
 
     try{
       fs.accessSync( mediaMetaPath, fs.F_OK);
@@ -323,10 +327,10 @@ module.exports = function main(app, io){
       return new Error('Couldn’t find media metafile');
     }
 
-  	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
-/*   	dev.logverbose( 'mediaData = ' + mediaData); */
-  	var mediaMetaData = parseData(mediaData);
-  	dev.logverbose( "COMMON — getMediaMeta : data was parsed");
+    	var mediaData = fs.readFileSync(mediaMetaPath, settings.textEncoding);
+  /*   	dev.logverbose( 'mediaData = ' + mediaData); */
+    	var mediaMetaData = parseData(mediaData);
+    	dev.logverbose( "COMMON — getMediaMeta : data was parsed and mediaMetaData = " + JSON.stringify(mediaMetaData));
     return mediaMetaData;
   }
 

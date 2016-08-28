@@ -47,9 +47,8 @@ function init(){
   		e.preventDefault();
   		$(".drop-files-container").removeClass('is--visible');
   		console.log("DROP FILE");
-      var files = e.originalEvent.dataTransfer.files;
-      uploadDroppedFiles(files);
-
+    var files = e.originalEvent.dataTransfer.files;
+    uploadDroppedFiles(files);
   	})
   	.on('dragleave',function(e){
   		$(".drop-files-container").removeClass('is--visible');
@@ -67,6 +66,8 @@ function onListAllSlides(d) {
   d.forEach(function(s) {
     $allNewSlides.add(listOneSlide(s));
   });
+
+  $('.popover_upload').fadeOut(400, function() { $(this).hide(); });
 }
 
 function onListOneSlide(d) {
@@ -76,9 +77,16 @@ function onListOneSlide(d) {
 
 function listOneSlide(d) {
   console.log('Listing one slide');
+
+  // Check if it has a name (ie. a media name associated with a metaName
+  // Missing medias only have a metaName like 1-mymedia
+  if(d.name === undefined) {
+    popup.displayMessage('Le média suivant n’a pas été trouvé&nbsp;: <br><strong>' + d.metaName + '</strong>');
+    return;
+  }
+
 	var ext = d.name.split('.').pop();
 	var isUrl = d.name.indexOf('http://') >= 0 ? true : false;
-
 	var mediaItem;
   var preserveRatio = true;
 
@@ -153,29 +161,20 @@ function listOneSlide(d) {
 	  pxHeight = pxWidth * d.ratio;
 	 else
 	  pxHeight = d.height * 0.5625 * window.innerWidth;
-
-/*
-	if( pxHeight > window.innerHeight) {
-	  pxHeight = window.innerHeight;
-    pxWidth = pxHeight / d.ratio;
-  }
-*/
-
   var posX = d.posX * window.innerWidth;
   var posY = d.posY * window.innerHeight;
-
 	mediaItem
 	  .attr('data-fileName', d.metaName)
 	  .find('.slide--item')
-  	  .css({
-  	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
-  	  	'width': pxWidth,
-  	  	'height': pxHeight,
-  	  	'display':'block'
-  	  })
-  	  .attr('data-x', posX)
-  	  .attr('data-y', posY)
-  	.end()
+    	  .css({
+    	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
+    	  	'width': pxWidth,
+    	  	'height': pxHeight,
+    	  	'display':'block'
+    	  })
+    	  .attr('data-x', posX)
+    	  .attr('data-y', posY)
+    .end()
     ;
 
   $('.slides-list').append(mediaItem);
@@ -204,10 +203,9 @@ function uploadDroppedFiles(droppedFiles) {
       // add the files to formData object for the data payload
       formData.append('uploads[]', file, file.name);
     }
-/*
-    $popoverUpload = $('.popover_upload');
+
+    var $popoverUpload = $('.popover_upload');
     $popoverUpload.show();
-*/
 
     $.ajax({
       url: './file-upload',
@@ -220,7 +218,7 @@ function uploadDroppedFiles(droppedFiles) {
         console.log('upload successful!\n' + data);
 //         $popoverUpload.html('Upload et rechargement de la conférence…');
         // let's wait a bit that the media has been added before we ask for a refreshed list of medias
-        setTimeout(function() { socket.emit('listSlides', { "slugConfName" : app.slugConfName}); }, 500)
+        setTimeout(function() { socket.emit('listSlides', { "slugConfName" : app.slugConfName}); }, 2500)
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -233,16 +231,9 @@ function uploadDroppedFiles(droppedFiles) {
             var percentComplete = evt.loaded / evt.total;
             percentComplete = parseInt(percentComplete * 100);
 
-/*
             // update the Bootstrap progress bar with the new percentage
             $popoverUpload.find('.progress-bar').text(percentComplete + '%');
             $popoverUpload.find('.progress-bar').width(percentComplete + '%');
-
-            // once the upload reaches 100%, set the progress bar text to done
-            if (percentComplete === 100) {
-              $popoverUpload.html('Done');
-            }
-*/
 
           }
 
