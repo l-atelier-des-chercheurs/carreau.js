@@ -28,9 +28,11 @@ Create a folder named *conferences* next to the *views* and *public* folder.
 
 ### server-side
 
-Run `node server.js` to start the server
-Run `node server.js --debug` to start the server with debug in terminal
-Run `node server.js --debug --verbose` to start the server with debug and verbose
+* Run `node server.js` to start the server
+
+* Run `node server.js --debug` to start the server with debug in terminal
+
+* Run `node server.js --debug --verbose` to start the server with debug and verbose
 
 To add a npm package, run `npm install` (for example `npm install --save-dev jshint gulp-jshint`).
 
