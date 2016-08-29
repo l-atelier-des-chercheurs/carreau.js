@@ -316,7 +316,7 @@ img, video, audio, svg {
   overflow: scroll;
 
   display: none;
-  z-index:  15000;
+  z-index:  999;
 
   .module--popup--textContent {
     position: relative;
