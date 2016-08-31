@@ -4,7 +4,7 @@ A presentation is made from cards that form a stack.
 
 ## How it looks / how it works
 
-![Screenshot of the home page](image: carreau.js/screenshot.png)
+![Screenshot of the home page](screenshot.png)
 
 * creating a new stack, adding cards https://www.youtube.com/watch?v=acjNvDlNPfc
 
