@@ -72,6 +72,7 @@ h1,h2,h3,h4,h5,h6{
   border-radius: 5px;
   margin: 5px;
   cursor: pointer;
+  text-align: center;
 
   &:focus {
     outline: none;
@@ -334,6 +335,7 @@ img, video, audio, svg {
 
     .module--popup--closePopup {
       @include small_button;
+      background-color: darken(#D1DF98, 10%);
       position: absolute;
       top: 0;
       right: 0;
@@ -562,12 +564,13 @@ body[data-page='conf']::after {
           overflow: hidden;
         }
         .iframeNewTab {
-
           @extend button;
           display: inline-block;
           vertical-align: top;
           margin: 0;
-          padding: 3px;
+          margin-left: 4px;
+          padding: 0;
+          padding-top: 2px;
           width: 20px;
           height: 20px;
           border-radius: 3px;

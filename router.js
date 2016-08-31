@@ -12,7 +12,8 @@ var settings  = require('./public/settings'),
 	flags = require('flags'),
   gutil = require('gulp-util'),
   sizeOf = require('image-size'),
-  mm = require('marky-mark')
+  mm = require('marky-mark'),
+  slugg = require('slugg')
 ;
 
 module.exports = function(app,io,m){
@@ -70,30 +71,17 @@ module.exports = function(app,io,m){
     form.uploadDir = path.join(__dirname, settings.contentDir, slugConfName);
 
     var allFilesMeta = [];
-
+    var allIframeMeta = [];
     var index = 0;
-    var filesToAddToMeta = [];
     var processed;
 
-/*
-  // for multiples
-    form.parse(req, function(err, fields, files) {
-      dev.logverbose('fields ' + JSON.stringify(fields, null, 4));
-      dev.logverbose('file ' + JSON.stringify(files, null, 4));
-      dev.logverbose('number of files ' + files['uploads[]'].length);
-      // get all names
-      var allFiles = files['uploads[]'];
-      var uniqueFilesnames;
-      if( allFiles.length > 1) {
-        var allFilenames = allFiles.map(function(a) {return a.name;});
-        uniqueFilesnames = allFilenames.filter((elem, pos, arr) => arr.indexOf(elem) == pos);
-      } else {
-        uniqueFilesnames = allFiles.name;
+    form.on('field', function(name, value) {
+      console.log('Name: ' + name);
+      console.log('Value: ' + value);
+      if(name === 'iframe[]') {
+        allIframeMeta.push(value);
       }
-      filesToAddToMeta = uniqueFilesnames;
-      dev.logverbose('uniqueFilesnames : ' + uniqueFilesnames);
     });
-*/
 
     // every time a file has been uploaded successfully,
     form.on('file', function(field, file) {
@@ -110,26 +98,46 @@ module.exports = function(app,io,m){
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
-      console.log('Finished packet, will send medias info : ' + JSON.stringify(allFilesMeta));
 
-      var m = [];
-      for(var i in allFilesMeta) {
-        m.push(renameMediaAndCreateMeta(form.uploadDir, slugConfName, allFilesMeta[i]));
+
+
+      // if websites
+      if(allIframeMeta.length > 0) {
+        var m = [];
+        for(var i in allIframeMeta) {
+          m.push(renameMediaAndCreateMetaForIframe(form.uploadDir, slugConfName, allIframeMeta[i]));
+        }
+        Promise.all(m).then(function(filesToAddToMeta) {
+          addMediasToMetaConf(slugConfName, filesToAddToMeta);
+          var msg = {
+            "msg" : "success",
+            "medias" : JSON.stringify(allIframeMeta)
+          }
+          // not using those packets actually
+          res.end(JSON.stringify(msg));
+        });
       }
 
-      dev.logverbose('Will promise all soon');
-
-      // rename the new media if necessary to it's original name prepended by a number
-      Promise.all(m).then(function(filesToAddToMeta) {
-        dev.logverbose('plip plop plip');
-        addMediasToMetaConf(slugConfName, filesToAddToMeta);
-        var msg = {
-          "msg" : "success",
-          "medias" : JSON.stringify(allFilesMeta)
+      // if files
+      if(allFilesMeta.length > 0) {
+        var m = [];
+        for(var i in allFilesMeta) {
+          m.push(renameMediaAndCreateMeta(form.uploadDir, slugConfName, allFilesMeta[i]));
         }
-        // not using those packets actually
-        res.end(JSON.stringify(msg));
-      });
+
+        dev.logverbose('Will promise all soon');
+
+        // rename the new media if necessary to it's original name prepended by a number
+        Promise.all(m).then(function(filesToAddToMeta) {
+          addMediasToMetaConf(slugConfName, filesToAddToMeta);
+          var msg = {
+            "msg" : "success",
+            "medias" : JSON.stringify(allFilesMeta)
+          }
+          // not using those packets actually
+          res.end(JSON.stringify(msg));
+        });
+      }
     });
 
     // parse the incoming request containing the form data
@@ -155,19 +163,38 @@ module.exports = function(app,io,m){
     });
   }
 
-  function createMediaMeta(confPath, mediaFileName) {
+  function renameMediaAndCreateMetaForIframe( uploadDir, slugConfName, websiteName) {
+    return new Promise(function(resolve, reject) {
+      var slugWebsiteName = slugg(websiteName);
+      findFirstFilenameNotTaken( uploadDir, slugWebsiteName + settings.metaFileext).then(function(newSlugWebsiteName){
+        createMediaMeta( uploadDir, websiteName, newSlugWebsiteName).then(function(fileMeta){
+          resolve(newSlugWebsiteName);
+        }, function(err) {
+          console.log('fail createMediaMeta for Iframes : ' + err);
+          reject(err);
+        });
+      }, function(err) {
+        console.log('fail findFirstFilenameNotTaken for iframe : ' + err);
+        reject(err);
+      });
+    });
+  }
+
+  function createMediaMeta(confPath, mediaFileName, metaFileName) {
     return new Promise(function(resolve, reject) {
       console.log( "Will create a new meta file for media " + mediaFileName + " for conf " + confPath);
-  //       var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( mediaFileName)[0];
-      var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( mediaFileName)[1];
 
-      var newMetaFileName = fileNameWithoutExtension + settings.metaFileext;
-      var newPathToMeta = path.join(confPath, newMetaFileName);
+      // if no metaFileName, we will deduce metaFileName from mediaFileName
+      if(metaFileName === undefined) {
+        var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( mediaFileName)[1];
+        metaFileName = fileNameWithoutExtension + settings.metaFileext;
+      }
+      var newPathToMeta = path.join(confPath, metaFileName);
 
       // essayer d'avoir la taille du media
-      var newPathToImage = path.join(confPath, mediaFileName);
+      var newPathToMedia = path.join(confPath, mediaFileName);
       try {
-        var dimension = sizeOf(newPathToImage);
+        var dimension = sizeOf(newPathToMedia);
         if(typeof dimension !== undefined)
           var mediaRatio = dimension.height / dimension.width;
       } catch(err) {}
@@ -313,11 +340,13 @@ module.exports = function(app,io,m){
     return metaPath;
   }
 
+  // check whether fileName (such as "hello-world.mp4") already exists in the conf folder
   function findFirstFilenameNotTaken( confPath, fileName) {
     return new Promise(function(resolve, reject) {
-      // let's find the extension
+      // let's find the extension if it exists
       var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( fileName)[0];
       var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( fileName)[1];
+      fileNameWithoutExtension = slugg(fileNameWithoutExtension);
       dev.logverbose("Looking for existing file with name : " + fileNameWithoutExtension + " in confPath : " + confPath);
       try {
         var newFileName = fileNameWithoutExtension + fileExtension;

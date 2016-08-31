@@ -47,8 +47,26 @@ function init(){
   		e.preventDefault();
   		$(".drop-files-container").removeClass('is--visible');
   		console.log("DROP FILE");
-    var files = e.originalEvent.dataTransfer.files;
-    uploadDroppedFiles(files);
+
+
+    if( e.originalEvent.dataTransfer.files.length >= 0) {
+      var files = e.originalEvent.dataTransfer.files;
+      // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
+      var formData = new FormData();
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        // add the files to formData object for the data payload
+        formData.append('uploads[]', file, file.name);
+      }
+      uploadFormData(formData);
+    }
+    if(typeof e.originalEvent.dataTransfer.getData('text') === 'string' && e.originalEvent.dataTransfer.getData('text').length > 0) {
+      // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
+      var formData = new FormData();
+      formData.append('iframe[]', e.originalEvent.dataTransfer.getData('text'));
+      uploadFormData(formData);
+    }
+
   	})
   	.on('dragleave',function(e){
   		$(".drop-files-container").removeClass('is--visible');
@@ -66,8 +84,7 @@ function onListAllSlides(d) {
   d.forEach(function(s) {
     $allNewSlides.add(listOneSlide(s));
   });
-
-  $('.popover_upload').fadeOut(400, function() { $(this).hide(); });
+  $('.popover_upload').fadeOut(200, function() { $(this).hide(); });
 }
 
 function onListOneSlide(d) {
@@ -109,16 +126,16 @@ function listOneSlide(d) {
 		  .end()
 		  .find('.js--startIframe')
 		    .on('click', function() {
-  		    var ifr = mediaItem.find('iframe');
-  		    if(ifr.attr('src') === undefined) {
-  		      ifr.attr('src', ifr.attr('data-src'));
-    		    $(this).addClass('is--active');
-    		    mediaItem.find('.slide--item_iframe').addClass('is--iframeOn');
-  		    } else {
-  		      ifr.removeAttr('src');
-    		    $(this).removeClass('is--active');
-    		    mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
-  		    }
+    		    var ifr = mediaItem.find('iframe');
+    		    if(ifr.attr('src') === undefined) {
+    		      ifr.attr('src', ifr.attr('data-src'));
+      		    $(this).addClass('is--active');
+      		    mediaItem.find('.slide--item_iframe').addClass('is--iframeOn');
+    		    } else {
+    		      ifr.removeAttr('src');
+      		    $(this).removeClass('is--active');
+      		    mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
+    		    }
 		    })
 		  .end()
 		  .find('.js--openIframeNewTab')
@@ -156,11 +173,14 @@ function listOneSlide(d) {
 
 	var pxWidth = d.width * window.innerWidth;
 
+
 	var pxHeight;
 	if(preserveRatio)
 	  pxHeight = pxWidth * d.ratio;
-	 else
-	  pxHeight = d.height * 0.5625 * window.innerWidth;
+	 else {
+    var desiredHeight = (d.height === undefined) ? d.width : d.height;
+	  pxHeight = desiredHeight * 0.5625 * window.innerWidth;
+	}
   var posX = d.posX * window.innerWidth;
   var posY = d.posY * window.innerHeight;
 	mediaItem
@@ -188,62 +208,47 @@ function listOneSlide(d) {
 }
 
 
-function uploadDroppedFiles(droppedFiles) {
+function uploadFormData(formData) {
 
-  // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
-  if(droppedFiles.length > 0) { // checks if any files were dropped
+  var $popoverUpload = $('.popover_upload');
+  $popoverUpload.show();
 
-    // create a FormData object which will be sent as the data payload in the
-    // AJAX request
-    var formData = new FormData();
-
-    // loop through all the selected files and add them to the formData object
-    for (var i = 0; i < droppedFiles.length; i++) {
-      var file = droppedFiles[i];
-      // add the files to formData object for the data payload
-      formData.append('uploads[]', file, file.name);
-    }
-
-    var $popoverUpload = $('.popover_upload');
-    $popoverUpload.show();
-
-    $.ajax({
-      url: './file-upload',
-      type: 'POST',
-      data: formData,
-      datatype: 'json', // expecting JSON to be returned
-      processData: false,
-      contentType: false,
-      success: function(data){
-        console.log('upload successful!\n' + data);
+  $.ajax({
+    url: './file-upload',
+    type: 'POST',
+    data: formData,
+    datatype: 'json', // expecting JSON to be returned
+    processData: false,
+    contentType: false,
+    success: function(data){
+      console.log('upload successful!\n' + data);
 //         $popoverUpload.html('Upload et rechargement de la conférence…');
-        // let's wait a bit that the media has been added before we ask for a refreshed list of medias
-        setTimeout(function() { socket.emit('listSlides', { "slugConfName" : app.slugConfName}); }, 2500)
-      },
-      xhr: function() {
-        // create an XMLHttpRequest
-        var xhr = new XMLHttpRequest();
+      // let's wait a bit that the media has been added before we ask for a refreshed list of medias
+      setTimeout(function() { socket.emit('listSlides', { "slugConfName" : app.slugConfName}); }, 500)
+    },
+    xhr: function() {
+      // create an XMLHttpRequest
+      var xhr = new XMLHttpRequest();
 
-        // listen to the 'progress' event
-        xhr.upload.addEventListener('progress', function(evt) {
-          if (evt.lengthComputable) {
-            // calculate the percentage of upload completed
-            var percentComplete = evt.loaded / evt.total;
-            percentComplete = parseInt(percentComplete * 100);
+      // listen to the 'progress' event
+      xhr.upload.addEventListener('progress', function(evt) {
+        if (evt.lengthComputable) {
+          // calculate the percentage of upload completed
+          var percentComplete = evt.loaded / evt.total;
+          percentComplete = parseInt(percentComplete * 100);
 
-            // update the Bootstrap progress bar with the new percentage
-            $popoverUpload.find('.progress-bar').text(percentComplete + '%');
-            $popoverUpload.find('.progress-bar').width(percentComplete + '%');
+          // update the Bootstrap progress bar with the new percentage
+          $popoverUpload.find('.progress-bar').text(percentComplete + '%');
+          $popoverUpload.find('.progress-bar').width(percentComplete + '%');
 
-          }
+        }
 
-        }, false);
+      }, false);
 
-        return xhr;
-      }
-    });
+      return xhr;
+    }
+  });
 
-  }
 }
 
 /***************************************************************************
