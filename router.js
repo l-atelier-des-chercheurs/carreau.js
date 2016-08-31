@@ -99,8 +99,6 @@ module.exports = function(app,io,m){
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
 
-
-
       // if websites
       if(allIframeMeta.length > 0) {
         var m = [];

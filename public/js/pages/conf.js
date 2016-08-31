@@ -78,13 +78,40 @@ function init(){
 
 }
 
+// executed on page load or media update (with diff checking)
 function onListAllSlides(d) {
   console.log('Listing all slides');
+
+  // create slides for dom
   var $allNewSlides = $();
   d.forEach(function(s) {
-    $allNewSlides.add(listOneSlide(s));
+    $allNewSlides = $allNewSlides.add(listOneSlide(s));
   });
-  $('.popover_upload').fadeOut(200, function() { $(this).hide(); });
+
+  // adding slides to dom
+  var firstSlidePosY;
+  $allNewSlides.each(function(i) {
+    $mediaItem = $(this);
+    $('.slides-list').append($mediaItem);
+    setSceneForSlide($mediaItem[0]);
+    initInteractForSlide({
+      'slide' : $mediaItem.find('.js--interactevents')[0],
+      'preserveRatio' : $mediaItem.data('preserveRatio')
+    });
+    if(i === 0) {
+      firstSlidePosY = $mediaItem.offset().top;
+    }
+  });
+
+  // if we just sent a few medias/websites
+  if( $('.popover_upload').is(":visible")){
+    $('.popover_upload').fadeOut(200, function() { $(this).hide(); });
+    $('html').animate(
+      {scrollTop: firstSlidePosY},
+      900,
+      $.easing.easeInOutQuint
+    );
+  }
 }
 
 function onListOneSlide(d) {
@@ -103,7 +130,10 @@ function listOneSlide(d) {
   }
 
 	var ext = d.name.split('.').pop();
-	var isUrl = d.name.indexOf('http://') >= 0 ? true : false;
+	var isUrl = false;
+	if(d.name.toLowerCase().indexOf('http://') !== -1 || d.name.toLowerCase().indexOf('https://') !== -1) {
+    	isUrl = true;
+  }
 	var mediaItem;
   var preserveRatio = true;
 
@@ -173,7 +203,6 @@ function listOneSlide(d) {
 
 	var pxWidth = d.width * window.innerWidth;
 
-
 	var pxHeight;
 	if(preserveRatio)
 	  pxHeight = pxWidth * d.ratio;
@@ -195,15 +224,8 @@ function listOneSlide(d) {
     	  .attr('data-x', posX)
     	  .attr('data-y', posY)
     .end()
+    .data('preserveRatio', preserveRatio)
     ;
-
-  $('.slides-list').append(mediaItem);
-
-  setSceneForSlide(mediaItem[0]);
-  initInteractForSlide({
-    'slide' : mediaItem.find('.js--interactevents')[0],
-    'preserveRatio' : preserveRatio
-  });
   return mediaItem;
 }
 

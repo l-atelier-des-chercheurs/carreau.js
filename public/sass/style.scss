@@ -510,8 +510,16 @@ body[data-page='conf']::after {
     background-color: transparent;
 
     &_iframe {
-      padding-top: 40px;
       background-color: #dedcdc;
+
+      .slide--item--navbar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height:   30px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
 
       iframe {
         pointer-events: none;
@@ -523,26 +531,18 @@ body[data-page='conf']::after {
         background-color: #fff;
       }
 
-      &::before {
+      .slide--item--navbar::before {
         content: '...';
         font-size: 70px;
         line-height: 0;
         display: block;
-        height: 40px;
         width: 80px;
-        position: absolute;
-        top: 0;
-        left: 0;
+        height: 40px;
         margin-left: 10px;
-        margin-top: 5px;
         color: #cccbcb;
       }
 
       .pageUrlField {
-        position: absolute;
-        top: 0;
-        left: 60px;
-        height: 30px;
         margin: 20px;
         width: calc(100% - 60px - 170px);
         overflow: hidden;
@@ -551,11 +551,10 @@ body[data-page='conf']::after {
         border-radius: 4px;
         padding: 5px 5px 5px 10px;
         color: #0A997F;
-
+        flex: auto;
 
         .pageUrl {
-          display: inline-block;
-
+          display: block;
           font-weight: 300;
           line-height: 20px;
           font-size: 20px;
@@ -563,38 +562,22 @@ body[data-page='conf']::after {
           white-space: nowrap;
           overflow: hidden;
         }
-        .iframeNewTab {
-          @extend button;
-          display: inline-block;
-          vertical-align: top;
-          margin: 0;
-          margin-left: 4px;
-          padding: 0;
-          padding-top: 2px;
-          width: 20px;
-          height: 20px;
-          border-radius: 3px;
-        }
       }
     }
 
     .toggleIframe {
-      background: #0A997F;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      font-size: .8em;
-      border-radius: 5px;
-      width: auto;
-      float: right;
-      margin: 8px;
-      position: absolute;
-      top: 0;
-      right: 0;
+      @extend button;
 
       &.is--active {
         background-color: #ff2719;
       }
+    }
+
+    .iframeNewTab {
+      @extend button;
+      border: none;
+      padding: 10px 15px;
+      font-size: .8em;
     }
   }
 
@@ -604,8 +587,9 @@ body[data-page='conf']::after {
 
   iframe {
     width: calc(100% - 16px);
-    height: calc(100% - 16px);
+    height: calc(100% - 16px - 40px);
     margin:8px;
+    margin-top: 0;
     border: none;
     background-color: #fff;
     border-top: 1px solid #bbb;
@@ -636,6 +620,10 @@ body[data-page='conf']::after {
   pointer-events: none;
 
   display: none;
+
+  .progress-bar {
+    display: none;
+  }
 }
 
 .js--interactevents {

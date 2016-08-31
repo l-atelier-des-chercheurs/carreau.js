@@ -12,7 +12,7 @@ var popup = (function() {
         .on('click', function() {
           $(this)
             .closest('.js--textContent')
-              .fadeOut(300, function() { $(this).remove() })
+              .fadeOut(300, function() { $(this).remove(); })
             .end()
             ;
         })
@@ -44,3 +44,12 @@ var popup = (function() {
 
 })();
 popup.init($('.js--popup'));
+
+
+$.extend($.easing,
+{
+    easeInOutQuint: function (x, t, b, c, d) {
+        if ((t/=d/2) < 1) { return c/2*t*t*t*t*t + b; }
+        return c/2*((t-=2)*t*t*t*t + 2) + b;
+    }
+});
