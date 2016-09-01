@@ -197,9 +197,12 @@ function listOneSlide(d) {
         .end()
         ;
 	}
-	if(ext == ''){
-
+	// if extension is some unknown format, let's bail out
+	else{
+    return;
   }
+
+
 
 	var pxWidth = d.width * window.innerWidth;
 
