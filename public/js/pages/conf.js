@@ -60,8 +60,14 @@ function setWebcamEvents() {
 
 function toggleWebcamPopover() {
   $('.js--popover_cameraFeed').toggleClass('is--open');
-  $('body').toggleClass('is--unscrollable');
-  currentStream.startCameraFeed();
+
+  if( $('.js--popover_cameraFeed').hasClass('is--open')) {
+    $('body').addClass('is--unscrollable');
+    currentStream.startCameraFeed();
+  } else {
+    $('body').removeClass('is--unscrollable');
+    currentStream.stopAllFeeds();
+  }
 }
 
 function setDragEvents() {
