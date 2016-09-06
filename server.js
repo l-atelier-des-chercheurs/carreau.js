@@ -1,12 +1,18 @@
 var express = require("express"),
   http    = require('http'),
+  https = require('https'),
   fs = require('fs'),
   io = require('socket.io')
 ;
 
 var app     = express();
-var httpServer = http.createServer(app);
-var io      = require("socket.io").listen(httpServer);
+
+var privateKey  = fs.readFileSync('file.pem', 'utf8');
+var certificate = fs.readFileSync('file.crt', 'utf8');
+
+var credentials = {key: privateKey, cert: certificate};
+var httpsServer = https.createServer(credentials, app);
+var io      = require("socket.io").listen(httpsServer);
 
 var settings  = require('./public/settings');
 var main    = require('./main');
@@ -31,8 +37,8 @@ router(app, io, m);
 * Start the http server at port and IP defined before
 */
 
-httpServer.listen(
+httpsServer.listen(
   app.get("port"), function() {
-    console.log("Server up and running. Go to http://localhost:" + app.get("port"));
+    console.log("Server up and running. Go to https://localhost:" + app.get("port"));
   }
 );

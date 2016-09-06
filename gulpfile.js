@@ -20,7 +20,8 @@ var pluginsScripts = [
   'public/bower_components/scrollmagic/scrollmagic/uncompressed/plugins/debug.addIndicators.js',
   'public/bower_components/interact/dist/interact.js',
   'public/bower_components/scrollmagic/scrollmagic/minified/plugins/animation.gsap.min.js',
-  'public/bower_components/gsap/src/minified/TweenMax.min.js'
+  'public/bower_components/gsap/src/minified/TweenMax.min.js',
+  'public/bower_components/recordrtc/RecordRTC.min.js',
 ];
 var userScripts = [
   'public/js/_global.js'

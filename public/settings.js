@@ -7,12 +7,18 @@ var lang = 'fr';
 if( lang === 'fr') {
   var localize = {
     "lang" : {
-      "folder" : "Dossier",
-      "project" : "Projet",
-      "projects" : "Projets",
-      "capture" : "Prise de vue",
-      "bibli" : "Bibliotheque de médias",
-      "publi" : "Publication",
+      "chooseCameraResolution" : "Sélectionnez la résolution de votre caméra",
+      "audioInputSource" : "source audio&nbsp;:",
+      "audioOutputDestination" : "destination audio&nbsp;:",
+      "videoInputSource" : "source video:",
+
+      "videoStreamCouldntBeStartedTryChangingRes" : "Le flux vidéo n’a pas pu être démarré.\nEssayez de modifier la résolution dans le panneau de droite.",
+      "audioStreamCouldntBeStarted" : "Le flux audio n’a pas pu être démarré.",
+
+      "settings" : "Règlages",
+
+      "openCamera" : "Camera",
+      "closeCamera" : "Fermer"
     }
   };
 } else if( lang === 'en') {
@@ -30,6 +36,10 @@ if( lang === 'fr') {
       "lastMediasAdded" : "Last medias added",
       "listOfPublications" : "List of publications",
 
+      "settings" : "Settings",
+
+      "openCamera" : "Camera",
+      "closeCamera" : "Close"
     }
   };
 }
@@ -40,13 +50,6 @@ var settings = {
   "contentDir" : "conferences",
   "metaFileext" : ".txt",
   "confMetafilename" : "meta",
-
-  "projectPublisFoldername" : "publications",
-  "projectPhotosFoldername" : "01-photos",
-  "projectAnimationsFoldername" : "02-animations",
-  "projectVideosFoldername" : "03-videos",
-  "projectAudiosFoldername" : "04-sons",
-  "projectTextsFoldername" : "05-textes",
 
   "metaDateFormat" : "YYYYMMDD_HHmmss",
   "textEncoding" : "UTF-8",
