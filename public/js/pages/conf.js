@@ -663,7 +663,7 @@ var currentStream = (function(context) {
           resolve( stream);
         },
         function(err) {
-          alert( dodoc.lang.videoStreamCouldntBeStartedTryChangingRes + '\n\n error: ' + JSON.stringify(err));
+          alert( settings.lang.videoStreamCouldntBeStartedTryChangingRes + '\n\n error: ' + JSON.stringify(err));
         }
       );
     });

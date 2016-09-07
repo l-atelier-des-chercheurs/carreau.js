@@ -43,7 +43,6 @@ module.exports = function(app,io,m){
 
       var pageTitle = c.name + ' | carreau.js';
       var confMeta = {
-        "slugConfName": slugConfName,
         "confName": c.name
       };
       if( c.lieu !== undefined)
@@ -55,7 +54,7 @@ module.exports = function(app,io,m){
       if( c.introduction !== undefined)
         confMeta.introduction = c.introduction;
 
-      res.render("conf", {"confMeta" : confMeta, "pageTitle" : pageTitle, "settings" : settings});
+      res.render("conf", {"confMeta" : confMeta, "pageTitle" : pageTitle, "slugConfName" : slugConfName, "settings" : settings});
 //       res.render("conf", confMeta);
 
     });
