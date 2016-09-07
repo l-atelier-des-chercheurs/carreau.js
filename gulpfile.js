@@ -27,7 +27,7 @@ var userScripts = [
   'public/js/_global.js'
 ];
 
-var localDevUrl = 'http://localhost:8080/';
+var localDevUrl = 'https://localhost:8080/';
 
 
 
