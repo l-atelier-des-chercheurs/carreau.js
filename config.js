@@ -13,4 +13,5 @@ module.exports = function(app,express){
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use(favicon(__dirname + '/public/images/favicon.ico'));
+  app.locals.pretty = true;
 }

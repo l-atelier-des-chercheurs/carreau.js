@@ -31,8 +31,8 @@ module.exports = function(app,io,m){
 
   // GET
   function getIndex(req, res) {
-    var pageTitle = "carreau.js";
     // console.log(req);
+    var pageTitle = "carreau.js";
     res.render("index", {"pageTitle" : pageTitle, "settings" : settings});
   };
 
@@ -40,9 +40,9 @@ module.exports = function(app,io,m){
     var slugConfName = req.param('conf');
     readConfMeta(slugConfName).then(function(c) {
       dev.logverbose('meta conf gotten. Sending back conf to client');
+
+      var pageTitle = c.name + ' | carreau.js';
       var confMeta = {
-        "pageTitle" : c.name + ' | carreau.js',
-        "slugConfName": slugConfName,
         "confName": c.name
       };
       if( c.lieu !== undefined)
@@ -53,7 +53,10 @@ module.exports = function(app,io,m){
         confMeta.auteur = c.auteur;
       if( c.introduction !== undefined)
         confMeta.introduction = c.introduction;
-      res.render("conf", confMeta);
+
+      res.render("conf", {"confMeta" : confMeta, "pageTitle" : pageTitle, "slugConfName" : slugConfName, "settings" : settings});
+//       res.render("conf", confMeta);
+
     });
   };
 

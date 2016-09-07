@@ -7,29 +7,32 @@ var lang = 'fr';
 if( lang === 'fr') {
   var localize = {
     "lang" : {
-      "folder" : "Dossier",
-      "project" : "Projet",
-      "projects" : "Projets",
-      "capture" : "Prise de vue",
-      "bibli" : "Bibliotheque de médias",
-      "publi" : "Publication",
+      "chooseCameraResolution" : "Résolution de votre&nbsp;caméra&nbsp;:",
+      "audioInputSource" : "Source audio&nbsp;:",
+      "audioOutputDestination" : "Destination audio&nbsp;:",
+      "videoInputSource" : "Source video&nbsp;:",
+
+      "videoStreamCouldntBeStartedTryChangingRes" : "Le flux vidéo n’a pas pu être démarré.\nEssayez de modifier la résolution dans le panneau de droite.",
+      "audioStreamCouldntBeStarted" : "Le flux audio n’a pas pu être démarré.",
+
+      "settings" : "Règlages",
+
+      "openCamera" : "Camera",
+      "closeCamera" : "Fermer"
     }
   };
 } else if( lang === 'en') {
   var localize = {
     "lang" : {
-      "folder" : "Folder",
-      "project" : "Project",
-      "projects" : "Projects",
-      "capture" : "Media capture",
-      "bibli" : "Media library",
-      "publi" : "Publication",
+      "chooseCameraResolution" : "Choose camera's resolution:",
+      "audioInputSource" : "audio source:",
+      "audioOutputDestination" : "audio output:",
+      "videoInputSource" : "video source:",
 
-      "remove" : "Remove",
+      "settings" : "Settings",
 
-      "lastMediasAdded" : "Last medias added",
-      "listOfPublications" : "List of publications",
-
+      "openCamera" : "Camera",
+      "closeCamera" : "Close"
     }
   };
 }
@@ -40,13 +43,6 @@ var settings = {
   "contentDir" : "conferences",
   "metaFileext" : ".txt",
   "confMetafilename" : "meta",
-
-  "projectPublisFoldername" : "publications",
-  "projectPhotosFoldername" : "01-photos",
-  "projectAnimationsFoldername" : "02-animations",
-  "projectVideosFoldername" : "03-videos",
-  "projectAudiosFoldername" : "04-sons",
-  "projectTextsFoldername" : "05-textes",
 
   "metaDateFormat" : "YYYYMMDD_HHmmss",
   "textEncoding" : "UTF-8",
