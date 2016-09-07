@@ -7,10 +7,10 @@ var lang = 'fr';
 if( lang === 'fr') {
   var localize = {
     "lang" : {
-      "chooseCameraResolution" : "Sélectionnez la résolution de votre caméra",
-      "audioInputSource" : "source audio&nbsp;:",
-      "audioOutputDestination" : "destination audio&nbsp;:",
-      "videoInputSource" : "source video:",
+      "chooseCameraResolution" : "Résolution de votre&nbsp;caméra&nbsp;:",
+      "audioInputSource" : "Source audio&nbsp;:",
+      "audioOutputDestination" : "Destination audio&nbsp;:",
+      "videoInputSource" : "Source video&nbsp;:",
 
       "videoStreamCouldntBeStartedTryChangingRes" : "Le flux vidéo n’a pas pu être démarré.\nEssayez de modifier la résolution dans le panneau de droite.",
       "audioStreamCouldntBeStarted" : "Le flux audio n’a pas pu être démarré.",
@@ -24,17 +24,10 @@ if( lang === 'fr') {
 } else if( lang === 'en') {
   var localize = {
     "lang" : {
-      "folder" : "Folder",
-      "project" : "Project",
-      "projects" : "Projects",
-      "capture" : "Media capture",
-      "bibli" : "Media library",
-      "publi" : "Publication",
-
-      "remove" : "Remove",
-
-      "lastMediasAdded" : "Last medias added",
-      "listOfPublications" : "List of publications",
+      "chooseCameraResolution" : "Choose camera's resolution:",
+      "audioInputSource" : "audio source:",
+      "audioOutputDestination" : "audio output:",
+      "videoInputSource" : "video source:",
 
       "settings" : "Settings",
 

@@ -499,6 +499,7 @@ function initInteractForSlide(s) {
 var currentStream = (function(context) {
   // using https://github.com/webrtc/samples/blob/gh-pages/src/content/devices/input-output/js/main.js
   // to select audio/video source
+  var $videoPopover = $('.js--popover_cameraFeed');
   var $settingsPane = $('.js--popover_cameraFeed_settingsPane');
   var $settingsButton = $('.js--toggleCameraSettings');
 
@@ -704,13 +705,22 @@ var currentStream = (function(context) {
 
       $(document)
         .on( 'toggle_settings_pane', function() {
-          $settingsPane.toggleClass('is--open');
-        })
-        .on( 'open_settings_pane', function() {
-          $settingsPane.addClass('is--open');
-        })
-        .on( 'close_settings_pane', function() {
-          $settingsPane.removeClass('is--open');
+          // si le menu des réglages est masqué en bas de page
+          if( $settingsPane.offset().top >= $(window).innerHeight() - 50) {
+
+            debugger;
+            $($videoPopover).animate(
+              {scrollTop: $settingsPane.outerHeight()},
+              600,
+              $.easing.easeInOutQuint
+            );
+          } else {
+            $($videoPopover).animate(
+              {scrollTop: 0},
+              600,
+              $.easing.easeInOutQuint
+            );          }
+
         })
         ;
 

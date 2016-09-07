@@ -429,6 +429,9 @@ a:hover {
 ul {
   margin: 0; }
 
+fieldset {
+  border: 1px solid #fff; }
+
 img, video, audio, svg {
   display: block;
   min-width: 100%;
@@ -834,17 +837,33 @@ body[data-page='conf']::after {
     .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow {
       position: relative;
       z-index: 5;
-      background-color: #fff;
-      max-width: 400px;
+      max-width: 280px;
       margin: 0 auto;
       margin-right: 0;
-      padding: 40px; }
+      padding: 20px;
+      border-radius: 5px 0 0 0;
+      background-color: #0A997F;
+      color: white;
+      font-size: 80%;
+      font-weight: 300; }
+      .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .btn_openSettings {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        padding: 10px;
+        margin: 0;
+        background-color: #0A997F;
+        border-radius: 5px 0 0 0; }
       .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .selectField {
         display: block;
         width: 100%;
         margin-bottom: 10px; }
         .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .selectField label {
-          margin-right: 20px; }
+          margin-right: 20px;
+          margin-bottom: 10px;
+          display: block; }
+      .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioSource, .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioOutput {
+        display: none; }
       .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector {
         margin-top: 20px; }
         .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector fieldset {
@@ -852,7 +871,12 @@ body[data-page='conf']::after {
           padding: 15px;
           border-radius: 5px; }
         .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector input {
-          margin: 0; }
+          margin: 0;
+          margin-right: 10px; }
+        .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector label {
+          letter-spacing: .3px; }
+        .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector input:checked + label {
+          font-weight: 600; }
 
 .js--interactevents {
   background-color: #f9f9f9; }

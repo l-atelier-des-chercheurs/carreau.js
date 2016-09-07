@@ -131,6 +131,10 @@ ul {
   margin: 0;
 }
 
+fieldset {
+  border: 1px solid #fff;
+}
+
 img, video, audio, svg {
 	display: block;
 	min-width: 100%;
@@ -660,12 +664,26 @@ body[data-page='conf']::after {
     .feedSettings--scrollWindow {
       position: relative;
       z-index:  5;
-      background-color: #fff;
-      max-width: 400px;
+      max-width: 280px;
       margin: 0 auto;
       margin-right: 0;
-      padding: 40px;
+      padding: 20px;
+      border-radius: 5px 0 0 0;
 
+      background-color: #0A997F;
+      color: white;
+      font-size:  80%;
+      font-weight: 300;
+
+      .btn_openSettings {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        padding: 10px;
+        margin: 0;
+        background-color: #0A997F;
+        border-radius: 5px 0 0 0;
+      }
       .sourceSelector {
         .selectField {
           display: block;
@@ -674,8 +692,17 @@ body[data-page='conf']::after {
 
           label {
             margin-right: 20px;
+            margin-bottom: 10px;
+            display: block;
           }
         }
+
+
+        // not using sound sources for now
+        .audioSource, .audioOutput {
+          display: none;
+        }
+
       }
 
       .resolutionSelector {
@@ -689,6 +716,15 @@ body[data-page='conf']::after {
 
         input {
           margin: 0;
+          margin-right: 10px;
+        }
+
+        label {
+          letter-spacing: .3px;
+        }
+
+        input:checked + label {
+          font-weight:  600;
         }
       }
     }

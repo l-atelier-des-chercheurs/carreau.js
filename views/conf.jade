@@ -32,6 +32,8 @@ html
       .cameraFeed
         video.js--videoFeed
       .feedSettings--scrollWindow.js--popover_cameraFeed_settingsPane
+        a.btn.btn_openSettings.js--toggleCameraSettings
+          | !{settings.lang.settings}
         form.sourceSelector
           .selectField.audioSource
             label(for="audioSource")
