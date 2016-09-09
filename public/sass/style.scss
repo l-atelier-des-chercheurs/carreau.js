@@ -512,7 +512,8 @@ body[data-page='conf']::after {
   pointer-events: none;
   background-color: transparent;
 
-  transition: background-color .3s ease, opacity .3s;
+  // that delay for opacity is made to increase responsivity when pinning a slide
+  transition: background-color .3s ease, opacity .3s .3s;
 
   .slide--item {
     position: absolute;
@@ -620,11 +621,11 @@ body[data-page='conf']::after {
 
 
 
-  &.is--pinned .slide--item {
+  &.is--pinned > .slide--item {
     position: fixed;
   }
 
-  .is--far > & {
+  &.is--far > .slide--item {
     opacity: 0;
   }
 
