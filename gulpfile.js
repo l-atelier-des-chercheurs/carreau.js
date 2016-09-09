@@ -16,14 +16,12 @@ var pluginsScripts = [
   'public/bower_components/moment/min/moment-with-locales.js',
   'public/bower_components/jquery/dist/jquery.min.js',
   'public/bower_components/store-js/store.min.js',
-  'public/bower_components/scrollmagic/scrollmagic/uncompressed/ScrollMagic.js',
-  'public/bower_components/scrollmagic/scrollmagic/uncompressed/plugins/debug.addIndicators.js',
   'public/bower_components/interact/dist/interact.js',
-  'public/bower_components/scrollmagic/scrollmagic/minified/plugins/animation.gsap.min.js',
-  'public/bower_components/gsap/src/minified/TweenMax.min.js',
   'public/bower_components/recordrtc/RecordRTC.min.js',
 ];
 var userScripts = [
+  'public/js/_fixedSlideEngine.js',
+  'public/js/_currentStream.js',
   'public/js/_global.js'
 ];
 
@@ -67,10 +65,20 @@ gulp.task('lint', function() {
 // Concatenate JS plugin
 gulp.task('script-plugins', function() {
   return gulp.src(pluginsScripts)
-    .pipe(concat('_plugins.js'))
-    .pipe(gulp.dest('public/js'))
+    .pipe(concat('plugins.js'))
+    .pipe(gulp.dest('public/production/js'))
     .pipe(browserSync.stream());
 });
+
+// Concatenate user scripts and minify them.
+gulp.task('scripts', ['script-plugins'], function (done) {
+  return gulp.src(userScripts)
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest('public/production/js'))
+    .pipe(browserSync.stream());
+});
+
+
 
 
 // Live reload sync on every screen connect to localhost
@@ -90,9 +98,9 @@ gulp.task('dev-watch-sync', ['init-live-reload', 'watch']);
 
 // Watch Files For Changes
 gulp.task('watch', function() {
-  gulp.watch( userScripts, ['lint', 'script-plugins']);
+  gulp.watch( userScripts, ['lint', 'script-plugins', 'scripts']);
   gulp.watch('public/sass/*.scss', ['sass', 'css']);
 });
 
 // Default Task
-gulp.task('default', ['sass', 'css', 'lint', 'script-plugins', 'watch']);
+gulp.task('default', ['sass', 'css', 'lint', 'script-plugins', 'scripts', 'watch']);

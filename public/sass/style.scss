@@ -512,10 +512,13 @@ body[data-page='conf']::after {
   pointer-events: none;
   background-color: transparent;
 
-  transition: background-color .3s ease, opacity .3s;
+  // that delay for opacity is made to increase responsivity when pinning a slide
+  transition: background-color .3s ease, opacity .3s .3s;
 
   .slide--item {
     position: absolute;
+    top: 0;
+    left: 0;
     pointer-events: auto;
 //     padding: 10px;
 //  problématique (marge sur les côtés)
@@ -615,7 +618,14 @@ body[data-page='conf']::after {
   &.is--dragged {
     background-color: fade-out(#0A997F,0.70);
   }
-  .is--far > & {
+
+
+
+  &.is--pinned > .slide--item {
+    position: fixed;
+  }
+
+  &.is--far > .slide--item {
     opacity: 0;
   }
 
