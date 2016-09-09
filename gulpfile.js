@@ -20,7 +20,7 @@ var pluginsScripts = [
   'public/bower_components/recordrtc/RecordRTC.min.js',
 ];
 var userScripts = [
-  'public/js/_fse.js',
+  'public/js/_fixedSlideEngine.js',
   'public/js/_currentStream.js',
   'public/js/_global.js'
 ];

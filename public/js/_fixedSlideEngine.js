@@ -9,8 +9,6 @@ var setFixedForSlides = (function() {
                window.oRequestAnimationFrame ||
                function(callback){ window.setTimeout(callback, 1000/60); };
 
-  var pxThreshold = 0;
-
   var isRunning = false;
   var slidesData = [];
 
@@ -44,20 +42,23 @@ var setFixedForSlides = (function() {
         scroll(loop);
         return false;
     } else {
+      var scrollSpeed = window.pageYOffset - lastPosition;
       lastPosition = window.pageYOffset;
-    }
+      console.log('scrollSpeed : ' + scrollSpeed);
 
-    for (i =0; i<slidesData.length; i++){
-      if(window.pageYOffset >= slidesData[i].bounds.top) {
-        debugger;
-        fixThisSlide(slidesData[i]);
-      } else {
-        unfixThisSlide(slidesData[i]);
+      for (i =0; i<slidesData.length; i++){
+        // position actuelle du scroll + vitesse actuelle = position anticipée à l'instant suivant
+        if(window.pageYOffset+scrollSpeed >= slidesData[i].bounds.top) {
+          fixThisSlide(slidesData[i]);
+        } else {
+          unfixThisSlide(slidesData[i]);
+        }
+      }
+      if(isRunning) {
+        scroll(loop);
       }
     }
-    if(isRunning) {
-      scroll(loop);
-    }
+
   }
 
   return {
