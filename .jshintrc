@@ -12,6 +12,7 @@
 	"quotmark":  "single",
 	"sub":       true,
 	"trailing":  false,
+	"laxcomma":  true,
 	"unused":    "vars",
 	"globals": {
 		"module":     true,

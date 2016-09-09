@@ -20,6 +20,8 @@ var pluginsScripts = [
   'public/bower_components/recordrtc/RecordRTC.min.js',
 ];
 var userScripts = [
+  'public/js/_fse.js',
+  'public/js/_currentStream.js',
   'public/js/_global.js'
 ];
 
@@ -63,10 +65,20 @@ gulp.task('lint', function() {
 // Concatenate JS plugin
 gulp.task('script-plugins', function() {
   return gulp.src(pluginsScripts)
-    .pipe(concat('_plugins.js'))
-    .pipe(gulp.dest('public/js'))
+    .pipe(concat('plugins.js'))
+    .pipe(gulp.dest('public/production/js'))
     .pipe(browserSync.stream());
 });
+
+// Concatenate user scripts and minify them.
+gulp.task('scripts', ['script-plugins'], function (done) {
+  return gulp.src(userScripts)
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest('public/production/js'))
+    .pipe(browserSync.stream());
+});
+
+
 
 
 // Live reload sync on every screen connect to localhost
@@ -86,9 +98,9 @@ gulp.task('dev-watch-sync', ['init-live-reload', 'watch']);
 
 // Watch Files For Changes
 gulp.task('watch', function() {
-  gulp.watch( userScripts, ['lint', 'script-plugins']);
+  gulp.watch( userScripts, ['lint', 'script-plugins', 'scripts']);
   gulp.watch('public/sass/*.scss', ['sass', 'css']);
 });
 
 // Default Task
-gulp.task('default', ['sass', 'css', 'lint', 'script-plugins', 'watch']);
+gulp.task('default', ['sass', 'css', 'lint', 'script-plugins', 'scripts', 'watch']);

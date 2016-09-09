@@ -738,6 +738,8 @@ body[data-page='conf']::after {
   transition: background-color .3s ease, opacity .3s; }
   .slide .slide--item {
     position: absolute;
+    top: 0;
+    left: 0;
     pointer-events: auto;
     background-color: transparent; }
     .slide .slide--item_iframe {
@@ -804,6 +806,8 @@ body[data-page='conf']::after {
     box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.5); }
   .slide.is--dragged {
     background-color: rgba(10, 153, 127, 0.3); }
+  .slide.is--pinned .slide--item {
+    position: fixed; }
   .is--far > .slide {
     opacity: 0; }
 

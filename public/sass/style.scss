@@ -516,6 +516,8 @@ body[data-page='conf']::after {
 
   .slide--item {
     position: absolute;
+    top: 0;
+    left: 0;
     pointer-events: auto;
 //     padding: 10px;
 //  problématique (marge sur les côtés)
@@ -615,6 +617,13 @@ body[data-page='conf']::after {
   &.is--dragged {
     background-color: fade-out(#0A997F,0.70);
   }
+
+
+
+  &.is--pinned .slide--item {
+    position: fixed;
+  }
+
   .is--far > & {
     opacity: 0;
   }

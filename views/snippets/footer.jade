@@ -4,7 +4,7 @@ script(src='/socket.io/socket.io.js')
 script
   | var app = {};
   | app.slugConfName = "#{slugConfName}";
-script( src='/js/_plugins.js')
+script( src='/production/js/plugins.js')
 script moment.locale("#{settings.codelang}");
 script( src='/settings.js')
-script( src='/js/_global.js')
+script( src='/production/js/main.js')
