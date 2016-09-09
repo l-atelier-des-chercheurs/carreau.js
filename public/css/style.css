@@ -808,7 +808,7 @@ body[data-page='conf']::after {
     background-color: rgba(10, 153, 127, 0.3); }
   .slide.is--pinned > .slide--item {
     position: fixed; }
-  .slide.is--far > .slide--item {
+  .slide.is--far {
     opacity: 0; }
 
 .module-popover {

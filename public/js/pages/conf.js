@@ -33,9 +33,7 @@ jQuery(document).ready(function($) {
 function init(){
 
 	socket.emit('listSlides', { "slugConfName" : app.slugConfName});
-
 	setDragEvents();
-
   setWebcamEvents();
 
 }

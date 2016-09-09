@@ -12,9 +12,7 @@ var browserSync  = require('browser-sync').create();
 
 var pluginsScripts = [
   'public/bower_components/jquery/dist/jquery.js',
-  'public/bower_components/bootstrap/dist/js/bootstrap.js',
   'public/bower_components/moment/min/moment-with-locales.js',
-  'public/bower_components/jquery/dist/jquery.min.js',
   'public/bower_components/store-js/store.min.js',
   'public/bower_components/interact/dist/interact.js',
   'public/bower_components/recordrtc/RecordRTC.min.js',

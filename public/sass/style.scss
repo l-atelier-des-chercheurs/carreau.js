@@ -625,7 +625,7 @@ body[data-page='conf']::after {
     position: fixed;
   }
 
-  &.is--far > .slide--item {
+  &.is--far {
     opacity: 0;
   }
 
