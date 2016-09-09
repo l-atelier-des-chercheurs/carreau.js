@@ -649,9 +649,10 @@ var currentStream = (function(context) {
       }
     };
 
-    // restart the feed (should be cleaner but since we don't need audio...)
-    currentStream.startCameraFeed();
-
+    // restart the feed if the videoElement is playing
+    if(!videoElement.paused) {
+      currentStream.startCameraFeed();
+    }
   }
 
   function getCameraFeed() {
