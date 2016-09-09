@@ -38,7 +38,6 @@ function init(){
 
   setWebcamEvents();
 
-
 }
 
 
@@ -132,7 +131,7 @@ function onListAllSlides(d) {
   $allNewSlides.each(function(i) {
     $mediaItem = $(this);
     $('.slides-list').append($mediaItem);
-    setSceneForSlide($mediaItem[0]);
+    setFixedForSlide($mediaItem[0]);
     initInteractForSlide({
       'slide' : $mediaItem.find('.js--interactevents')[0],
       'preserveRatio' : $mediaItem.data('preserveRatio')
@@ -324,6 +323,13 @@ var controller = new ScrollMagic.Controller({
 });
 
 // get all slides
+function setFixedForSlide(s) {
+
+
+
+}
+
+
 
 function setSceneForSlide(s) {
 	var thisScene = new ScrollMagic.Scene({
