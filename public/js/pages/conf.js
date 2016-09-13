@@ -36,6 +36,9 @@ function init(){
 	setDragEvents();
   setWebcamEvents();
 
+  window.slideSize = { "width" : window.innerHeight, "height" : window.innerHeight * 0.5625 };
+
+
 }
 
 
@@ -127,7 +130,7 @@ function onListAllSlides(d) {
   // adding new slides to dom
   var firstSlidePosY;
   $allNewSlides.each(function(i) {
-    $mediaItem = $(this);
+    var $mediaItem = $(this);
     $('.slides-list').append($mediaItem);
     initInteractForSlide({
       'slide' : $mediaItem.find('.js--interactevents')[0],
@@ -136,6 +139,11 @@ function onListAllSlides(d) {
     if(i === 0) {
       firstSlidePosY = $mediaItem.offset().top;
     }
+  });
+
+  // init all slides content position according to their own data
+  $allNewSlides.each(function(i) {
+    updateSlideContentPosition($(this));
   });
 
   // init all slides position and scroll effect
@@ -241,32 +249,9 @@ function listOneSlide(d) {
     return;
   }
 
-
-
-	var pxWidth = d.width * window.innerWidth;
-
-	var pxHeight;
-	if(preserveRatio)
-	  pxHeight = pxWidth * d.ratio;
-	 else {
-    var desiredHeight = (d.height === undefined) ? d.width : d.height;
-	  pxHeight = desiredHeight * 0.5625 * window.innerWidth;
-	}
-  var posX = d.posX * window.innerWidth;
-  var posY = d.posY * window.innerHeight;
 	mediaItem
 	  .attr('data-fileName', d.metaName)
-	  .find('.slide--item')
-    	  .css({
-    	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
-    	  	'width': pxWidth,
-    	  	'height': pxHeight,
-    	  	'display':'block'
-    	  })
-    	  .attr('data-x', posX)
-    	  .attr('data-y', posY)
-    .end()
-    .data('preserveRatio', preserveRatio)
+	  .data(d)
     ;
   return mediaItem;
 }
@@ -311,6 +296,47 @@ function uploadFormData(formData) {
   });
 
 }
+
+/***************************************************************************
+                  Slide content position and size logic
+***************************************************************************/
+
+function updateSlideContentPosition($s) {
+
+  var d = $s.data();
+
+	var pxWidth = d.width * window.innerWidth;
+
+
+	var pxHeight;
+	if(d.preserveRatio)
+	  pxHeight = pxWidth * d.ratio;
+	 else {
+    var desiredHeight = (d.height === undefined) ? d.width : d.height;
+	  pxHeight = desiredHeight * 0.5625 * window.innerWidth;
+	}
+  var posX = d.posX * window.innerWidth;
+  var posY = d.posY * window.innerHeight;
+
+  return $s
+	  .attr('data-fileName', d.metaName)
+	  .find('.slide--item')
+    	  .css({
+    	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
+    	  	'width': pxWidth,
+    	  	'height': pxHeight,
+    	  	'display':'block'
+    	  })
+    	  .attr('data-x', posX)
+    	  .attr('data-y', posY)
+    .end()
+    ;
+
+
+}
+
+
+
 
 /***************************************************************************
                   Interactjs logic (dragging slides objects, etc.)
