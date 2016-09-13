@@ -1,10 +1,10 @@
 {
-  "name": "dodoc",
-  "version": "0.8.2",
-  "description": "Dodoc is a documentation tool for children",
+  "name": "carreau.js",
+  "version": "0.2",
+  "description": "Carreau.js is a presentation tool in the browser.",
   "repository": {
     "type": "git",
-    "url": "git://github.com//sarahgarcin/opendoc-tangible.git"
+    "url": "git://github.com/louis-ev/carreau.js/"
   },
   "dependencies": {
     "body-parser": "^1.15.0",
