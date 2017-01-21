@@ -7,7 +7,7 @@
 /* VARIABLES */
 var socket = io.connect();
 var zIndex = 0;
-
+var $allSlides = $();
 
 /* sockets */
 socket.on('connect', onSocketConnect);
@@ -24,11 +24,32 @@ function onSocketError(reason) {
 
 
 socket.on('listAllSlides', onListAllSlides);
+socket.on('updateOneSlide', onUpdateOneSlide);
+
+
+
+
+
+
+
+/***
+  ---
+***/
 
 jQuery(document).ready(function($) {
 	init();
 });
 
+var resizeTimer;
+
+$(window).on('resize', function(e) {
+
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    console.log('event: resize end');
+    repositionSlides($('.slides-list .slide'));
+  }, 250);
+});
 
 function init(){
 
@@ -147,7 +168,7 @@ function onListAllSlides(d) {
   });
 
   // init all slides position and scroll effect
-  var $allSlides = $('.slides-list .js--fixedslide');
+  $allSlides = $('.slides-list .slide');
   setFixedForSlides.init($allSlides);
 
   // if we just sent a few medias/websites
@@ -161,9 +182,34 @@ function onListAllSlides(d) {
   }
 }
 
-function onListOneSlide(d) {
-  console.log('Listing all slides');
-  listOneSlide(d);
+
+function onUpdateOneSlide(d) {
+
+  // find the slide in
+  var $thisSlide = $allSlides.filter(function() {
+    return $(this).data('name') === d.name;
+  });
+
+  $thisSlide
+    .data(d)
+    ;
+
+  updateSlideContentPosition( $thisSlide);
+}
+
+
+
+
+
+
+
+
+
+
+function repositionSlides($s) {
+  $s.each(function(i) {
+    updateSlideContentPosition($(this));
+  });
 }
 
 function listOneSlide(d) {

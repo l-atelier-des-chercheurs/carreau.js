@@ -4,7 +4,7 @@
   "description": "Carreau.js is a presentation tool in the browser.",
   "repository": {
     "type": "git",
-    "url": "git://github.com/louis-ev/carreau.js/"
+    "url": "git://github.com/l-atelier-des-chercheurs/carreau.js/"
   },
   "dependencies": {
     "body-parser": "^1.15.0",

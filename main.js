@@ -90,7 +90,9 @@ module.exports = function main(app, io){
     mediaMeta.posX = Math.max(slidePos.posX,0);
     mediaMeta.posY = slidePos.posY;
     updateMediaMeta(slidePos.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
-//      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
+      sendEventWithContent( 'updateOneSlide', mediaNewMeta);
+    }, function(error) {
+      console.error("Failed to update media meta! Error: ", error);
     });
   }
 
@@ -101,7 +103,9 @@ module.exports = function main(app, io){
     if(!mediaMeta.hasOwnProperty('ratio'))
       mediaMeta.height = slideWidth.height;
     updateMediaMeta(slideWidth.slugConfName, slideNameWE, mediaMeta).then(function(mediaNewMeta) {
-//      sendEventWithContent( 'listAllSlides', confSlidesData, socket);
+      sendEventWithContent( 'updateOneSlide', mediaNewMeta);
+    }, function(error) {
+      console.error("Failed to update media meta! Error: ", error);
     });
   }
 
@@ -136,7 +140,7 @@ module.exports = function main(app, io){
               "created" : currentDateString,
             };
           storeData( getMetaFileOfFolder(confPath), fmeta, "create").then(function( meta) {
-          	console.log('sucess ' + meta)
+            	console.log('sucess ' + meta)
             resolve( meta);
           }, function(err) {
             console.log( gutil.colors.red('--> Couldn\'t create conf meta.'));
@@ -237,13 +241,13 @@ module.exports = function main(app, io){
       var textd = textifyObj(d);
       if( e === "create") {
         fs.appendFile( mpath, textd, function(err) {
-          if (err) reject( err);
+          if (err) { console.log('Failed to create new meta file'); reject( err); }
           resolve(parseData(textd));
         });
       }
-  	  if( e === "update") {
+    	  if( e === "update") {
         fs.writeFile( mpath, textd, function(err) {
-          if (err) reject( err);
+          if (err) { console.log('Failed to update new meta file'); reject( err); }
           resolve(parseData(textd));
         });
       }
@@ -336,10 +340,11 @@ module.exports = function main(app, io){
 
   function updateMediaMeta( slugConfName, fileNameWithoutExtension, newMediaMeta) {
     return new Promise(function(resolve, reject) {
-    	dev.logfunction( "COMMON — updateMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
-    	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+      	dev.logfunction( "COMMON — updateMediaMeta : slugConfName = " + slugConfName + " fileNameWithoutExtension = " + fileNameWithoutExtension);
+      	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
       var mediaMetaPath = path.join(confPath, fileNameWithoutExtension + settings.metaFileext);
       storeData( mediaMetaPath, newMediaMeta, 'update').then(function( meta) {
+        console.log('just stored new media meta');
         resolve(meta);
       }, function(err) {
         console.log( gutil.colors.red('--> Couldn\'t update media meta.'));

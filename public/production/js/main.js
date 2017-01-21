@@ -74,8 +74,8 @@ var setFixedForSlides = (function() {
             if(olderSlideToHide >= 0) { farThisSlide(slidesData[olderSlideToHide]); }
           }
         } else {
-          var successFixSlide = unfixThisSlide(slidesData[i]);
-          if(successFixSlide) {
+          var successUnFixSlide = unfixThisSlide(slidesData[i]);
+          if(successUnFixSlide) {
             var olderSlideToShow = i - slideLifetime;
             if(olderSlideToShow >= 0) { unfarThisSlide(slidesData[olderSlideToShow]); }
           }
