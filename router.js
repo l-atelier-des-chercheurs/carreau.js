@@ -1,19 +1,19 @@
-var _ = require('underscore');
-var url = require('url')
-var fs = require('fs-extra');
-var path = require('path');
-var fs = require('fs-extra');
-var settings  = require('./public/settings'),
+const
+  path = require('path'),
+  fs = require('fs-extra');
 	moment = require('moment'),
-  merge = require('merge'),
   parsedown = require('woods-parsedown'),
   formidable = require('formidable'),
-  main = require('./main'),
-	flags = require('flags'),
   gutil = require('gulp-util'),
   sizeOf = require('image-size'),
   mm = require('marky-mark'),
   slugg = require('slugg')
+;
+
+const
+  settings = require('./settings'),
+  main = require('./sockets'),
+  dev = require('./bin/dev-log')
 ;
 
 module.exports = function(app,io,m){
@@ -37,6 +37,7 @@ module.exports = function(app,io,m){
   };
 
   function getConf(req, res) {
+    dev.logverbose('getConf');
     var slugConfName = req.param('conf');
     readConfMeta(slugConfName).then(function(c) {
       dev.logverbose('meta conf gotten. Sending back conf to client');
@@ -71,7 +72,7 @@ module.exports = function(app,io,m){
     form.multiples = false;
 
     // store all uploads in the conf directory
-    form.uploadDir = path.join(__dirname, settings.contentDir, slugConfName);
+    form.uploadDir = path.join(__dirname, settings.contentDirname, slugConfName);
 
     var allFilesMeta = [];
     var allIframeMeta = [];
@@ -319,7 +320,7 @@ module.exports = function(app,io,m){
 
   function readConfMeta( slugConfName) {
     return new Promise(function(resolve, reject) {
-  		dev.logfunction( "COMMON — readConfMeta");
+  		dev.logfunction( "COMMON — readConfMeta: " + slugConfName);
   		var metaConfPath = getMetaFileOfConf(slugConfName);
   		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
   		var folderMetadata = parseData( folderData);
@@ -336,7 +337,7 @@ module.exports = function(app,io,m){
   }
 
   function getMetaFileOfConf( slugConfName) {
-    	var confPath = path.join(__dirname, settings.contentDir, slugConfName);
+    	var confPath = path.join(__dirname, settings.contentDirname, slugConfName);
     	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
     return metaPath;
   }
@@ -373,48 +374,4 @@ module.exports = function(app,io,m){
       resolve(newFileName);
     });
   }
-
-
 };
-
-
-global.dev = (function() {
-  // VARIABLES
-  flags.defineBoolean('debug');
-  flags.defineBoolean('verbose');
-  flags.parse();
-
-  var isDebugMode = flags.get('debug');
-  var isVerbose = flags.get('verbose');
-
-  return {
-    init : function() {
-      if(isDebugMode) {
-        console.log('Debug mode is Enabled');
-        console.log('---');
-        dev.log('all functions are prepended with ~ ');
-        dev.logpackets('(dev mode) green for sent packets');
-        if(isVerbose) {
-          dev.logverbose('(dev and verbose) gray for regular parsing data');
-        }
-      }
-    },
-    log : function(term) {
-      if( isDebugMode)
-        console.log(gutil.colors.blue('- ' + term));
-    },
-    logverbose : function(term) {
-      if( isDebugMode && isVerbose)
-        console.log(gutil.colors.gray('- ' + term));
-    },
-    logpackets : function(term) {
-      if( isDebugMode)
-        console.log(gutil.colors.green('- ' + term));
-    },
-    logfunction : function(term) {
-      if( isDebugMode)
-        console.info(gutil.colors.magenta('~ ' + term))
-    }
-  }
-})();
-dev.init();

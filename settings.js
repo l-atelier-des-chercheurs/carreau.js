@@ -40,7 +40,7 @@ if( lang === 'fr') {
 var settings = {
 
   "codelang" : lang,
-  "contentDir" : "conferences",
+  "contentDirname" : "conferences",
   "metaFileext" : ".txt",
   "confMetafilename" : "meta",
 

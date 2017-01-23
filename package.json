@@ -1,15 +1,27 @@
 {
   "name": "carreau.js",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Carreau.js is a presentation tool in the browser.",
+  "author": "L’Atelier des Chercheurs <http://latelier-des-chercheurs.fr/>",
+  "homepage": "https://github.com/l-atelier-des-chercheurs/carreau.js#readme",
+  "main": "main.js",
+  "license": "CC-BY-NC-SA-4.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/l-atelier-des-chercheurs/carreau.js/"
   },
+  "bugs": {
+    "url": "https://github.com/l-atelier-des-chercheurs/carreau.js/issues"
+  },
+  "scripts": {
+    "start": "electron main",
+    "debug": "electron main --debug --verbose"
+  },
   "dependencies": {
     "body-parser": "^1.15.0",
-    "connect-multiparty": "^2.0.0",
     "download": "^3.3.0",
+    "electron-log": "^1.3.0",
     "express": "3.1.0",
     "flags": "^0.1.3",
     "formidable": "^1.0.17",
@@ -20,22 +32,18 @@
     "i18n": "^0.5.0",
     "image-size": "^0.5.0",
     "jade": "^1.11.0",
-    "markdown-it": "^6.0.1",
-    "markdown-parse": "^0.2.1",
     "marky-mark": "^1.2.1",
     "merge": "^1.2.0",
     "moment": "^2.12.0",
+    "node-localstorage": "^1.3.0",
     "serve-favicon": "^2.3.0",
     "slugg": "^1.0.0",
     "socket.io": "^1.3.5",
-    "socketio-file-upload": "^0.4.4",
-    "sprintf-js": "*",
-    "thumbbot": "^0.4.1",
-    "underscore": "*",
     "woods-parsedown": "git://github.com/louis-ev/woods-parsedown.git#master"
   },
   "devDependencies": {
     "browser-sync": "^2.14.0",
+    "electron-prebuilt": "^1.4.13",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
     "gulp-jshint": "^2.0.1",
