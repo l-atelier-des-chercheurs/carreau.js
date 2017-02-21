@@ -7,28 +7,7 @@
 var currentStream = (function() {
   // using https://github.com/webrtc/samples/blob/gh-pages/src/content/devices/input-output/js/main.js
   // to select audio/video source
-  var $videoPopover = $('.js--popover_cameraFeed');
-  var $settingsPane = $('.js--popover_cameraFeed_settingsPane');
-  var $settingsButton = $('.js--toggleCameraSettings');
-
-  var videoElement = document.querySelector('.js--videoFeed');
-  var videoStream, audioStream;
-
-  var audioInputSelect = document.querySelector('.js--audioSource');
-  var audioOutputSelect = document.querySelector('.js--audioOutput');
-  var videoSelect = document.querySelector('.js--videoSource');
-  var selectors = [audioInputSelect, audioOutputSelect, videoSelect];
-
-  var videoResSwitches = document.querySelector('.js--resolutionSelector').videoRes;
-
-  var recordVideoFeed;
-  var recordAudioFeed;
-
-  var userSelectedVideoDevice = 'selectedVideoDeviceId';
-  var userSelectedAudioDevice = 'selectedAudioDeviceId';
-  var userSelectedRes = 'selectedVideoRes';
-
-  var currentFeedsSource;
+  var $videoPopover, $settingsPane, $settingsButton, videoElement, videoStream, audioStream, audioInputSelect, audioOutputSelect, videoSelect, selectors, videoResSwitches, recordVideoFeed, recordAudioFeed, userSelectedVideoDevice, userSelectedAudioDevice, userSelectedRes, currentFeedsSource;
 
 
   function gotDevices(deviceInfos) {
@@ -205,6 +184,20 @@ var currentStream = (function() {
   return {
 
     init : function() {
+
+      $videoPopover = $('.js--popover_cameraFeed');
+      $settingsPane = $('.js--popover_cameraFeed_settingsPane');
+      $settingsButton = $('.js--toggleCameraSettings');
+      videoElement = document.querySelector('.js--videoFeed');
+      audioInputSelect = document.querySelector('.js--audioSource');
+      audioOutputSelect = document.querySelector('.js--audioOutput');
+      videoSelect = document.querySelector('.js--videoSource');
+      selectors = [audioInputSelect, audioOutputSelect, videoSelect];
+      videoResSwitches = document.querySelector('.js--resolutionSelector').videoRes;
+      userSelectedVideoDevice = 'selectedVideoDeviceId';
+      userSelectedAudioDevice = 'selectedAudioDeviceId';
+      userSelectedRes = 'selectedVideoRes';
+
 
       $settingsButton.click(function() {
         $(document).trigger('toggle_settings_pane');

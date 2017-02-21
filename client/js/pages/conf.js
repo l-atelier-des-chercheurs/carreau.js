@@ -14,12 +14,12 @@ socket.on('connect', onSocketConnect);
 socket.on('error', onSocketError);
 
 function onSocketConnect() {
-	sessionId = socket.io.engine.id;
-	console.log('Connected ' + sessionId);
+  sessionId = socket.io.engine.id;
+  console.log('Connected ' + sessionId);
 };
 
 function onSocketError(reason) {
-	console.log('Unable to connect to server', reason);
+  console.log('Unable to connect to server', reason);
 };
 
 
@@ -37,7 +37,7 @@ socket.on('updateOneSlide', onUpdateOneSlide);
 ***/
 
 jQuery(document).ready(function($) {
-	init();
+  init();
 });
 
 var resizeTimer;
@@ -53,8 +53,8 @@ $(window).on('resize', function(e) {
 
 function init(){
 
-	socket.emit('listSlides', { "slugConfName" : app.slugConfName});
-	setDragEvents();
+  socket.emit('listSlides', { "slugConfName" : app.slugConfName});
+  setDragEvents();
   setWebcamEvents();
 
   window.slideSize = { "width" : window.innerHeight, "height" : window.innerHeight * 0.5625 };
@@ -70,13 +70,12 @@ function setWebcamEvents() {
   });
 
   document.body.onkeydown = function(e){
-    if(e.keyCode == 32){
+    if(e.keyCode === 32){
       toggleWebcamPopover();
       e.preventDefault();
       return false;
     }
   }
-
 }
 
 function toggleWebcamPopover() {
@@ -93,19 +92,19 @@ function toggleWebcamPopover() {
 
 function setDragEvents() {
 
-	$(window)
-	  .on('dragover',function(e){
-  		$(".drop-files-container").addClass('is--visible');
-  		e.preventDefault();
-  		e.stopPropagation();
-  		return false;
-  	})
+  $(window)
+    .on('dragover',function(e){
+      $(".drop-files-container").addClass('is--visible');
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    })
     ;
-	$(".drop-files-container")
-    	.on("drop", function(e) {
-    		e.preventDefault();
-    		$(".drop-files-container").removeClass('is--visible');
-    		console.log("DROP FILE");
+  $(".drop-files-container")
+      .on("drop", function(e) {
+        e.preventDefault();
+        $(".drop-files-container").removeClass('is--visible');
+        console.log("DROP FILE");
 
 
       if( e.originalEvent.dataTransfer.files.length >= 0) {
@@ -126,14 +125,14 @@ function setDragEvents() {
         uploadFormData(formData);
       }
 
-    	})
-    	.on('dragleave',function(e){
-    		$(".drop-files-container").removeClass('is--visible');
-    		e.preventDefault();
-    		e.stopPropagation();
-    		return false;
-    	})
-  	;
+      })
+      .on('dragleave',function(e){
+        $(".drop-files-container").removeClass('is--visible');
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      })
+    ;
 
 }
 
@@ -174,7 +173,8 @@ function onListAllSlides(d) {
   // if we just sent a few medias/websites
   if( $('.js--popover_upload').hasClass('is--open')){
     $('.js--popover_upload').removeClass('is--open');
-    $('html').animate(
+    debugger;
+    $('html,body').animate(
       {scrollTop: firstSlidePosY},
       900,
       $.easing.easeInOutQuint
@@ -222,13 +222,13 @@ function listOneSlide(d) {
     return;
   }
 
-	var ext = d.name.split('.').pop();
-	var isUrl = false;
-	if(d.name.toLowerCase().indexOf('http://') !== -1 || d.name.toLowerCase().indexOf('https://') !== -1) {
-    	isUrl = true;
+  var ext = d.name.split('.').pop();
+  var isUrl = false;
+  if(d.name.toLowerCase().indexOf('http://') !== -1 || d.name.toLowerCase().indexOf('https://') !== -1) {
+      isUrl = true;
   }
-	var mediaItem;
-  var preserveRatio = true;
+  var mediaItem;
+  d.preserveRatio = true;
 
   var $existingSlide = $('.slides-list .slide').filter(function() {
     return $(this).attr('data-filename') === d.metaName;
@@ -239,65 +239,65 @@ function listOneSlide(d) {
   }
 
   if( isUrl ) {
-		mediaItem = $(".js--templates > .js--iframeSlide").clone(false);
+    mediaItem = $(".js--templates > .js--iframeSlide").clone(false);
     mediaItem
-		  .find( 'iframe')
-		    .attr('data-src', d.name)
-		  .end()
-		  .find('.pageUrl')
-		    .text(d.name)
-		  .end()
-		  .find('.js--startIframe')
-		    .on('click', function() {
-    		    var ifr = mediaItem.find('iframe');
-    		    if(ifr.attr('src') === undefined) {
-    		      ifr.attr('src', ifr.attr('data-src'));
-      		    $(this).addClass('is--active');
-      		    mediaItem.find('.slide--item_iframe').addClass('is--iframeOn');
-    		    } else {
-    		      ifr.removeAttr('src');
-      		    $(this).removeClass('is--active');
-      		    mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
-    		    }
-		    })
-		  .end()
-		  .find('.js--openIframeNewTab')
+      .find( 'iframe')
+        .attr('data-src', d.name)
+      .end()
+      .find('.pageUrl')
+        .text(d.name)
+      .end()
+      .find('.js--startIframe')
+        .on('click', function() {
+            var ifr = mediaItem.find('iframe');
+            if(ifr.attr('src') === undefined) {
+              ifr.attr('src', ifr.attr('data-src'));
+              $(this).addClass('is--active');
+              mediaItem.find('.slide--item_iframe').addClass('is--iframeOn');
+            } else {
+              ifr.removeAttr('src');
+              $(this).removeClass('is--active');
+              mediaItem.find('.slide--item_iframe').removeClass('is--iframeOn');
+            }
+        })
+      .end()
+      .find('.js--openIframeNewTab')
         .attr('href', d.name)
-		  .end()
-		  ;
-		preserveRatio = false;
+      .end()
+      ;
+    d.preserveRatio = false;
   }
 
-	else if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
-		mediaItem = $(".js--templates > .js--imageSlide").clone(false);
+  else if(ext == 'jpg' || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "JPG" || ext == "tiff"){
+    mediaItem = $(".js--templates > .js--imageSlide").clone(false);
     mediaItem
-		  .find( 'img')
-		    .attr('src', d.name)
-		  .end()
+      .find( 'img')
+        .attr('src', d.name)
+      .end()
   }
 
-	else if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "webm"){
-		mediaItem = $(".js--templates > .js--videoSlide").clone(false);
-		mediaItem
-		  .find('source')
-		    .attr('src', d.name)
-		  .end()
-		if(d.poster !== undefined)
-		  mediaItem
-		    .find('video')
-		      .attr('poster', d.poster)
+  else if(ext == 'mp4' || ext == "avi" || ext == "ogg" || ext == "webm"){
+    mediaItem = $(".js--templates > .js--videoSlide").clone(false);
+    mediaItem
+      .find('source')
+        .attr('src', d.name)
+      .end()
+    if(d.poster !== undefined)
+      mediaItem
+        .find('video')
+          .attr('poster', d.poster)
           .attr('preload', 'none')
         .end()
         ;
-	}
-	// if extension is some unknown format, let's bail out
-	else{
+  }
+  // if extension is some unknown format, let's bail out
+  else{
     return;
   }
 
-	mediaItem
-	  .attr('data-fileName', d.metaName)
-	  .data(d)
+  mediaItem
+    .attr('data-fileName', d.metaName)
+    .data(d)
     ;
   return mediaItem;
 }
@@ -351,30 +351,34 @@ function updateSlideContentPosition($s) {
 
   var d = $s.data();
 
-	var pxWidth = d.width * window.innerWidth;
+  var dwidth = parseFloat(d.width);
+  var dratio = parseFloat(d.ratio);
+  var dheight = parseFloat(d.height);
+  var dposX = parseFloat(d.posX);
+  var dposY = parseFloat(d.posY);
 
+  var pxWidth = dwidth * window.innerWidth;
 
-	var pxHeight;
-	if(d.preserveRatio)
-	  pxHeight = pxWidth * d.ratio;
-	 else {
-    var desiredHeight = (d.height === undefined) ? d.width : d.height;
-	  pxHeight = desiredHeight * 0.5625 * window.innerWidth;
-	}
-  var posX = d.posX * window.innerWidth;
-  var posY = d.posY * window.innerHeight;
+  var pxHeight;
+  if(isNaN(dheight))
+    pxHeight = pxWidth * dratio;
+  else {
+    pxHeight = dheight * 0.5625 * window.innerWidth;
+  }
+  var posX = dposX * window.innerWidth;
+  var posY = dposY * window.innerHeight;
 
   return $s
-	  .attr('data-fileName', d.metaName)
-	  .find('.slide--item')
-    	  .css({
-    	  	'transform': 'translate(' + posX + 'px, ' + posY + 'px)',
-    	  	'width': pxWidth,
-    	  	'height': pxHeight,
-    	  	'display':'block'
-    	  })
-    	  .attr('data-x', posX)
-    	  .attr('data-y', posY)
+    .attr('data-fileName', d.metaName)
+    .find('.slide--item')
+        .css({
+          'transform': 'translate(' + parseInt(posX) + 'px, ' + parseInt(posY) + 'px)',
+          'width': parseInt(pxWidth),
+          'height': parseInt(pxHeight),
+          'display':'block'
+        })
+        .attr('data-x', parseInt(posX))
+        .attr('data-y', parseInt(posY))
     .end()
     ;
 

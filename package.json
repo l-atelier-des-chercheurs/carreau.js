@@ -2,10 +2,10 @@
   "name": "carreau.js",
   "version": "1.0.0",
   "description": "Carreau.js is a presentation tool in the browser.",
-  "author": "L’Atelier des Chercheurs <http://latelier-des-chercheurs.fr/>",
+  "author": "L’Atelier des Chercheurs <https://latelier-des-chercheurs.fr/>",
   "homepage": "https://github.com/l-atelier-des-chercheurs/carreau.js#readme",
-  "main": "main.js",
   "license": "CC-BY-NC-SA-4.0",
+  "main": "main.js",
   "private": true,
   "repository": {
     "type": "git",
@@ -15,8 +15,21 @@
     "url": "https://github.com/l-atelier-des-chercheurs/carreau.js/issues"
   },
   "scripts": {
-    "start": "electron main",
-    "debug": "electron main --debug --verbose"
+    "start": "electron .",
+    "debug": "electron . --debug --verbose",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "build": {
+    "electronVersion": "1.4.8",
+    "appId": "carreau.js",
+    "asar": false,
+    "mac": {
+      "category": "public.app-category.education"
+    },
+    "win": {
+      "iconUrl": ""
+    }
   },
   "dependencies": {
     "body-parser": "^1.15.0",

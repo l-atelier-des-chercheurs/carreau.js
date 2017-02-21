@@ -1,8 +1,6 @@
 const
   path = require('path'),
   fs = require('fs-extra');
-	moment = require('moment'),
-  parsedown = require('woods-parsedown'),
   formidable = require('formidable'),
   gutil = require('gulp-util'),
   sizeOf = require('image-size'),
@@ -13,7 +11,8 @@ const
 const
   settings = require('./settings'),
   main = require('./sockets'),
-  dev = require('./bin/dev-log')
+  dev = require('./bin/dev-log'),
+  api = require('./bin/api')
 ;
 
 module.exports = function(app,io,m){
@@ -37,9 +36,9 @@ module.exports = function(app,io,m){
   };
 
   function getConf(req, res) {
-    dev.logverbose('getConf');
     var slugConfName = req.param('conf');
-    readConfMeta(slugConfName).then(function(c) {
+    dev.logverbose(`COMMON — getConf with slugConfName = ${slugConfName}`);
+    api.readConfMeta(slugConfName).then(function(c) {
       dev.logverbose('meta conf gotten. Sending back conf to client');
 
       var pageTitle = c.name + ' | carreau.js';
@@ -72,7 +71,7 @@ module.exports = function(app,io,m){
     form.multiples = false;
 
     // store all uploads in the conf directory
-    form.uploadDir = path.join(__dirname, settings.contentDirname, slugConfName);
+    form.uploadDir = api.getContentPath(slugConfName);
 
     var allFilesMeta = [];
     var allIframeMeta = [];
@@ -148,7 +147,7 @@ module.exports = function(app,io,m){
 
   function renameMediaAndCreateMeta( uploadDir, slugConfName, file) {
     return new Promise(function(resolve, reject) {
-      findFirstFilenameNotTaken( uploadDir, file.name).then(function(newFileName){
+      api.findFirstFilenameNotTaken( uploadDir, file.name).then(function(newFileName){
         dev.logverbose('Found new name');
         var newPathToNewFileName = path.join(uploadDir, newFileName);
         fs.rename(file.path, newPathToNewFileName);
@@ -168,7 +167,7 @@ module.exports = function(app,io,m){
   function renameMediaAndCreateMetaForIframe( uploadDir, slugConfName, websiteName) {
     return new Promise(function(resolve, reject) {
       var slugWebsiteName = slugg(websiteName);
-      findFirstFilenameNotTaken( uploadDir, slugWebsiteName + settings.metaFileext).then(function(newSlugWebsiteName){
+      api.findFirstFilenameNotTaken( uploadDir, slugWebsiteName + settings.metaFileext).then(function(newSlugWebsiteName){
         createMediaMeta( uploadDir, websiteName, newSlugWebsiteName).then(function(fileMeta){
           resolve(newSlugWebsiteName);
         }, function(err) {
@@ -199,13 +198,15 @@ module.exports = function(app,io,m){
         var dimension = sizeOf(newPathToMedia);
         if(typeof dimension !== undefined)
           var mediaRatio = dimension.height / dimension.width;
-      } catch(err) {}
+      } catch(err) {
+
+      }
 
       var mdata =
       {
         "name" : mediaFileName,
-        "created" : getCurrentDate(),
-        "modified" : getCurrentDate(),
+        "created" : api.getCurrentDate(),
+        "modified" : api.getCurrentDate(),
         "informations" : "",
         "posX" : settings.startingPosX,
         "posY" : settings.startingPosY,
@@ -216,7 +217,7 @@ module.exports = function(app,io,m){
       }
 
       dev.logverbose("Saving JSON string " + JSON.stringify(mdata, null, 4));
-      storeData( newPathToMeta, mdata, 'create').then(function( meta) {
+      api.storeData( newPathToMeta, mdata, 'create').then(function( meta) {
         console.log( "New media meta file created at path " + newPathToMeta + " with meta : " + meta);
         resolve(meta);
       }, function(err) {
@@ -233,7 +234,7 @@ module.exports = function(app,io,m){
     dev.logverbose('Finished adding media files, let’s add those to the conf meta');
     dev.logverbose('filesToAddToMeta : ' + JSON.stringify(filesToAddToMeta, null, 4));
 
-    readConfMeta(slugConfName).then(function(confMeta) {
+    api.readConfMeta(slugConfName).then(function(confMeta) {
       var curSlides = [];
       if( confMeta.hasOwnProperty('slides')) {
         curSlides = confMeta.slides;
@@ -252,126 +253,12 @@ module.exports = function(app,io,m){
       }
       dev.logverbose('new slides for meta ' + JSON.stringify(curSlides, null, 4))
       confMeta['slides'] = curSlides;
-      var metaConfPath = getMetaFileOfConf(slugConfName);
-      storeData(metaConfPath, confMeta, 'update');
+      var metaConfPath = api.getMetaFileOfConf(slugConfName);
+      api.storeData(metaConfPath, confMeta, 'update');
     }, function(err) {
       console.log('fail readConfMeta ' + err);
       reject(err);
     });
   }
 
-
-  function storeData( mpath, d, e) {
-    return new Promise(function(resolve, reject) {
-      console.log('Will store data');
-      var textd = textifyObj(d);
-      if( e === "create") {
-        fs.appendFile( mpath, textd, function(err) {
-          if (err) reject( err);
-          resolve(parseData(textd));
-        });
-      }
-  	    if( e === "update") {
-        fs.writeFile( mpath, textd, function(err) {
-          if (err) reject( err);
-          resolve(parseData(textd));
-        });
-      }
-    });
-  }
-  function textifyObj( obj) {
-    var str = '';
-    dev.logverbose( '1. will prepare string for storage');
-    for (var prop in obj) {
-      var value = obj[prop];
-      dev.logverbose('2. prop ? ' + prop + ' and value ? ' + value);
-      // if value is a string, it's all good
-      // but if it's an array (like it is for medias in publications) we'll need to make it into a string
-      if( typeof value === 'array' || typeof value === 'object') {
-        dev.logverbose('this is an array');
-        value = value.join('\n');
-      // check if value contains a delimiter
-      } else if( typeof value === 'string' && value.indexOf('\n----\n') >= 0) {
-        dev.logverbose( '2. WARNING : found a delimiter in string, replacing it with a backslash');
-        // prepend with a space to neutralize it
-        value = value.replace('\n----\n', '\n ----\n');
-      }
-      str += prop + ': ' + value + settings.textFieldSeparator;
-  //       dev.logverbose('Current string output : ' + str);
-    }
-  //     dev.logverbose( '3. textified object : ' + str);
-    return str;
-  }
-
-  function getCurrentDate() {
-    return moment().format( settings.metaDateFormat);
-  }
-
-  function parseData(d) {
-    	dev.logverbose("Will parse data");
-    	var parsed = parsedown(d);
-    	// if there is a field called medias, this one has to be made into an array
-    	if( parsed.hasOwnProperty('slides')) {
-      	parsed.slides = parsed.slides.trim();
-    	  parsed.slides = parsed.slides.split('\n');
-    }
-    	return parsed;
-  }
-
-  function readConfMeta( slugConfName) {
-    return new Promise(function(resolve, reject) {
-  		dev.logfunction( "COMMON — readConfMeta: " + slugConfName);
-  		var metaConfPath = getMetaFileOfConf(slugConfName);
-  		var folderData = fs.readFileSync( metaConfPath, settings.textEncoding);
-  		var folderMetadata = parseData( folderData);
-  		if( folderMetadata.introduction !== undefined) {
-      try {
-        folderMetadata.introduction = mm.parse(folderMetadata.introduction).content;
-      } catch(err){
-        console.log('Couldn’t parse conf introduction for conf ' + slugConfName);
-      }
-    }
-  		dev.logverbose( "conf meta : " + JSON.stringify(folderMetadata));
-      resolve(folderMetadata);
-    });
-  }
-
-  function getMetaFileOfConf( slugConfName) {
-    	var confPath = path.join(__dirname, settings.contentDirname, slugConfName);
-    	var metaPath = path.join(confPath, settings.confMetafilename + settings.metaFileext);
-    return metaPath;
-  }
-
-  // check whether fileName (such as "hello-world.mp4") already exists in the conf folder
-  function findFirstFilenameNotTaken( confPath, fileName) {
-    return new Promise(function(resolve, reject) {
-      // let's find the extension if it exists
-      var fileExtension = new RegExp( settings.regexpGetFileExtension, 'i').exec( fileName)[0];
-      var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( fileName)[1];
-      fileNameWithoutExtension = slugg(fileNameWithoutExtension);
-      dev.logverbose("Looking for existing file with name : " + fileNameWithoutExtension + " in confPath : " + confPath);
-      try {
-        var newFileName = fileNameWithoutExtension + fileExtension;
-        var newMetaFileName = fileNameWithoutExtension + settings.metaFileext;
-        var index = 0;
-        var newPathToFile = path.join(confPath, newFileName);
-        var newPathToMeta = path.join(confPath, newMetaFileName);
-        dev.logverbose( "2. about to look for existing files.");
-        // check si le nom du fichier et le nom du fichier méta sont déjà pris
-        while( (!fs.accessSync( newPathToFile, fs.F_OK) && !fs.accessSync( newPathToMeta, fs.F_OK))){
-          dev.logverbose("- - following path is already taken : newPathToFile = " + newPathToFile + " or newPathToMeta = " + newPathToMeta);
-          index++;
-
-          newFileName = fileNameWithoutExtension + "-" + index + fileExtension;
-          newMetaFileName = fileNameWithoutExtension + "-" + index + settings.metaFileext;
-          newPathToFile = path.join(confPath, newFileName);
-          newPathToMeta = path.join(confPath, newMetaFileName);
-        }
-      } catch(err) {
-
-      }
-      dev.logverbose( "3. this filename is not taken : " + newFileName);
-      resolve(newFileName);
-    });
-  }
 };

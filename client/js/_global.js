@@ -43,6 +43,8 @@ var popup = (function() {
   };
 
 })();
+
+console.log($('.js--popup'));
 popup.init($('.js--popup'));
 
 
