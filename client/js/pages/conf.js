@@ -58,7 +58,6 @@ function init(){
 
   window.slideSize = { "width" : window.innerHeight, "height" : window.innerHeight * 0.5625 };
 
-
 }
 
 
@@ -91,47 +90,40 @@ function toggleWebcamPopover() {
 
 function setDragEvents() {
 
-  $(window)
-    .on('dragover',function(e){
-      $(".drop-files-container").addClass('is--visible');
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    })
-    ;
-  $(".drop-files-container")
-      .on("drop", function(e) {
-        e.preventDefault();
-        $(".drop-files-container").removeClass('is--visible');
-        console.log("DROP FILE");
+  $(window).on('dragover',function(e){
+    $(".drop-files-container").addClass('is--visible');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 
+  $(".drop-files-container").on("drop", function(e) {
+    e.preventDefault();
+    $(".drop-files-container").removeClass('is--visible');
 
-      if( e.originalEvent.dataTransfer.files.length >= 0) {
-        var files = e.originalEvent.dataTransfer.files;
-        // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
-        var formData = new FormData();
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          // add the files to formData object for the data payload
-          formData.append('uploads[]', file, file.name);
-        }
-        uploadFormData(formData);
+    // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
+    if( e.originalEvent.dataTransfer.files.length >= 0) {
+      var files = e.originalEvent.dataTransfer.files;
+      var formData = new FormData();
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        // add the files to formData object for the data payload
+        formData.append('uploads[]', file, file.name);
       }
-      if(typeof e.originalEvent.dataTransfer.getData('text') === 'string' && e.originalEvent.dataTransfer.getData('text').length > 0) {
-        // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
-        var formData = new FormData();
-        formData.append('iframe[]', e.originalEvent.dataTransfer.getData('text'));
-        uploadFormData(formData);
-      }
-
-      })
-      .on('dragleave',function(e){
-        $(".drop-files-container").removeClass('is--visible');
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      })
-    ;
+      uploadFormData(formData);
+    }
+    if(typeof e.originalEvent.dataTransfer.getData('text') === 'string' && e.originalEvent.dataTransfer.getData('text').length > 0) {
+      var formData = new FormData();
+      formData.append('iframe[]', e.originalEvent.dataTransfer.getData('text'));
+      uploadFormData(formData);
+    }
+  })
+  .on('dragleave',function(e){
+    $(".drop-files-container").removeClass('is--visible');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 
 }
 
@@ -189,19 +181,10 @@ function onUpdateOneSlide(d) {
     return $(this).data('name') === d.name;
   });
 
-  $thisSlide
-    .data(d)
-    ;
+  $thisSlide.data(d);
 
   updateSlideContentPosition( $thisSlide);
 }
-
-
-
-
-
-
-
 
 
 
