@@ -1,0 +1,28 @@
+name: capture-2-450x306-q92.jpg
+
+----
+
+created: 20161002_134206
+
+----
+
+modified: 20161002_134206
+
+----
+
+informations: 
+
+----
+
+posX: 0
+
+----
+
+posY: 0
+
+----
+
+width: 0.5
+
+----
+

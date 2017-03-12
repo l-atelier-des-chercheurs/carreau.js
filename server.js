@@ -1,44 +1,61 @@
-var express = require("express"),
-  http    = require('http'),
-  https = require('https'),
-  fs = require('fs'),
-  io = require('socket.io')
-;
+var express = require("express");
+var http = require('http');
+var https = require('https');
+var fs = require('fs');
+var io = require('socket.io');
+var path = require('path');
+var dev = require('./bin/dev-log');
 
-var app     = express();
+// var localtunnel = require('localtunnel');
+// var ngrok = require('ngrok');
 
-var privateKey  = fs.readFileSync('file.pem', 'utf8');
-var certificate = fs.readFileSync('file.crt', 'utf8');
+var config = require('./config.json');
 
-var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
-var io      = require("socket.io").listen(httpsServer);
+module.exports = function(electronApp) {
+  dev.logverbose('Starting server');
 
-var settings  = require('./public/settings');
-var main    = require('./main');
-var config  = require('./config');
-var router  = require('./router');
+  var app = express();
+  // works without asking for a certificate
+  const privateKey  = fs.readFileSync(path.join(__dirname, 'ssl', 'file.pem'), 'utf8');
+  const certificate = fs.readFileSync(path.join(__dirname, 'ssl', 'file.crt'), 'utf8');
+  const options = { key: privateKey, cert: certificate };
 
-var m = new main(app, io);
+  if( config.protocol === 'http')
+    var server = http.createServer(app);
+  else if( config.protocol === 'https')
+    var server = https.createServer(options, app);
+
+  var io = require("socket.io").listen(server);
+
+  var sockets = require('./sockets');
+  var expressSettings = require('./express-settings');
+  var router = require('./router');
+
+  var m = sockets.init(app, io, electronApp);
+
+  /*
+  * Server config
+  */
+  expressSettings(app, express);
+
+  /**
+  * Server routing and io events
+  */
+  router(app, io, m);
 
 
-/*
-* Server config
-*/
-config(app, express);
+  /**
+  * Start the http server at port and IP defined before
+  */
 
-/**
-* Server routing and io events
-*/
-router(app, io, m);
-
-
-/**
-* Start the http server at port and IP defined before
-*/
-
-httpsServer.listen(
-  app.get("port"), function() {
-    console.log("Server up and running. Go to https://localhost:" + app.get("port"));
-  }
-);
+  server.listen(
+    app.get("port"), function() {
+      dev.log(`Server up and running. Go to ${config.protocol}://${config.host}:${config.port}`);
+      dev.log(' ');
+      process.on('unhandledRejection', function(reason, p) {
+        dev.error("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+          // application specific logging, throwing an error, or other logic here
+      });
+    }
+  );
+}

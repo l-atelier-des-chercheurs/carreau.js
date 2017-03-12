@@ -1,8 +1,8 @@
 doctype html
 html
   include snippets/head
-  body(data-page='conf')
 
+  body(data-page='conf' class=isDebug && 'is--debug')
 
     .drop-files-container
       .instructions déposez ici les slides à ajouter
@@ -85,7 +85,7 @@ html
             .pageUrlField
               h6.pageUrl
             button.toggleIframe.js--startIframe on&nbsp;/&nbsp;off
-            a.iframeNewTab.js--openIframeNewTab(target="_blank") ↗
+            a.iframeNewTab.js--openInBrowser(target="_blank") ↗
           iframe
 
 

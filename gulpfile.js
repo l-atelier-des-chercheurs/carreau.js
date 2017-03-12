@@ -9,27 +9,25 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var jshint       = require('gulp-jshint');
 var browserSync  = require('browser-sync').create();
+var uglify       = require('gulp-uglify');
 
 var pluginsScripts = [
-  'public/bower_components/jquery/dist/jquery.js',
-  'public/bower_components/moment/min/moment-with-locales.js',
-  'public/bower_components/store-js/store.min.js',
-  'public/bower_components/interact/dist/interact.js',
-  'public/bower_components/recordrtc/RecordRTC.min.js',
+  'client/bower_components/jquery/dist/jquery.js',
+  'client/bower_components/moment/min/moment-with-locales.js',
+  'client/bower_components/store-js/store.min.js',
+  'client/bower_components/interact/dist/interact.js',
+  'client/bower_components/recordrtc/RecordRTC.min.js',
 ];
 var userScripts = [
-  'public/js/_fixedSlideEngine.js',
-  'public/js/_currentStream.js',
-  'public/js/_global.js'
+  'client/js/_fixedSlideEngine.js',
+  'client/js/_currentStream.js',
+  'client/js/_global.js'
 ];
-
 var localDevUrl = 'https://localhost:8080/';
-
-
 
 // Compile Our Sass
 gulp.task('sass', function() {
-  return gulp.src('public/sass/*.scss')
+  return gulp.src('client/sass/*.scss')
     .pipe(plumber({
         errorHandler: function (err) {
             console.log(err);
@@ -37,18 +35,17 @@ gulp.task('sass', function() {
         }
     }))
     .pipe(sass())
-    .pipe(gulp.dest('public/css'))
+    .pipe(gulp.dest('client/development'))
     .pipe(browserSync.stream());
 });
 
 // Concatenate & Minify CSS
-gulp.task('css', function() {
-  return gulp.src('pubic/css/*.css')
+gulp.task('css-prod', function() {
+  return gulp.src('client/development/*.css')
     .pipe(concat('all.css'))
-    .pipe(gulp.dest('public/css'))
     .pipe(minifyCss({compatibility: 'ie9'}))
     .pipe(rename('all.min.css'))
-    .pipe(gulp.dest('public/production'));
+    .pipe(gulp.dest('client/production'));
 });
 
 
@@ -64,7 +61,8 @@ gulp.task('lint', function() {
 gulp.task('script-plugins', function() {
   return gulp.src(pluginsScripts)
     .pipe(concat('plugins.js'))
-    .pipe(gulp.dest('public/production/js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('client/development'))
     .pipe(browserSync.stream());
 });
 
@@ -72,21 +70,21 @@ gulp.task('script-plugins', function() {
 gulp.task('scripts', ['script-plugins'], function (done) {
   return gulp.src(userScripts)
     .pipe(concat('main.js'))
-    .pipe(gulp.dest('public/production/js'))
-    .pipe(browserSync.stream());
+    .pipe(gulp.dest('client/development'))
 });
 
-
-
+// Concatenate user scripts and minify them.
+gulp.task('scripts-prod', ['scripts'], function (done) {
+  return gulp.src('client/development/*.js')
+    .pipe(concat('all.min.js'))
+    .pipe(gulp.dest('client/production'))
+});
 
 // Live reload sync on every screen connect to localhost
 gulp.task('init-live-reload', function() {
   browserSync.init({
     proxy: localDevUrl,
-    notify: false,
-    snippetOptions: {
-      ignorePaths: ['panel/**', 'site/accounts/**']
-    },
+    notify: false
   });
 });
 
@@ -97,8 +95,8 @@ gulp.task('dev-watch-sync', ['init-live-reload', 'watch']);
 // Watch Files For Changes
 gulp.task('watch', function() {
   gulp.watch( userScripts, ['lint', 'script-plugins', 'scripts']);
-  gulp.watch('public/sass/*.scss', ['sass', 'css']);
+  gulp.watch('client/sass/*.scss', ['sass', 'css-prod']);
 });
 
 // Default Task
-gulp.task('default', ['sass', 'css', 'lint', 'script-plugins', 'scripts', 'watch']);
+gulp.task('default', ['sass', 'css-prod', 'lint', 'script-plugins', 'scripts', 'scripts-prod', 'watch']);
