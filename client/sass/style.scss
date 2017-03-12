@@ -64,7 +64,7 @@ h1,h2,h3,h4,h5,h6{
 @mixin button {
   -webkit-appearance: none;
   display: inline-block;
-  background: #0A997F;
+  background: $vert_sombre;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -148,7 +148,7 @@ img, video, audio, svg {
   position: relative;
   width:  100%;
   min-height: 150px;
-  background-color: fade-out(#0A997F, .2);
+  background-color: fade-out($vert_sombre, .2);
   color: white;
   overflow: hidden;
 
@@ -171,7 +171,7 @@ img, video, audio, svg {
     right: 0;
     bottom: 0;
     opacity: .3;
-    background: repeating-linear-gradient( -65deg, #0A997F, #0A997F 10px, fade-out(#0A997F,1) 10px, fade-out(#0A997F,1) 20px );
+    background: repeating-linear-gradient( -65deg, $vert_sombre, $vert_sombre 10px, transparent 10px, transparent 20px );
   }
   &::after {
     content: '';
@@ -183,7 +183,7 @@ img, video, audio, svg {
     right: 0;
     bottom: -50%;
     opacity: .3;
-    background: repeating-linear-gradient( 65deg, #0A997F, #0A997F 10px, fade-out(#0A997F,1) 10px, fade-out(#0A997F,1) 20px );
+    background: repeating-linear-gradient( 65deg, $vert_sombre, $vert_sombre 10px, transparent 10px, transparent 20px );
 
   }
 
@@ -224,7 +224,7 @@ img, video, audio, svg {
   margin:10px;
 
   background-color: hsl(0, 0%, 94%);
-  border-bottom:  2px solid #0A997F;
+  border-bottom:  2px solid $vert_sombre;
   border-radius: 2px;
 
   transition: background-color .4s ease-out, transform .4s ease-out;;
@@ -253,7 +253,7 @@ img, video, audio, svg {
     position: absolute;
     top: 0px;
     right: 0px;
-    background-color: #0A997F;
+    background-color: $vert_sombre;
     color: #fff;
     font-size: 15px;
     line-height: 16px;
@@ -267,12 +267,12 @@ img, video, audio, svg {
   .title {
     font-size:  2rem;
     margin-bottom:  30px;
-    color: #0A997F;
+    color: $vert_sombre;
     font-weight:  400;
     transition: color .6s;
 
     &:hover {
-      color: darken(#0A997F, 10%);
+      color: darken($vert_sombre, 10%);
     }
   }
 
@@ -303,7 +303,7 @@ img, video, audio, svg {
     padding:5px;
     border:2px solid #eee;
     &:focus {
-      outline: 2px solid #0A997F;
+      outline: 2px solid $vert_sombre;
     }
   }
 
@@ -397,7 +397,7 @@ body[data-page='conf']::after {
       margin-right: 15px;
       &::before {
         content:'•';
-        color: #0A997F;
+        color: $vert_sombre;
         margin-right: 8px;
       }
 
@@ -437,7 +437,7 @@ body[data-page='conf']::after {
         padding-left: 0;  margin-left: 0;
   			&::before {
           content:'—';
-          color: #0A997F;
+          color: $vert_sombre;
   				display: inline-block;
   				margin-right: 10px;
   			}
@@ -458,7 +458,7 @@ body[data-page='conf']::after {
 .drop-files-container{
 	position:fixed;
   top: 0; left: 0;  right: 0; bottom: 0;
-  background-color: #0A997F;
+  background-color: $vert_sombre;
   opacity: 0;
   z-index:  -1;
   transition: opacity .4s ease-out;
@@ -584,7 +584,7 @@ body[data-page='conf']::after {
         background: #fff;
         border-radius: 4px;
         padding: 5px 5px 5px 10px;
-        color: #0A997F;
+        color: $vert_sombre;
         flex: auto;
 
         .pageUrl {
@@ -635,7 +635,7 @@ body[data-page='conf']::after {
   }
 
   &.is--dragged {
-    background-color: fade-out(#0A997F,0.70);
+    background-color: fade-out($vert_sombre,0.70);
   }
 
 
@@ -655,7 +655,7 @@ body[data-page='conf']::after {
 .module-popover {
 	position:fixed;
   top: 0; left: 0;  right: 0; bottom: 0;
-  background-color: #0A997F;
+  background-color: $vert_sombre;
   z-index:  1001;
   transition: opacity .4s ease-out;
   pointer-events: none;
@@ -699,7 +699,7 @@ body[data-page='conf']::after {
       padding: 20px;
       border-radius: 5px 0 0 0;
 
-      background-color: #0A997F;
+      background-color: $vert_sombre;
       color: white;
       font-size:  80%;
       font-weight: 300;
@@ -710,7 +710,7 @@ body[data-page='conf']::after {
         right: 0;
         padding: 10px;
         margin: 0;
-        background-color: #0A997F;
+        background-color: $vert_sombre;
         border-radius: 5px 0 0 0;
       }
       .sourceSelector {
