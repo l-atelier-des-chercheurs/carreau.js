@@ -278,7 +278,7 @@ var currentStream = (function() {
           resolve( stream);
         },
         function(err) {
-          alert( settings.lang.videoStreamCouldntBeStartedTryChangingRes + '\n\n error: ' + JSON.stringify(err));
+          alert( app.settings.lang.videoStreamCouldntBeStartedTryChangingRes + '\n\n error: ' + JSON.stringify(err));
         }
       );
     });

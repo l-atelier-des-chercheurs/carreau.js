@@ -541,6 +541,8 @@ body[data-page='conf']::after {
 //  problématique (marge sur les côtés)
     background-color: transparent;
 
+    outline: 1px solid #ccc;
+
     &_iframe {
       background-color: #dedcdc;
 
