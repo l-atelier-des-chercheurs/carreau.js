@@ -491,7 +491,22 @@ body[data-page='conf']::after {
 .slides-list {
   position: relative;
   margin-bottom:  20vh;
+
+  body.is--debug & {
+    counter-reset: section;
+
+    .slide--item::before {
+      counter-increment: section;                /* Increment the section counter*/
+      content: "Section " counter(section) ": "; /* Display the counter */
+      display: block;
+      color: $bleuvert;
+      position: absolute;
+    }
+  }
 }
+
+
+
 .slide {
 
   position: relative;
@@ -514,6 +529,8 @@ body[data-page='conf']::after {
 
   // that delay for opacity is made to increase responsivity when pinning a slide
   transition: background-color .3s ease, opacity .3s .3s;
+
+
 
   .slide--item {
     position: absolute;

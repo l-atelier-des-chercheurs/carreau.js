@@ -11,7 +11,7 @@ var setFixedForSlides = (function() {
 
   var isRunning = false;
   // this means 3 slides will stay pinned at once before the last one gets hidden
-  var slideLifetime = 2;
+  var slideLifetime = 10;
   var slidesData = [];
   var $slides;
 
@@ -46,7 +46,6 @@ var setFixedForSlides = (function() {
   }
 
   function getSlidesPositions() {
-    slidesData = [];
     for (i =0; i<$slides.length; i++){
       slidesData[i] = { el: $slides[i] };
       slidesData[i].bounds = slidesData[i].el.getBoundingClientRect();
@@ -64,22 +63,44 @@ var setFixedForSlides = (function() {
       var scrollSpeed = window.pageYOffset - lastPosition;
       lastPosition = window.pageYOffset;
 //       console.log('scrollSpeed : ' + scrollSpeed);
-      for (i =0; i<slidesData.length; i++){
+      for (i=0; i<slidesData.length; i++){
         // position actuelle du scroll + vitesse actuelle = position anticipée à l'instant suivant
         if(window.pageYOffset + scrollSpeed >= slidesData[i].bounds.offsetTop) {
+
+          // tentative de fixed les slides qui sont entre le début et le moment actuel du scroll
           var successFixSlide = fixThisSlide(slidesData[i]);
+
+          // si nouvelle slide fixed, alors
           if(successFixSlide) {
             console.log('Just made slide number ' + i + ' fixed.');
-            var olderSlideToHide = i - slideLifetime;
-            console.log('Will try to hide slide number ' + olderSlideToHide + '.');
-            if(olderSlideToHide >= 0) { farThisSlide(slidesData[olderSlideToHide]); }
+            var hideSlideIndex = i - slideLifetime;
+            console.log('Will try to hide slide number ' + hideSlideIndex + '.');
+
+            // masquer toutes les slides qui ont un numéro entre 0 et hideSlideIndex
+            if(hideSlideIndex >= 0) {
+              for(j=0; j<=hideSlideIndex; j++) {
+                fixThisSlide(slidesData[j]);
+                farThisSlide(slidesData[j]);
+              }
+            }
           }
         } else {
+
+          // tentative de unfix les slides qui sont entre le moment actuel du scroll et la fin
           var successUnFixSlide = unfixThisSlide(slidesData[i]);
           if(successUnFixSlide) {
+            // supprimer is--far sur la slide n - x
             var olderSlideToShow = i - slideLifetime;
             if(olderSlideToShow >= 0) { unfarThisSlide(slidesData[olderSlideToShow]); }
+
+            // pour nettoyer, supprimer aussi le is--pinned et is--far sur toutes les slides après i
+            for(j=i; j<slidesData.length; j++) {
+              console.log('Will unfix ' + j);
+              unfixThisSlide(slidesData[j]);
+              unfarThisSlide(slidesData[j]);
+            }
           }
+
         }
       }
       if(isRunning) {
@@ -106,7 +127,7 @@ var setFixedForSlides = (function() {
       if(isRunning) {
         getSlidesPositions();
         // force update of fixed
-        lastPosition = -1;
+        lastPosition = window.pageYOffset - 10;
       }
     },
   };
@@ -534,8 +555,8 @@ popup.init($('.js--popup'));
 
 $.extend($.easing,
 {
-    easeInOutQuint: function (x, t, b, c, d) {
-        if ((t/=d/2) < 1) { return c/2*t*t*t*t*t + b; }
-        return c/2*((t-=2)*t*t*t*t + 2) + b;
-    }
+  easeInOutQuint: function (x, t, b, c, d) {
+    if ((t/=d/2) < 1) { return c/2*t*t*t*t*t + b; }
+    return c/2*((t-=2)*t*t*t*t + 2) + b;
+  }
 });

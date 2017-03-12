@@ -15,6 +15,7 @@ const settings  = require('./settings');
 let win;
 
 app.commandLine.appendSwitch('--ignore-certificate-errors');
+app.commandLine.appendSwitch('--disable-http-cache')
 
 function createWindow() {
 

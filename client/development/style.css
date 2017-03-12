@@ -717,6 +717,16 @@ body[data-page='conf']::after {
 .slides-list {
   position: relative;
   margin-bottom: 20vh; }
+  body.is--debug .slides-list {
+    counter-reset: section; }
+    body.is--debug .slides-list .slide--item::before {
+      counter-increment: section;
+      /* Increment the section counter*/
+      content: "Section " counter(section) ": ";
+      /* Display the counter */
+      display: block;
+      color: #48C2B5;
+      position: absolute; }
 
 .slide {
   position: relative;

@@ -54,8 +54,13 @@ module.exports = function(app,io,m){
       if( c.introduction !== undefined)
         confMeta.introduction = c.introduction;
 
-      res.render("conf", {"confMeta" : confMeta, "pageTitle" : pageTitle, "slugConfName" : slugConfName, "settings" : settings});
-//       res.render("conf", confMeta);
+      res.render("conf", {
+        "confMeta" : confMeta,
+        "pageTitle" : pageTitle,
+        "slugConfName" : slugConfName,
+        "settings" : settings,
+        "isDebug" : dev.isDebug(),
+      });
 
     });
   };
