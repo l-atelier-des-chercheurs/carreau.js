@@ -26,9 +26,6 @@
     "asar": false,
     "mac": {
       "category": "public.app-category.education"
-    },
-    "win": {
-      "iconUrl": ""
     }
   },
   "dependencies": {
