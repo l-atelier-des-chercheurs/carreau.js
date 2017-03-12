@@ -18,28 +18,20 @@ In a terminal :
 2. `cd path/to/the/folder`
 3. `npm install`
 
-Create a folder named *conferences* next to the *views* and *public* folder then run the following command:
+Now run carreau.js by writing
 
-* `node server.js`
+* `npm start`
 
 ## How to tweak, fork and debug
 
 ### server-side
 
-* Run `node server.js --debug` to start the server with a better debug in terminal
-
-* Run `node server.js --debug --verbose` to start the server with debug and verbose
-
-To add an npm package, run `npm install` (for example `npm install --save-dev jshint`).
+* Run `npm run debug` to start the server with a better debug in terminal
 
 ### client-side
 
-To tweak and write some new SASS or client-side JS, you need to install bower from the public folder:
+To tweak and write some new SASS or client-side JS, you need to run the gulp task:
 
-1. `cd public && bower install`
-2. `cd ../`
-3. `gulp`
+* `gulp`
 
-To start gulp, just run `gulp` and tasks with watch will run.
-
-To add a library, go to the `public` folder and use bower commands (such as `bower install isotope --save`)
+To add a library, go to the `client` folder and use bower commands (such as `bower install isotope --save`).
