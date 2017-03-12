@@ -23,6 +23,7 @@ var setFixedForSlides = (function() {
     }
     return false;
   }
+
   function unfixThisSlide(s) {
     if(s.isFixed) {
       s.el.classList.remove('is--pinned');
