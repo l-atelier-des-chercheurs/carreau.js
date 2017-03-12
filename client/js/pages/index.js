@@ -24,7 +24,6 @@ socket.on('listAllFolders', onListAllFolders);
 		var newConfDate= $('input.date').val();
 		var newConfAuth = $('input.auteur').val();
 		var newConfIntro = $('.introduction').val();
-		console.log('hey');
 		socket.emit( 'newConf', {
   		"titre":newConfTitre,
   		"introduction": newConfIntro,

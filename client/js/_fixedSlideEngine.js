@@ -13,6 +13,7 @@ var setFixedForSlides = (function() {
   // this means 3 slides will stay pinned at once before the last one gets hidden
   var slideLifetime = 2;
   var slidesData = [];
+  var $slides;
 
   function fixThisSlide(s) {
     if(!s.isFixed) {
@@ -44,10 +45,10 @@ var setFixedForSlides = (function() {
     }
   }
 
-  function getSlidesPositions(slides) {
+  function getSlidesPositions() {
     slidesData = [];
-    for (i =0; i<slides.length; i++){
-      slidesData[i] = { el: slides[i] };
+    for (i =0; i<$slides.length; i++){
+      slidesData[i] = { el: $slides[i] };
       slidesData[i].bounds = slidesData[i].el.getBoundingClientRect();
       slidesData[i].bounds.offsetTop = slidesData[i].bounds.top + window.pageYOffset;
     }
@@ -89,14 +90,24 @@ var setFixedForSlides = (function() {
   }
 
   return {
-
-    init : function(slides) {
-      getSlidesPositions(slides);
+    init : function($s) {
+      if($s === undefined) {
+        return;
+      }
+      $slides = $s;
+      getSlidesPositions();
       isRunning = true;
       loop();
     },
     stop : function() {
       isRunning = false;
-    }
+    },
+    update: function($slides) {
+      if(isRunning) {
+        getSlidesPositions();
+        // force update of fixed
+        lastPosition = -1;
+      }
+    },
   };
 })();

@@ -43,7 +43,6 @@ jQuery(document).ready(function($) {
 var resizeTimer;
 
 $(window).on('resize', function(e) {
-
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(function() {
     console.log('event: resize end');
@@ -210,6 +209,7 @@ function repositionSlides($s) {
   $s.each(function(i) {
     updateSlideContentPosition($(this));
   });
+  setFixedForSlides.update();
 }
 
 function listOneSlide(d) {
