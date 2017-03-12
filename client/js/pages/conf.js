@@ -29,9 +29,6 @@ socket.on('updateOneSlide', onUpdateOneSlide);
 
 
 
-
-
-
 /***
   ---
 ***/
@@ -164,7 +161,6 @@ function onListAllSlides(d) {
   // if we just sent a few medias/websites
   if( $('.js--popover_upload').hasClass('is--open')){
     $('.js--popover_upload').removeClass('is--open');
-    debugger;
     $('html,body').animate(
       {scrollTop: firstSlidePosY},
       900,
