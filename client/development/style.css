@@ -462,7 +462,7 @@ img, video, audio, svg {
     right: 0;
     bottom: 0;
     opacity: .3;
-    background: repeating-linear-gradient(-65deg, #0A997F, #0A997F 10px, rgba(10, 153, 127, 0) 10px, rgba(10, 153, 127, 0) 20px); }
+    background: repeating-linear-gradient(-65deg, #0A997F, #0A997F 10px, transparent 10px, transparent 20px); }
   .module--bandeau::after {
     content: '';
     z-index: 3;
@@ -473,7 +473,7 @@ img, video, audio, svg {
     right: 0;
     bottom: -50%;
     opacity: .3;
-    background: repeating-linear-gradient(65deg, #0A997F, #0A997F 10px, rgba(10, 153, 127, 0) 10px, rgba(10, 153, 127, 0) 20px); }
+    background: repeating-linear-gradient(65deg, #0A997F, #0A997F 10px, transparent 10px, transparent 20px); }
   .module--bandeau #intro {
     position: relative;
     margin: 0 auto;
@@ -725,7 +725,7 @@ body[data-page='conf']::after {
       content: "Section " counter(section) ": ";
       /* Display the counter */
       display: block;
-      color: #48C2B5;
+      color: #4BC0B4;
       position: absolute; }
 
 .slide {
