@@ -29,9 +29,6 @@ socket.on('updateOneSlide', onUpdateOneSlide);
 
 
 
-
-
-
 /***
   ---
 ***/
@@ -57,7 +54,6 @@ function init(){
   setWebcamEvents();
 
   window.slideSize = { "width" : window.innerHeight, "height" : window.innerHeight * 0.5625 };
-
 
 }
 
@@ -91,47 +87,40 @@ function toggleWebcamPopover() {
 
 function setDragEvents() {
 
-  $(window)
-    .on('dragover',function(e){
-      $(".drop-files-container").addClass('is--visible');
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    })
-    ;
-  $(".drop-files-container")
-      .on("drop", function(e) {
-        e.preventDefault();
-        $(".drop-files-container").removeClass('is--visible');
-        console.log("DROP FILE");
+  $(window).on('dragover',function(e){
+    $(".drop-files-container").addClass('is--visible');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 
+  $(".drop-files-container").on("drop", function(e) {
+    e.preventDefault();
+    $(".drop-files-container").removeClass('is--visible');
 
-      if( e.originalEvent.dataTransfer.files.length >= 0) {
-        var files = e.originalEvent.dataTransfer.files;
-        // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
-        var formData = new FormData();
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          // add the files to formData object for the data payload
-          formData.append('uploads[]', file, file.name);
-        }
-        uploadFormData(formData);
+    // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
+    if( e.originalEvent.dataTransfer.files.length >= 0) {
+      var files = e.originalEvent.dataTransfer.files;
+      var formData = new FormData();
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        // add the files to formData object for the data payload
+        formData.append('uploads[]', file, file.name);
       }
-      if(typeof e.originalEvent.dataTransfer.getData('text') === 'string' && e.originalEvent.dataTransfer.getData('text').length > 0) {
-        // code adapted from https://coligo.io/building-ajax-file-uploader-with-node/
-        var formData = new FormData();
-        formData.append('iframe[]', e.originalEvent.dataTransfer.getData('text'));
-        uploadFormData(formData);
-      }
-
-      })
-      .on('dragleave',function(e){
-        $(".drop-files-container").removeClass('is--visible');
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      })
-    ;
+      uploadFormData(formData);
+    }
+    if(typeof e.originalEvent.dataTransfer.getData('text') === 'string' && e.originalEvent.dataTransfer.getData('text').length > 0) {
+      var formData = new FormData();
+      formData.append('iframe[]', e.originalEvent.dataTransfer.getData('text'));
+      uploadFormData(formData);
+    }
+  })
+  .on('dragleave',function(e){
+    $(".drop-files-container").removeClass('is--visible');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 
 }
 
@@ -172,7 +161,6 @@ function onListAllSlides(d) {
   // if we just sent a few medias/websites
   if( $('.js--popover_upload').hasClass('is--open')){
     $('.js--popover_upload').removeClass('is--open');
-    debugger;
     $('html,body').animate(
       {scrollTop: firstSlidePosY},
       900,
@@ -189,19 +177,10 @@ function onUpdateOneSlide(d) {
     return $(this).data('name') === d.name;
   });
 
-  $thisSlide
-    .data(d)
-    ;
+  $thisSlide.data(d);
 
   updateSlideContentPosition( $thisSlide);
 }
-
-
-
-
-
-
-
 
 
 
@@ -415,38 +394,23 @@ function initInteractForSlide(s) {
 
       // call this function on every dragmove event
       onmove: function(event) {
-        $(event.target.parentElement).addClass('is--dragged');
-        var target = event.target,
-            // keep the dragged position in the data-x/data-y attributes
-            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+        $(s.slide.parentElement).addClass('is--dragged');
+        var x = (parseFloat(s.slide.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(s.slide.getAttribute('data-y')) || 0) + event.dy;
 
         // translate the element
-        target.style.webkitTransform =
-        target.style.transform =
+        s.slide.style.webkitTransform =
+        s.slide.style.transform =
           'translate(' + x + 'px, ' + y + 'px)';
 
         // update the posiion attributes
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
+        s.slide.setAttribute('data-x', x);
+        s.slide.setAttribute('data-y', y);
       },
       // call this function on every dragend event
       onend: function (event) {
-        $(event.target.parentElement).removeClass('is--dragged');
-        var target = event.target,
-            x = (parseFloat(target.getAttribute('data-x')) || 0),
-            y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-        var relativeX = x / window.innerWidth;
-        var relativeY = y / window.innerHeight;
-
-        var mediaPos = {
-          'mediaName' : target.parentElement.getAttribute('data-filename'),
-          'slugConfName' : app.slugConfName,
-          'posX' : relativeX,
-          'posY' : relativeY
-        }
-        socket.emit('mediaNewPos', mediaPos);
+        $(s.slide.parentElement).removeClass('is--dragged');
+        updateMediaPosition();
       },
     })
     .resizable({
@@ -458,56 +422,69 @@ function initInteractForSlide(s) {
       },
     })
     .on('resizemove', function (event) {
-      $(event.target.parentElement).addClass('is--resized');
-      var target = event.target,
-          x = (parseFloat(target.getAttribute('data-x')) || 0),
-          y = (parseFloat(target.getAttribute('data-y')) || 0);
+      $(s.slide.parentElement).addClass('is--resized');
+      var x = (parseFloat(s.slide.getAttribute('data-x')) || 0),
+          y = (parseFloat(s.slide.getAttribute('data-y')) || 0);
 
       // update the element's style
       var rectWidth = event.rect.width > 100 ? event.rect.width : 100;
       var rectHeight = event.rect.height > 100 ? event.rect.height : 100;
 
-      target.style.width  = rectWidth + 'px';
-      target.style.height = rectHeight + 'px';
+      s.slide.style.width  = rectWidth + 'px';
+      s.slide.style.height = rectHeight + 'px';
 
       // translate when resizing from top or left edges
       x += event.deltaRect.left;
       y += event.deltaRect.top;
 
-      target.style.webkitTransform = target.style.transform =
+      s.slide.style.webkitTransform = s.slide.style.transform =
           'translate(' + x + 'px,' + y + 'px)';
 
-      target.setAttribute('data-x', x);
-      target.setAttribute('data-y', y);
-//       target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
+      s.slide.setAttribute('data-x', x);
+      s.slide.setAttribute('data-y', y);
+//       s.slide.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
     })
     .on('resizeend', function (event) {
-      $(event.target.parentElement).removeClass('is--resized');
-      var target = event.target;
-      updateMediaSize(target);
+      $(s.slide.parentElement).removeClass('is--resized');
+      updateMediaSize();
+      updateMediaPosition();
     })
-    .on('doubletap', function (event) {
-      var target = event.target;
-      var tparent = target.parentElement;
-
-      var baseWidth = settings.startingWidth * window.innerWidth;
-      target.style.width  = baseWidth + 'px';
-      updateMediaSize(target);
+    .on('doubletap', function() {
+      var baseWidth = app.settings.startingWidth * window.innerWidth;
+      s.slide.style.width  = baseWidth + 'px';
+      updateMediaSize();
     })
     ;
 
-  function updateMediaSize(t) {
-    var w = t.offsetWidth;
-    var h = t.offsetHeight;
-    var relativeW = w / t.parentElement.offsetWidth;
-    var relativeH = h / t.parentElement.offsetHeight;
+
+  function updateMediaPosition() {
+    var x = (parseFloat(s.slide.getAttribute('data-x')) || 0),
+        y = (parseFloat(s.slide.getAttribute('data-y')) || 0);
+
+    var relativeX = x / window.innerWidth;
+    var relativeY = y / window.innerHeight;
+
+    var mediaPos = {
+      'mediaName' : s.slide.parentElement.getAttribute('data-filename'),
+      'slugConfName' : app.slugConfName,
+      'posX' : relativeX,
+      'posY' : relativeY
+    }
+    socket.emit('mediaNewPos', mediaPos);
+  }
+
+  function updateMediaSize() {
+    var w = s.slide.offsetWidth;
+    var h = s.slide.offsetHeight;
+    var relativeW = w / s.slide.parentElement.offsetWidth;
+    var relativeH = h / s.slide.parentElement.offsetHeight;
     var mediaSize = {
-      'mediaName' : t.parentElement.getAttribute('data-filename'),
+      'mediaName' : s.slide.parentElement.getAttribute('data-filename'),
       'slugConfName' : app.slugConfName,
       'width' : relativeW,
     }
     // ajouter la height si pas de ratio
-    if( !s.preserveRatio)
+    if(!s.preserveRatio)
       mediaSize.height = relativeH;
 
     socket.emit('mediaNewSize', mediaSize);

@@ -751,7 +751,8 @@ body[data-page='conf']::after {
     top: 0;
     left: 0;
     pointer-events: auto;
-    background-color: transparent; }
+    background-color: transparent;
+    outline: 1px solid #ccc; }
     .slide .slide--item_iframe {
       background-color: #dedcdc; }
       .slide .slide--item_iframe .slide--item--navbar {

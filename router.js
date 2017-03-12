@@ -119,7 +119,7 @@ module.exports = function(app,io,m){
             "msg" : "success",
             "medias" : JSON.stringify(allIframeMeta)
           }
-          // not using those packets actually
+          // not using those packets for now
           res.end(JSON.stringify(msg));
         });
       }
@@ -140,7 +140,7 @@ module.exports = function(app,io,m){
             "msg" : "success",
             "medias" : JSON.stringify(allFilesMeta)
           }
-          // not using those packets actually
+          // not using those packets for now
           res.end(JSON.stringify(msg));
         });
       }
@@ -195,39 +195,44 @@ module.exports = function(app,io,m){
         var fileNameWithoutExtension = new RegExp( settings.regexpRemoveFileExtension, 'i').exec( mediaFileName)[1];
         metaFileName = fileNameWithoutExtension + settings.metaFileext;
       }
-      var newPathToMeta = path.join(confPath, metaFileName);
 
-      // essayer d'avoir la taille du media
-      var newPathToMedia = path.join(confPath, mediaFileName);
-      try {
-        var dimension = sizeOf(newPathToMedia);
-        if(typeof dimension !== undefined)
-          var mediaRatio = dimension.height / dimension.width;
-      } catch(err) {
+      // check that a meta with this name doesn't exist already
+      api.findFirstFilenameNotTaken(confPath, metaFileName).then(function(metaFileName){
 
-      }
+        var newPathToMeta = path.join(confPath, metaFileName);
+        // essayer d'avoir la taille du media
+        var newPathToMedia = path.join(confPath, mediaFileName);
+        try {
+          var dimension = sizeOf(newPathToMedia);
+          if(typeof dimension !== undefined)
+            var mediaRatio = dimension.height / dimension.width;
+        } catch(err) {}
 
-      var mdata =
-      {
-        "name" : mediaFileName,
-        "created" : api.getCurrentDate(),
-        "modified" : api.getCurrentDate(),
-        "informations" : "",
-        "posX" : settings.startingPosX,
-        "posY" : settings.startingPosY,
-        "width" : settings.startingWidth,
-      };
-      if(mediaRatio !== undefined) {
-        mdata['ratio'] = mediaRatio;
-      }
+        var mdata =
+        {
+          "name" : mediaFileName,
+          "created" : api.getCurrentDate(),
+          "modified" : api.getCurrentDate(),
+          "informations" : "",
+          "posX" : settings.startingPosX,
+          "posY" : settings.startingPosY,
+          "width" : settings.startingWidth,
+        };
+        if(mediaRatio !== undefined) {
+          mdata['ratio'] = mediaRatio;
+        }
 
-      dev.logverbose("Saving JSON string " + JSON.stringify(mdata, null, 4));
-      api.storeData( newPathToMeta, mdata, 'create').then(function( meta) {
-        console.log( "New media meta file created at path " + newPathToMeta + " with meta : " + meta);
-        resolve(meta);
+        dev.logverbose("Saving JSON string " + JSON.stringify(mdata, null, 4));
+        api.storeData( newPathToMeta, mdata, 'create').then(function( meta) {
+          console.log( "New media meta file created at path " + newPathToMeta + " with meta : " + meta);
+          resolve(meta);
+        }, function(err) {
+          console.log(gutil.colors.red('--> Couldn\'t create media meta.'));
+          reject( 'Couldn\'t create media meta ' + err);
+        });
       }, function(err) {
-        console.log( gutil.colors.red('--> Couldn\'t create media meta.'));
-        reject( 'Couldn\'t create media meta ' + err);
+        console.log(gutil.colors.red('--> Couldn\'t find meta filename to use.'));
+        reject( 'Couldn\'t find meta filename to use ' + err);
       });
     });
   }

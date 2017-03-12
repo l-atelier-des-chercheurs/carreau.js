@@ -134,7 +134,7 @@ var sockets = (function() {
 
 
 
-  // CONF METHOD !!
+  // CONF METHOD
   function createNewConf( confData) {
     return new Promise(function(resolve, reject) {
       console.log("COMMON — createNewFolder");
