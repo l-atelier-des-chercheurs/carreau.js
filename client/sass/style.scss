@@ -493,15 +493,17 @@ body[data-page='conf']::after {
   margin-bottom:  20vh;
 
   body.is--debug & {
+/*
     counter-reset: section;
 
     .slide--item::before {
-      counter-increment: section;                /* Increment the section counter*/
-      content: "Section " counter(section) ": "; /* Display the counter */
+      counter-increment: section;
+      content: "Section " counter(section) ": ";
       display: block;
       color: $bleuvert;
       position: absolute;
     }
+*/
   }
 }
 

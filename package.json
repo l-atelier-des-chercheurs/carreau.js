@@ -26,9 +26,6 @@
     "asar": false,
     "mac": {
       "category": "public.app-category.education"
-    },
-    "win": {
-      "iconUrl": ""
     }
   },
   "dependencies": {
@@ -65,6 +62,7 @@
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.1.1",
+    "gulp-uglify": "^2.1.0",
     "jshint": "^2.9.3"
   }
 }
