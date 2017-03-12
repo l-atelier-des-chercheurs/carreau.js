@@ -11,7 +11,7 @@ var setFixedForSlides = (function() {
 
   var isRunning = false;
   // this means 3 slides will stay pinned at once before the last one gets hidden
-  var slideLifetime = 10;
+  var slideLifetime = 3;
   var slidesData = [];
   var $slides;
 
@@ -61,49 +61,41 @@ var setFixedForSlides = (function() {
         scroll(loop);
         return false;
     } else {
+
       var scrollSpeed = window.pageYOffset - lastPosition;
       lastPosition = window.pageYOffset;
-//       console.log('scrollSpeed : ' + scrollSpeed);
+
+      // position actuelle du scroll + vitesse actuelle = position anticipée à l'instant suivant
+      var nextFrameScrollPos = window.pageYOffset + scrollSpeed;
+      var slideUnderScrollPosIdx = 0;
+
+      // trouver la première slide qui est au-dessous de la ligne de scroll
       for (i=0; i<slidesData.length; i++){
-        // position actuelle du scroll + vitesse actuelle = position anticipée à l'instant suivant
-        if(window.pageYOffset + scrollSpeed >= slidesData[i].bounds.offsetTop) {
-
-          // tentative de fixed les slides qui sont entre le début et le moment actuel du scroll
-          var successFixSlide = fixThisSlide(slidesData[i]);
-
-          // si nouvelle slide fixed, alors
-          if(successFixSlide) {
-            console.log('Just made slide number ' + i + ' fixed.');
-            var hideSlideIndex = i - slideLifetime;
-            console.log('Will try to hide slide number ' + hideSlideIndex + '.');
-
-            // masquer toutes les slides qui ont un numéro entre 0 et hideSlideIndex
-            if(hideSlideIndex >= 0) {
-              for(j=0; j<=hideSlideIndex; j++) {
-                fixThisSlide(slidesData[j]);
-                farThisSlide(slidesData[j]);
-              }
-            }
-          }
-        } else {
-
-          // tentative de unfix les slides qui sont entre le moment actuel du scroll et la fin
-          var successUnFixSlide = unfixThisSlide(slidesData[i]);
-          if(successUnFixSlide) {
-            // supprimer is--far sur la slide n - x
-            var olderSlideToShow = i - slideLifetime;
-            if(olderSlideToShow >= 0) { unfarThisSlide(slidesData[olderSlideToShow]); }
-
-            // pour nettoyer, supprimer aussi le is--pinned et is--far sur toutes les slides après i
-            for(j=i; j<slidesData.length; j++) {
-              console.log('Will unfix ' + j);
-              unfixThisSlide(slidesData[j]);
-              unfarThisSlide(slidesData[j]);
-            }
-          }
-
+        if( slidesData[i].bounds.offsetTop > nextFrameScrollPos) {
+          slideUnderScrollPosIdx = i;
+          break;
         }
       }
+
+      // pour toutes les slides, leur donner le bon statut en fonction de leur position avant/après slideUnderScrollPosIdx
+      for (i=0; i<slidesData.length; i++){
+        // si la slide est avant la limite
+        if(i < slideUnderScrollPosIdx) {
+          fixThisSlide(slidesData[i]);
+          // si en plus elle est loin, la passer en far
+          if(i < slideUnderScrollPosIdx-slideLifetime) {
+            farThisSlide(slidesData[i]);
+          // sinon, enlever le far (pour le scroll vers le haut
+          } else {
+            unfarThisSlide(slidesData[i]);
+          }
+        } else {
+          // si elle est à l'index ou après
+          unfixThisSlide(slidesData[i]);
+          unfarThisSlide(slidesData[i]);
+        }
+      }
+
       if(isRunning) {
         scroll(loop);
       }

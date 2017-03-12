@@ -261,7 +261,7 @@ function listOneSlide(d) {
             }
         })
       .end()
-      .find('.js--openIframeNewTab')
+      .find('.js--openInBrowser')
         .attr('href', d.name)
       .end()
       ;

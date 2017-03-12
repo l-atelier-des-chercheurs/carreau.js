@@ -53,3 +53,12 @@ $.extend($.easing,
     return c/2*((t-=2)*t*t*t*t + 2) + b;
   }
 });
+
+
+$('body').on('click', '.js--openInBrowser', function() {
+  if(require('electron') !== undefined) {
+    var shell = require('electron').shell;
+    event.preventDefault();
+    shell.openExternal(event.target.href);
+  }
+});
