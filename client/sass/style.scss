@@ -530,8 +530,7 @@ body[data-page='conf']::after {
   background-color: transparent;
 
   // that delay for opacity is made to increase responsivity when pinning a slide
-  transition: background-color .3s ease, opacity .3s .3s;
-
+  transition: background-color .3s ease, opacity 0.3s 0.3s;
 
 
   .slide--item {
@@ -633,7 +632,7 @@ body[data-page='conf']::after {
   }
 
   .shadowed {
-    box-shadow: 0px 0px 50px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 50px rgba(0,0,0,0.3);
   }
 
   &.is--dragged {
@@ -648,6 +647,10 @@ body[data-page='conf']::after {
 
   &.is--far {
     opacity: 0;
+
+    .slide--item {
+      display: none !important;
+    }
   }
 
 
