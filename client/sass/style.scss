@@ -395,10 +395,10 @@ body[data-page='conf']::after {
     font-weight:  600;
     span {
       margin-right: 15px;
-      &::before {
+      &:not(:first-child)::before {
         content:'•';
         color: $vert_sombre;
-        margin-right: 8px;
+        margin-right: 15px;
       }
 
       &:empty {
@@ -530,7 +530,7 @@ body[data-page='conf']::after {
   background-color: transparent;
 
   // that delay for opacity is made to increase responsivity when pinning a slide
-  transition: background-color .3s ease, opacity 0.3s 0.3s;
+  transition: background-color .3s ease;
 
 
   .slide--item {
@@ -639,21 +639,15 @@ body[data-page='conf']::after {
     background-color: fade-out($vert_sombre,0.70);
   }
 
-
-
   &.is--pinned > .slide--item {
     position: fixed;
   }
 
   &.is--far {
-    opacity: 0;
-
     .slide--item {
       display: none !important;
     }
   }
-
-
 }
 
 

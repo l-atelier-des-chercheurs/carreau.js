@@ -12,7 +12,7 @@ var setFixedForSlides = (function() {
 
   var isRunning = false;
   // this means 3 slides will stay pinned at once before the last one gets hidden
-  var slideLifetime = 10;
+  var slideLifetime = 5;
   var slidesData = [];
   var $slides;
 
@@ -87,15 +87,18 @@ var setFixedForSlides = (function() {
           if (i < slideUnderScrollPosIdx - slideLifetime) {
             farThisSlide(slidesData[i]);
             // sinon, enlever le far (pour le scroll vers le haut
-          } else if (i > slideUnderScrollPosIdx + slideLifetime) {
-            farThisSlide(slidesData[i]);
           } else {
             unfarThisSlide(slidesData[i]);
           }
         } else {
           // si elle est à l'index ou après
           unfixThisSlide(slidesData[i]);
-          unfarThisSlide(slidesData[i]);
+
+          if (i > slideUnderScrollPosIdx + slideLifetime) {
+            farThisSlide(slidesData[i]);
+          } else {
+            unfarThisSlide(slidesData[i]);
+          }
         }
       }
 

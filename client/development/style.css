@@ -250,7 +250,7 @@ input[type="submit"] {
 /**
  * Re-set default cursor for disabled elements.
  */
-button[disabled], .dossier input[disabled][type="submit"], .slide .slide--item [disabled].toggleIframe, .slide .slide--item [disabled].iframeNewTab,
+button[disabled], .dossier input[disabled][type="submit"], .slide .slide--item .toggleIframe[disabled], .slide .slide--item .iframeNewTab[disabled],
 html input[disabled] {
   cursor: default; }
 
@@ -402,7 +402,7 @@ button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide
   margin: 5px;
   cursor: pointer;
   text-align: center; }
-  button:focus, .dossier input[type="submit"]:focus, .slide .slide--item .toggleIframe:focus, .slide .slide--item .iframeNewTab:focus, .btn:focus {
+  button:focus, .dossier input:focus[type="submit"], .slide .slide--item .toggleIframe:focus, .slide .slide--item .iframeNewTab:focus, .btn:focus {
     outline: none; }
   button.btn_retour, .dossier input.btn_retour[type="submit"], .slide .slide--item .btn_retour.toggleIframe, .slide .slide--item .btn_retour.iframeNewTab, .btn.btn_retour {
     margin-top: 15px;
@@ -648,10 +648,10 @@ body[data-page='conf']::after {
     font-weight: 600; }
     .module--stackIntro .meta span {
       margin-right: 15px; }
-      .module--stackIntro .meta span::before {
+      .module--stackIntro .meta span:not(:first-child)::before {
         content: '•';
         color: #0A997F;
-        margin-right: 8px; }
+        margin-right: 15px; }
       .module--stackIntro .meta span:empty {
         display: none; }
   .module--stackIntro .introduction {
@@ -747,7 +747,7 @@ body[data-page='conf']::after {
   user-select: none;
   pointer-events: none;
   background-color: transparent;
-  transition: background-color .3s ease, opacity 0.3s 0.3s; }
+  transition: background-color .3s ease; }
   .slide .slide--item {
     position: absolute;
     top: 0;
@@ -821,10 +821,8 @@ body[data-page='conf']::after {
     background-color: rgba(10, 153, 127, 0.3); }
   .slide.is--pinned > .slide--item {
     position: fixed; }
-  .slide.is--far {
-    opacity: 0; }
-    .slide.is--far .slide--item {
-      display: none !important; }
+  .slide.is--far .slide--item {
+    display: none !important; }
 
 .module-popover {
   position: fixed;
