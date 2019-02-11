@@ -1,13 +1,14 @@
 var setFixedForSlides = (function() {
-
-
   // Detect request animation frame
-  var scroll = window.requestAnimationFrame ||
-               window.webkitRequestAnimationFrame ||
-               window.mozRequestAnimationFrame ||
-               window.msRequestAnimationFrame ||
-               window.oRequestAnimationFrame ||
-               function(callback){ window.setTimeout(callback, 1000/60); };
+  var scroll =
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
 
   var isRunning = false;
   // this means 3 slides will stay pinned at once before the last one gets hidden
@@ -16,7 +17,7 @@ var setFixedForSlides = (function() {
   var $slides;
 
   function fixThisSlide(s) {
-    if(!s.isFixed) {
+    if (!s.isFixed) {
       s.el.classList.add('is--pinned');
       s.isFixed = true;
       return true;
@@ -25,7 +26,7 @@ var setFixedForSlides = (function() {
   }
 
   function unfixThisSlide(s) {
-    if(s.isFixed) {
+    if (s.isFixed) {
       s.el.classList.remove('is--pinned');
       s.isFixed = false;
       return true;
@@ -34,34 +35,34 @@ var setFixedForSlides = (function() {
   }
 
   function farThisSlide(s) {
-    if(!s.isFar) {
+    if (!s.isFar) {
       s.el.classList.add('is--far');
       s.isFar = true;
     }
   }
   function unfarThisSlide(s) {
-    if(s.isFar) {
+    if (s.isFar) {
       s.el.classList.remove('is--far');
       s.isFar = false;
     }
   }
 
   function getSlidesPositions() {
-    for (i =0; i<$slides.length; i++){
+    for (i = 0; i < $slides.length; i++) {
       slidesData[i] = { el: $slides[i] };
       slidesData[i].bounds = slidesData[i].el.getBoundingClientRect();
-      slidesData[i].bounds.offsetTop = slidesData[i].bounds.top + window.pageYOffset;
+      slidesData[i].bounds.offsetTop =
+        slidesData[i].bounds.top + window.pageYOffset;
     }
   }
 
   var lastPosition = -1;
 
-  function loop(){
+  function loop() {
     if (lastPosition === window.pageYOffset) {
-        scroll(loop);
-        return false;
+      scroll(loop);
+      return false;
     } else {
-
       var scrollSpeed = window.pageYOffset - lastPosition;
       lastPosition = window.pageYOffset;
 
@@ -70,22 +71,22 @@ var setFixedForSlides = (function() {
       var slideUnderScrollPosIdx = slidesData.length;
 
       // trouver la première slide qui est au-dessous de la ligne de scroll
-      for (i=0; i<slidesData.length; i++){
-        if( slidesData[i].bounds.offsetTop > nextFrameScrollPos) {
+      for (i = 0; i < slidesData.length; i++) {
+        if (slidesData[i].bounds.offsetTop > nextFrameScrollPos) {
           slideUnderScrollPosIdx = i;
           break;
         }
       }
 
       // pour toutes les slides, leur donner le bon statut en fonction de leur position avant/après slideUnderScrollPosIdx
-      for (i=0; i<slidesData.length; i++){
+      for (i = 0; i < slidesData.length; i++) {
         // si la slide est avant la limite
-        if(i < slideUnderScrollPosIdx) {
+        if (i < slideUnderScrollPosIdx) {
           fixThisSlide(slidesData[i]);
           // si en plus elle est loin, la passer en far
-          if(i < slideUnderScrollPosIdx-slideLifetime) {
+          if (i < slideUnderScrollPosIdx - slideLifetime) {
             farThisSlide(slidesData[i]);
-          // sinon, enlever le far (pour le scroll vers le haut
+            // sinon, enlever le far (pour le scroll vers le haut
           } else {
             unfarThisSlide(slidesData[i]);
           }
@@ -96,16 +97,15 @@ var setFixedForSlides = (function() {
         }
       }
 
-      if(isRunning) {
+      if (isRunning) {
         scroll(loop);
       }
     }
-
   }
 
   return {
-    init : function($s) {
-      if($s === undefined) {
+    init: function($s) {
+      if ($s === undefined) {
         return;
       }
       $slides = $s;
@@ -113,15 +113,15 @@ var setFixedForSlides = (function() {
       isRunning = true;
       loop();
     },
-    stop : function() {
+    stop: function() {
       isRunning = false;
     },
     update: function($slides) {
-      if(isRunning) {
+      if (isRunning) {
         getSlidesPositions();
         // force update of fixed elements
         lastPosition = window.pageYOffset - 10;
       }
-    },
+    }
   };
 })();
