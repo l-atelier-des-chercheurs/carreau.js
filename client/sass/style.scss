@@ -214,14 +214,19 @@ img, video, audio, svg {
 .dossier-list {
   @include clearfix;
   margin: 0 -10px;
+
+  column-width: 250px;
 }
 
 .dossier {
   position: relative;
-  width: 285px;
+  max-width: 300px;
+  width: 100%;
   float: left;
   padding: 15px 20px 20px;
   margin:10px;
+
+  break-inside: avoid;
 
   background-color: hsl(0, 0%, 94%);
   border-bottom:  2px solid $vert_sombre;

@@ -495,7 +495,8 @@ img, video, audio, svg {
     margin-bottom: 15px; }
 
 .dossier-list {
-  margin: 0 -10px; }
+  margin: 0 -10px;
+  column-width: 250px; }
   .dossier-list:before, .dossier-list:after {
     content: " ";
     display: table; }
@@ -504,10 +505,12 @@ img, video, audio, svg {
 
 .dossier {
   position: relative;
-  width: 285px;
+  max-width: 300px;
+  width: 100%;
   float: left;
   padding: 15px 20px 20px;
   margin: 10px;
+  break-inside: avoid;
   background-color: #f0f0f0;
   border-bottom: 2px solid #0A997F;
   border-radius: 2px;
