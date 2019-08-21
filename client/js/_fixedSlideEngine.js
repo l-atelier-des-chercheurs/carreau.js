@@ -83,13 +83,14 @@ var setFixedForSlides = (function() {
         // si la slide est avant la limite
         if (i < slideUnderScrollPosIdx) {
           fixThisSlide(slidesData[i]);
-          // si en plus elle est loin, la passer en far
           if (i < slideUnderScrollPosIdx - slideLifetime) {
+            // si en plus elle est loin, la passer en far
             farThisSlide(slidesData[i]);
-            // sinon, enlever le far (pour le scroll vers le haut
           } else {
+            // sinon, enlever le far (pour le scroll vers le haut
             unfarThisSlide(slidesData[i]);
           }
+          slidesData[i].el.style.opacity = 1;
         } else {
           // si elle est à l'index ou après
           unfixThisSlide(slidesData[i]);
@@ -99,6 +100,11 @@ var setFixedForSlides = (function() {
           } else {
             unfarThisSlide(slidesData[i]);
           }
+
+          // régler l’opacity en fonction de la distance au scroll actuel
+          var op = (slidesData[i].bounds.offsetTop - nextFrameScrollPos) / 100;
+          if (op < 0.05) op = 0;
+          slidesData[i].el.style.opacity = 1 - op;
         }
       }
 

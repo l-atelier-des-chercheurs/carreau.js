@@ -1,57 +1,67 @@
 // I M P O R T
 
-@import "_normalize.scss";
-@import "_variables.scss";
-@import "_fonts.scss";
+@import '_normalize.scss';
+@import '_variables.scss';
+@import '_fonts.scss';
 
 ::-moz-selection {
-    background: rgba(151, 151, 151,0.25);
+  background: rgba(151, 151, 151, 0.25);
 }
 ::selection {
-    background: rgba(151, 151, 151,0.25);
+  background: rgba(151, 151, 151, 0.25);
 }
 html {
-	margin:0;
+  margin: 0;
 }
-body,html {
-	min-height:100%;
+body,
+html {
+  min-height: 100%;
 }
-
 
 html {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
-*, *:before, *:after {
-    box-sizing: border-box;
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
-
 
 p {
   font-size: 1em;
-  margin-bottom: .5em;
-  line-height:  1.4;
+  margin-bottom: 0.5em;
+  line-height: 1.4;
 }
 
-li{list-style: none;}
+li {
+  list-style: none;
+}
 
-h1,h2,h3,h4,h5,h6{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Fira Sans', sans-serif;
-  font-weight:  300;
+  font-weight: 300;
   margin: 0;
-
 }
-
 
 /******************
   Mixins
   ********************/
 
 @mixin clearfix {
-  &:before, &:after { content: " "; display: table; }
-  &:after { clear: both; }
+  &:before,
+  &:after {
+    content: ' ';
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
 }
-
-
 
 @mixin container {
   position: relative;
@@ -60,7 +70,6 @@ h1,h2,h3,h4,h5,h6{
   max-width: 1200px;
 }
 
-
 @mixin button {
   -webkit-appearance: none;
   display: inline-block;
@@ -68,7 +77,7 @@ h1,h2,h3,h4,h5,h6{
   color: white;
   border: none;
   padding: 10px 15px;
-  font-size: .8em;
+  font-size: 0.8em;
   border-radius: 5px;
   margin: 5px;
   cursor: pointer;
@@ -76,7 +85,6 @@ h1,h2,h3,h4,h5,h6{
 
   &:focus {
     outline: none;
-
   }
 }
 
@@ -90,17 +98,16 @@ h1,h2,h3,h4,h5,h6{
   border-radius: 50%;
 }
 
-
-button, .btn {
+button,
+.btn {
   @include button;
 
   &.btn_retour {
-    margin-top:   15px;
-    margin-left:  15px;
+    margin-top: 15px;
+    margin-left: 15px;
   }
 
   &.btn_openCloseCameraSettings {
-
   }
 }
 
@@ -117,14 +124,14 @@ body {
   }
 }
 
-a{
-	color: #000;
-	text-decoration: none;
+a {
+  color: #000;
+  text-decoration: none;
 }
 
 a:hover {
-	color: #000;
-	text-decoration: none;
+  color: #000;
+  text-decoration: none;
 }
 
 ul {
@@ -135,20 +142,22 @@ fieldset {
   border: 1px solid #fff;
 }
 
-img, video, audio, svg {
-	display: block;
-	min-width: 100%;
-	width:100%;
+img,
+video,
+audio,
+svg {
+  display: block;
+  min-width: 100%;
+  width: 100%;
 }
-
 
 // index
 
 .module--bandeau {
   position: relative;
-  width:  100%;
+  width: 100%;
   min-height: 150px;
-  background-color: fade-out($vert_sombre, .2);
+  background-color: fade-out($vert_sombre, 0.2);
   color: white;
   overflow: hidden;
 
@@ -170,8 +179,14 @@ img, video, audio, svg {
     left: 0;
     right: 0;
     bottom: 0;
-    opacity: .3;
-    background: repeating-linear-gradient( -65deg, $vert_sombre, $vert_sombre 10px, transparent 10px, transparent 20px );
+    opacity: 0.3;
+    background: repeating-linear-gradient(
+      -65deg,
+      $vert_sombre,
+      $vert_sombre 10px,
+      transparent 10px,
+      transparent 20px
+    );
   }
   &::after {
     content: '';
@@ -182,33 +197,33 @@ img, video, audio, svg {
     left: 0;
     right: 0;
     bottom: -50%;
-    opacity: .3;
-    background: repeating-linear-gradient( 65deg, $vert_sombre, $vert_sombre 10px, transparent 10px, transparent 20px );
-
+    opacity: 0.3;
+    background: repeating-linear-gradient(
+      65deg,
+      $vert_sombre,
+      $vert_sombre 10px,
+      transparent 10px,
+      transparent 20px
+    );
   }
-
 
   #intro {
     @include container;
     position: relative;
     z-index: 999;
     color: white;
-    font-size:  2em;
+    font-size: 2em;
     margin-bottom: 5px;
   }
-
 }
-
-
 
 .module--listePresentations {
   @include container;
 
   h2 {
     margin-top: 25px;
-    margin-bottom:  15px;
+    margin-bottom: 15px;
   }
-
 }
 
 .dossier-list {
@@ -224,15 +239,15 @@ img, video, audio, svg {
   width: 100%;
   float: left;
   padding: 15px 20px 20px;
-  margin:10px;
+  margin: 10px;
 
   break-inside: avoid;
 
   background-color: hsl(0, 0%, 94%);
-  border-bottom:  2px solid $vert_sombre;
+  border-bottom: 2px solid $vert_sombre;
   border-radius: 2px;
 
-  transition: background-color .4s ease-out, transform .4s ease-out;;
+  transition: background-color 0.4s ease-out, transform 0.4s ease-out;
 
   &:hover {
     background-color: hsl(0, 0%, 98%);
@@ -251,10 +266,9 @@ img, video, audio, svg {
     .introduction {
       display: block !important;
     }
-
   }
 
-  .index{
+  .index {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -270,11 +284,11 @@ img, video, audio, svg {
   }
 
   .title {
-    font-size:  2rem;
-    margin-bottom:  30px;
+    font-size: 2rem;
+    margin-bottom: 30px;
     color: $vert_sombre;
-    font-weight:  400;
-    transition: color .6s;
+    font-weight: 400;
+    transition: color 0.6s;
 
     &:hover {
       color: darken($vert_sombre, 10%);
@@ -287,46 +301,45 @@ img, video, audio, svg {
   }
   .meta-data {
     color: #999;
-    >* {
-      margin-bottom:  5px;
+    > * {
+      margin-bottom: 5px;
     }
     h4 {
-      font-weight:  400;
+      font-weight: 400;
       display: inline-block;
       margin: 0;
     }
 
     span {
-      font-weight:  600;
-      margin-left:  5px;
+      font-weight: 600;
+      margin-left: 5px;
     }
-
   }
 
-  input, textarea {
-    width:  100%;
-    padding:5px;
-    border:2px solid #eee;
+  input,
+  textarea {
+    width: 100%;
+    padding: 5px;
+    border: 2px solid #eee;
     &:focus {
       outline: 2px solid $vert_sombre;
     }
   }
 
-  input[type="submit"] {
+  input[type='submit'] {
     @extend button;
-      width: auto;
-      float: right;
-      margin-top: 15px;
+    width: auto;
+    float: right;
+    margin-top: 15px;
   }
 }
-
 
 /********************************************************************
               POPUP
 ********************************************************************/
 .module--popup {
   position: fixed;
-  top:15px;
+  top: 15px;
   right: 15px;
   width: 260px;
 
@@ -334,17 +347,17 @@ img, video, audio, svg {
   overflow: scroll;
 
   display: none;
-  z-index:  999;
+  z-index: 999;
 
   .module--popup--textContent {
     position: relative;
-    background-color: fade-out(#D1DF98, 0);
+    background-color: fade-out(#d1df98, 0);
     border-radius: 4px;
     padding: 10px;
     margin: 4px;
-    font-size:  .8em;
+    font-size: 0.8em;
 
-    transition: padding .6s ease-out, font-size .4s;
+    transition: padding 0.6s ease-out, font-size 0.4s;
 
     p {
       margin: 0;
@@ -352,14 +365,14 @@ img, video, audio, svg {
 
     .module--popup--closePopup {
       @include small_button;
-      background-color: darken(#D1DF98, 10%);
+      background-color: darken(#d1df98, 10%);
       position: absolute;
       top: 0;
       right: 0;
     }
   }
 
-/*
+  /*
   &:hover  {
     > .module--popup--textContent {
       font-size:  .8em;
@@ -369,12 +382,10 @@ img, video, audio, svg {
 */
 }
 
-
-
 // conf
 
 body[data-page='conf']::after {
-//   content: '.';
+  //   content: '.';
   margin-top: 100vh;
   display: block;
 }
@@ -384,24 +395,24 @@ body[data-page='conf']::after {
   width: 80%;
   max-width: 1200px;
   min-height: 40vh;
-  padding-bottom:   40px;
+  padding-bottom: 40px;
   font-size: 1.8em;
   line-height: 2;
 
   .titre {
-    margin-top:140px;
+    margin-top: 140px;
     margin-bottom: 0px;
-    font-size:  1.2em;
+    font-size: 1.2em;
     letter-spacing: -0.02em;
-    line-height:  1.2;
+    line-height: 1.2;
   }
 
   .meta {
-    font-weight:  600;
+    font-weight: 600;
     span {
       margin-right: 15px;
       &:not(:first-child)::before {
-        content:'•';
+        content: '•';
         color: $vert_sombre;
         margin-right: 15px;
       }
@@ -417,13 +428,13 @@ body[data-page='conf']::after {
     margin-bottom: 80px;
 
     h2 {
-      margin-top:20px;
+      margin-top: 20px;
       margin-bottom: 20px;
     }
 
     h3 {
       text-transform: uppercase;
-      font-size:  .8em;
+      font-size: 0.8em;
       & + p {
         margin-top: 0;
       }
@@ -434,46 +445,45 @@ body[data-page='conf']::after {
       margin-bottom: 140px;
     }
 
-    ul,ol {
-      padding-left: 0;  margin-left: 0;
+    ul,
+    ol {
+      padding-left: 0;
+      margin-left: 0;
       list-style: none;
       li {
-
-        padding-left: 0;  margin-left: 0;
-  			&::before {
-          content:'—';
+        padding-left: 0;
+        margin-left: 0;
+        &::before {
+          content: '—';
           color: $vert_sombre;
-  				display: inline-block;
-  				margin-right: 10px;
-  			}
+          display: inline-block;
+          margin-right: 10px;
+        }
       }
-
     }
-
-
   }
-
 }
-
 
 #upload-input {
   display: none;
 }
 
-.drop-files-container{
-	position:fixed;
-  top: 0; left: 0;  right: 0; bottom: 0;
+.drop-files-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: $vert_sombre;
   opacity: 0;
-  z-index:  -1;
-  transition: opacity .4s ease-out;
+  z-index: -1;
+  transition: opacity 0.4s ease-out;
 
   &.is--visible {
     opacity: 1;
-    z-index:  1500;
+    z-index: 1500;
   }
 }
-
 
 .instructions {
   display: block;
@@ -485,7 +495,7 @@ body[data-page='conf']::after {
   font-size: 2em;
   font-weight: 200;
   padding: 40px;
-  background-color: rgba(255,255,255,.1);
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   margin-top: 30vh;
   text-align: center;
@@ -495,10 +505,10 @@ body[data-page='conf']::after {
 
 .slides-list {
   position: relative;
-  margin-bottom:  20vh;
+  margin-bottom: 20vh;
 
   body.is--debug & {
-/*
+    /*
     counter-reset: section;
 
     .slide--item::before {
@@ -512,42 +522,40 @@ body[data-page='conf']::after {
   }
 }
 
-
-
 .slide {
-
   position: relative;
-  z-index:  1;
-  width:  100%;
-  width:  100vw;
+  z-index: 1;
+  width: 100%;
+  width: 100vw;
   height: 56.25vw;
-/*
+  /*
   height:   0%;
   padding-bottom:   56.25%;
 */
   -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 
   pointer-events: none;
   background-color: transparent;
 
   // that delay for opacity is made to increase responsivity when pinning a slide
-  transition: background-color .3s ease;
-
+  transition: background-color 0.3s ease;
 
   .slide--item {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    pointer-events: auto;
-//     padding: 10px;
-//  problématique (marge sur les côtés)
+    pointer-events: none;
+    //     padding: 10px;
+    //  problématique (marge sur les côtés)
     background-color: transparent;
 
     outline: 1px solid #ccc;
+
+    transition: all 0.1s ease-out;
 
     &_iframe {
       background-color: #dedcdc;
@@ -556,7 +564,7 @@ body[data-page='conf']::after {
         display: flex;
         flex-direction: row;
         align-items: center;
-        height:   30px;
+        height: 30px;
         margin-top: 10px;
         margin-bottom: 10px;
       }
@@ -564,7 +572,7 @@ body[data-page='conf']::after {
       iframe {
         pointer-events: none;
         background-color: transparent;
-        transition: background-color .8s ease-out;
+        transition: background-color 0.8s ease-out;
       }
       &.is--iframeOn iframe {
         pointer-events: auto;
@@ -617,7 +625,7 @@ body[data-page='conf']::after {
       @extend button;
       border: none;
       padding: 10px 15px;
-      font-size: .8em;
+      font-size: 0.8em;
     }
   }
 
@@ -628,7 +636,7 @@ body[data-page='conf']::after {
   iframe {
     width: calc(100% - 16px);
     height: calc(100% - 16px - 40px);
-    margin:8px;
+    margin: 8px;
     margin-top: 0;
     border: none;
     background-color: #fff;
@@ -637,15 +645,16 @@ body[data-page='conf']::after {
   }
 
   .shadowed {
-    box-shadow: 0px 0px 50px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.3);
   }
 
   &.is--dragged {
-    background-color: fade-out($vert_sombre,0.70);
+    background-color: fade-out($vert_sombre, 0.7);
   }
 
   &.is--pinned > .slide--item {
     position: fixed;
+    pointer-events: auto;
   }
 
   &.is--far {
@@ -655,13 +664,15 @@ body[data-page='conf']::after {
   }
 }
 
-
 .module-popover {
-	position:fixed;
-  top: 0; left: 0;  right: 0; bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: $vert_sombre;
-  z-index:  1001;
-  transition: opacity .4s ease-out;
+  z-index: 1001;
+  transition: opacity 0.4s ease-out;
   pointer-events: none;
 
   display: none;
@@ -672,7 +683,6 @@ body[data-page='conf']::after {
   }
 
   &.module-popover_upload {
-
     .progress-bar {
       display: none;
     }
@@ -690,13 +700,13 @@ body[data-page='conf']::after {
         width: 100%;
         height: 100%;
         z-index: 4;
-        background-color: fade-out(#000, .8);
+        background-color: fade-out(#000, 0.8);
       }
     }
 
     .feedSettings--scrollWindow {
       position: relative;
-      z-index:  5;
+      z-index: 5;
       max-width: 280px;
       margin: 0 auto;
       margin-right: 0;
@@ -705,7 +715,7 @@ body[data-page='conf']::after {
 
       background-color: $vert_sombre;
       color: white;
-      font-size:  80%;
+      font-size: 80%;
       font-weight: 300;
 
       .btn_openSettings {
@@ -720,8 +730,8 @@ body[data-page='conf']::after {
       .sourceSelector {
         .selectField {
           display: block;
-          width:  100%;
-          margin-bottom:  10px;
+          width: 100%;
+          margin-bottom: 10px;
 
           label {
             margin-right: 20px;
@@ -730,12 +740,11 @@ body[data-page='conf']::after {
           }
         }
 
-
         // not using sound sources for now
-        .audioSource, .audioOutput {
+        .audioSource,
+        .audioOutput {
           display: none;
         }
-
       }
 
       .resolutionSelector {
@@ -753,22 +762,20 @@ body[data-page='conf']::after {
         }
 
         label {
-          letter-spacing: .3px;
+          letter-spacing: 0.3px;
         }
 
         input:checked + label {
-          font-weight:  600;
+          font-weight: 600;
         }
       }
     }
   }
-
 }
 
 .js--interactevents {
   background-color: #f9f9f9;
 }
-
 
 .js--templates {
   display: none;

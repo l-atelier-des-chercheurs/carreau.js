@@ -346,19 +346,22 @@ function updateSlideContentPosition($s) {
   }
   var posX = dposX * window.innerWidth;
   var posY = dposY * window.innerHeight;
+  var rot = Number.parseInt(Math.random() * 50 - 25);
 
   return $s
     .attr('data-fileName', d.metaName)
     .find('.slide--item')
     .css({
-      transform:
-        'translate(' + parseInt(posX) + 'px, ' + parseInt(posY) + 'px)',
+      transform: `translate(${parseInt(posX)}px, ${parseInt(
+        posY
+      )}px) rotate(${rot}deg)`,
       width: parseInt(pxWidth),
       height: parseInt(pxHeight),
       display: 'block'
     })
     .attr('data-x', parseInt(posX))
     .attr('data-y', parseInt(posY))
+    .attr('data-rot', parseInt(rot))
     .end();
 }
 
@@ -391,11 +394,11 @@ function initInteractForSlide(s) {
       onmove: function(event) {
         $(s.slide.parentElement).addClass('is--dragged');
         var x = (parseFloat(s.slide.getAttribute('data-x')) || 0) + event.dx,
-          y = (parseFloat(s.slide.getAttribute('data-y')) || 0) + event.dy;
+          y = (parseFloat(s.slide.getAttribute('data-y')) || 0) + event.dy,
+          rot = parseInt(s.slide.getAttribute('data-rot')) || 0;
 
         // translate the element
-        s.slide.style.webkitTransform = s.slide.style.transform =
-          'translate(' + x + 'px, ' + y + 'px)';
+        s.slide.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
 
         // update the posiion attributes
         s.slide.setAttribute('data-x', x);
@@ -417,7 +420,8 @@ function initInteractForSlide(s) {
     .on('resizemove', function(event) {
       $(s.slide.parentElement).addClass('is--resized');
       var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
-        y = parseFloat(s.slide.getAttribute('data-y')) || 0;
+        y = parseFloat(s.slide.getAttribute('data-y')) || 0,
+        rot = parseInt(s.slide.getAttribute('data-rot')) || 0;
 
       // update the element's style
       var rectWidth = event.rect.width > 100 ? event.rect.width : 100;
@@ -430,8 +434,7 @@ function initInteractForSlide(s) {
       x += event.deltaRect.left;
       y += event.deltaRect.top;
 
-      s.slide.style.webkitTransform = s.slide.style.transform =
-        'translate(' + x + 'px,' + y + 'px)';
+      s.slide.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
 
       s.slide.setAttribute('data-x', x);
       s.slide.setAttribute('data-y', y);

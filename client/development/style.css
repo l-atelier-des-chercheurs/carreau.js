@@ -203,7 +203,7 @@ samp {
  * 2. Correct font properties not being inherited.
  * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
  */
-button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
+button, .dossier input[type='submit'], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
 input,
 optgroup,
 select,
@@ -218,7 +218,7 @@ textarea {
 /**
  * Address `overflow` set to `hidden` in IE 8/9/10/11.
  */
-button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab {
+button, .dossier input[type='submit'], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab {
   overflow: visible; }
 
 /**
@@ -227,7 +227,7 @@ button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide
  * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
  * Correct `select` style inheritance in Firefox.
  */
-button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
+button, .dossier input[type='submit'], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
 select {
   text-transform: none; }
 
@@ -238,7 +238,7 @@ select {
  * 3. Improve usability and consistency of cursor style between image-type
  *    `input` and others.
  */
-button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
+button, .dossier input[type='submit'], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
 html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
@@ -250,14 +250,14 @@ input[type="submit"] {
 /**
  * Re-set default cursor for disabled elements.
  */
-button[disabled], .dossier input[disabled][type="submit"], .slide .slide--item .toggleIframe[disabled], .slide .slide--item .iframeNewTab[disabled],
+button[disabled], .dossier input[disabled][type='submit'], .slide .slide--item .toggleIframe[disabled], .slide .slide--item .iframeNewTab[disabled],
 html input[disabled] {
   cursor: default; }
 
 /**
  * Remove inner padding and border in Firefox 4+.
  */
-button::-moz-focus-inner, .dossier input[type="submit"]::-moz-focus-inner, .slide .slide--item .toggleIframe::-moz-focus-inner, .slide .slide--item .iframeNewTab::-moz-focus-inner,
+button::-moz-focus-inner, .dossier input[type='submit']::-moz-focus-inner, .slide .slide--item .toggleIframe::-moz-focus-inner, .slide .slide--item .iframeNewTab::-moz-focus-inner,
 input::-moz-focus-inner {
   border: 0;
   padding: 0; }
@@ -365,24 +365,32 @@ th {
 html {
   margin: 0; }
 
-body, html {
+body,
+html {
   min-height: 100%; }
 
 html {
   box-sizing: border-box; }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: border-box; }
 
 p {
   font-size: 1em;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   line-height: 1.4; }
 
 li {
   list-style: none; }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Fira Sans', sans-serif;
   font-weight: 300;
   margin: 0; }
@@ -390,21 +398,24 @@ h1, h2, h3, h4, h5, h6 {
 /******************
   Mixins
   ********************/
-button, .dossier input[type="submit"], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab, .btn {
+button, .dossier input[type='submit'], .slide .slide--item .toggleIframe, .slide .slide--item .iframeNewTab,
+.btn {
   -webkit-appearance: none;
   display: inline-block;
   background: #0A997F;
   color: white;
   border: none;
   padding: 10px 15px;
-  font-size: .8em;
+  font-size: 0.8em;
   border-radius: 5px;
   margin: 5px;
   cursor: pointer;
   text-align: center; }
-  button:focus, .dossier input:focus[type="submit"], .slide .slide--item .toggleIframe:focus, .slide .slide--item .iframeNewTab:focus, .btn:focus {
+  button:focus, .dossier input:focus[type='submit'], .slide .slide--item .toggleIframe:focus, .slide .slide--item .iframeNewTab:focus,
+  .btn:focus {
     outline: none; }
-  button.btn_retour, .dossier input.btn_retour[type="submit"], .slide .slide--item .btn_retour.toggleIframe, .slide .slide--item .btn_retour.iframeNewTab, .btn.btn_retour {
+  button.btn_retour, .dossier input.btn_retour[type='submit'], .slide .slide--item .btn_retour.toggleIframe, .slide .slide--item .btn_retour.iframeNewTab,
+  .btn.btn_retour {
     margin-top: 15px;
     margin-left: 15px; }
 
@@ -432,7 +443,10 @@ ul {
 fieldset {
   border: 1px solid #fff; }
 
-img, video, audio, svg {
+img,
+video,
+audio,
+svg {
   display: block;
   min-width: 100%;
   width: 100%; }
@@ -461,7 +475,7 @@ img, video, audio, svg {
     left: 0;
     right: 0;
     bottom: 0;
-    opacity: .3;
+    opacity: 0.3;
     background: repeating-linear-gradient(-65deg, #0A997F, #0A997F 10px, transparent 10px, transparent 20px); }
   .module--bandeau::after {
     content: '';
@@ -472,7 +486,7 @@ img, video, audio, svg {
     left: 0;
     right: 0;
     bottom: -50%;
-    opacity: .3;
+    opacity: 0.3;
     background: repeating-linear-gradient(65deg, #0A997F, #0A997F 10px, transparent 10px, transparent 20px); }
   .module--bandeau #intro {
     position: relative;
@@ -498,7 +512,7 @@ img, video, audio, svg {
   margin: 0 -10px;
   column-width: 250px; }
   .dossier-list:before, .dossier-list:after {
-    content: " ";
+    content: ' ';
     display: table; }
   .dossier-list:after {
     clear: both; }
@@ -514,7 +528,7 @@ img, video, audio, svg {
   background-color: #f0f0f0;
   border-bottom: 2px solid #0A997F;
   border-radius: 2px;
-  transition: background-color .4s ease-out, transform .4s ease-out; }
+  transition: background-color 0.4s ease-out, transform 0.4s ease-out; }
   .dossier:hover {
     background-color: #fafafa; }
   .dossier h6 {
@@ -544,7 +558,7 @@ img, video, audio, svg {
     margin-bottom: 30px;
     color: #0A997F;
     font-weight: 400;
-    transition: color .6s; }
+    transition: color 0.6s; }
     .dossier .title:hover {
       color: #076957; }
   .dossier .introduction {
@@ -560,13 +574,15 @@ img, video, audio, svg {
     .dossier .meta-data span {
       font-weight: 600;
       margin-left: 5px; }
-  .dossier input, .dossier textarea {
+  .dossier input,
+  .dossier textarea {
     width: 100%;
     padding: 5px;
     border: 2px solid #eee; }
-    .dossier input:focus, .dossier textarea:focus {
+    .dossier input:focus,
+    .dossier textarea:focus {
       outline: 2px solid #0A997F; }
-  .dossier input[type="submit"] {
+  .dossier input[type='submit'] {
     width: auto;
     float: right;
     margin-top: 15px; }
@@ -597,8 +613,8 @@ img, video, audio, svg {
     border-radius: 4px;
     padding: 10px;
     margin: 4px;
-    font-size: .8em;
-    transition: padding .6s ease-out, font-size .4s; }
+    font-size: 0.8em;
+    transition: padding 0.6s ease-out, font-size 0.4s; }
     .module--popup .module--popup--textContent p {
       margin: 0; }
     .module--popup .module--popup--textContent .module--popup--closePopup {
@@ -608,7 +624,7 @@ img, video, audio, svg {
       color: white;
       border: none;
       padding: 10px 15px;
-      font-size: .8em;
+      font-size: 0.8em;
       border-radius: 5px;
       margin: 5px;
       cursor: pointer;
@@ -665,20 +681,23 @@ body[data-page='conf']::after {
       margin-bottom: 20px; }
     .module--stackIntro .introduction h3 {
       text-transform: uppercase;
-      font-size: .8em; }
+      font-size: 0.8em; }
       .module--stackIntro .introduction h3 + p {
         margin-top: 0; }
     .module--stackIntro .introduction hr {
       margin-top: 140px;
       margin-bottom: 140px; }
-    .module--stackIntro .introduction ul, .module--stackIntro .introduction ol {
+    .module--stackIntro .introduction ul,
+    .module--stackIntro .introduction ol {
       padding-left: 0;
       margin-left: 0;
       list-style: none; }
-      .module--stackIntro .introduction ul li, .module--stackIntro .introduction ol li {
+      .module--stackIntro .introduction ul li,
+      .module--stackIntro .introduction ol li {
         padding-left: 0;
         margin-left: 0; }
-        .module--stackIntro .introduction ul li::before, .module--stackIntro .introduction ol li::before {
+        .module--stackIntro .introduction ul li::before,
+        .module--stackIntro .introduction ol li::before {
           content: '—';
           color: #0A997F;
           display: inline-block;
@@ -696,7 +715,7 @@ body[data-page='conf']::after {
   background-color: #0A997F;
   opacity: 0;
   z-index: -1;
-  transition: opacity .4s ease-out; }
+  transition: opacity 0.4s ease-out; }
   .drop-files-container.is--visible {
     opacity: 1;
     z-index: 1500; }
@@ -750,14 +769,15 @@ body[data-page='conf']::after {
   user-select: none;
   pointer-events: none;
   background-color: transparent;
-  transition: background-color .3s ease; }
+  transition: background-color 0.3s ease; }
   .slide .slide--item {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    pointer-events: auto;
+    pointer-events: none;
     background-color: transparent;
-    outline: 1px solid #ccc; }
+    outline: 1px solid #ccc;
+    transition: all 0.1s ease-out; }
     .slide .slide--item_iframe {
       background-color: #dedcdc; }
       .slide .slide--item_iframe .slide--item--navbar {
@@ -770,7 +790,7 @@ body[data-page='conf']::after {
       .slide .slide--item_iframe iframe {
         pointer-events: none;
         background-color: transparent;
-        transition: background-color .8s ease-out; }
+        transition: background-color 0.8s ease-out; }
       .slide .slide--item_iframe.is--iframeOn iframe {
         pointer-events: auto;
         background-color: #fff; }
@@ -806,7 +826,7 @@ body[data-page='conf']::after {
     .slide .slide--item .iframeNewTab {
       border: none;
       padding: 10px 15px;
-      font-size: .8em; }
+      font-size: 0.8em; }
   .slide img {
     pointer-events: none; }
   .slide iframe {
@@ -823,7 +843,8 @@ body[data-page='conf']::after {
   .slide.is--dragged {
     background-color: rgba(10, 153, 127, 0.3); }
   .slide.is--pinned > .slide--item {
-    position: fixed; }
+    position: fixed;
+    pointer-events: auto; }
   .slide.is--far .slide--item {
     display: none !important; }
 
@@ -835,7 +856,7 @@ body[data-page='conf']::after {
   bottom: 0;
   background-color: #0A997F;
   z-index: 1001;
-  transition: opacity .4s ease-out;
+  transition: opacity 0.4s ease-out;
   pointer-events: none;
   display: none; }
   .module-popover.is--open {
@@ -882,7 +903,8 @@ body[data-page='conf']::after {
           margin-right: 20px;
           margin-bottom: 10px;
           display: block; }
-      .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioSource, .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioOutput {
+      .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioSource,
+      .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .sourceSelector .audioOutput {
         display: none; }
       .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector {
         margin-top: 20px; }
@@ -894,7 +916,7 @@ body[data-page='conf']::after {
           margin: 0;
           margin-right: 10px; }
         .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector label {
-          letter-spacing: .3px; }
+          letter-spacing: 0.3px; }
         .module-popover.module-popover_cameraFeed .feedSettings--scrollWindow .resolutionSelector input:checked + label {
           font-weight: 600; }
 
