@@ -51,7 +51,8 @@
     "serve-favicon": "^2.5.0",
     "slugg": "^1.2.1",
     "socket.io": "^2.2.0",
-    "woods-parsedown": "git://github.com/louis-ev/woods-parsedown.git#master"
+    "woods-parsedown": "git://github.com/louis-ev/woods-parsedown.git#master",
+    "write-file-atomic": "^3.0.0"
   },
   "devDependencies": {
     "browser-sync": "^2.26.3",
