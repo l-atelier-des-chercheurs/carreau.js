@@ -11,10 +11,10 @@ html
       h2 Liste des présentations
       .dossier-list
         .dossier.dossier_newconfform
-          form(onsubmit='return false;' class='add-new-conf-form')
+          form(onsubmit='createFolder()' class='add-new-conf-form')
             h6 créer une présentation
             .title
-              input(type="text" class="title" placeholder='Titre')
+              input(type="text" class="" placeholder='Titre')
             .meta-data
               textarea(class="introduction" placeholder='Introduction')
               input(type="text" class="lieu" placeholder='Lieu')
