@@ -161,7 +161,7 @@ function onListAllSlides(d) {
     $('.js--popover_upload').removeClass('is--open');
     $('html,body').animate(
       { scrollTop: firstSlidePosY },
-      900,
+      00,
       $.easing.easeInOutQuint
     );
   }
@@ -346,7 +346,16 @@ function updateSlideContentPosition($s) {
   }
   var posX = dposX * window.innerWidth;
   var posY = dposY * window.innerHeight;
-  var rot = Number.parseInt(Math.random() * 50 - 25);
+
+  var rot = d.rot;
+  if (!rot) {
+    rot = Number.parseInt(Math.random() * 30 - 15);
+    d.rot = rot;
+  }
+
+  if (dwidth === 1) {
+    rot = 0;
+  }
 
   return $s
     .attr('data-fileName', d.metaName)
@@ -410,13 +419,13 @@ function initInteractForSlide(s) {
         updateMediaPosition();
       }
     })
-    .resizable({
-      preserveAspectRatio: s.preserveRatio,
-      edges: { left: true, right: true, bottom: true, top: true },
-      restrict: {
-        restriction: {}
-      }
-    })
+    // .resizable({
+    //   preserveAspectRatio: s.preserveRatio,
+    //   edges: { left: true, right: true, bottom: true, top: true },
+    //   restrict: {
+    //     restriction: {}
+    //   }
+    // })
     .on('resizemove', function(event) {
       $(s.slide.parentElement).addClass('is--resized');
       var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
@@ -445,13 +454,24 @@ function initInteractForSlide(s) {
       updateMediaSize();
       updateMediaPosition();
     })
-    .on('doubletap', function() {
-      var baseWidth = app.settings.startingWidth * window.innerWidth;
+    .on('doubletap', function(event) {
+      console.log('doubletap');
+      var baseWidth = window.innerWidth;
+
       s.slide.style.width = baseWidth + 'px';
-      updateMediaSize();
+      s.slide.setAttribute('data-x', 0);
+      s.slide.setAttribute('data-y', 0);
+      s.slide.setAttribute('data-rot', 0);
+
+      setTimeout(() => {
+        updateMediaSize();
+        updateMediaPosition();
+      }, 300);
     });
 
   function updateMediaPosition() {
+    console.log(`METHODS • updateMediaPosition`);
+
     var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
       y = parseFloat(s.slide.getAttribute('data-y')) || 0;
 
@@ -468,8 +488,11 @@ function initInteractForSlide(s) {
   }
 
   function updateMediaSize() {
+    console.log(`METHODS • updateMediaSize`);
+
     var w = s.slide.offsetWidth;
     var h = s.slide.offsetHeight;
+
     var relativeW = w / s.slide.parentElement.offsetWidth;
     var relativeH = h / s.slide.parentElement.offsetHeight;
     var mediaSize = {
@@ -481,6 +504,9 @@ function initInteractForSlide(s) {
     if (!s.preserveRatio) mediaSize.height = relativeH;
 
     socket.emit('mediaNewSize', mediaSize);
+    console.log(
+      `METHODS • updateMediaSize with ${JSON.stringify(mediaSize, null, 4)}`
+    );
     return;
   }
 }

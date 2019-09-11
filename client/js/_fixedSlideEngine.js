@@ -104,7 +104,9 @@ var setFixedForSlides = (function() {
           // régler l’opacity en fonction de la distance au scroll actuel
           var op = (slidesData[i].bounds.offsetTop - nextFrameScrollPos) / 100;
           if (op < 0.05) op = 0;
-          slidesData[i].el.style.opacity = 1 - op;
+
+          slidesData[i].el.style.opacity = 0;
+          // slidesData[i].el.style.opacity = 1 - op;
         }
       }
 

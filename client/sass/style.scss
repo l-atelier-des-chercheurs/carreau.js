@@ -474,13 +474,13 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: $vert_sombre;
+  background-color: white;
   opacity: 0;
   z-index: -1;
   transition: opacity 0.4s ease-out;
 
   &.is--visible {
-    opacity: 1;
+    opacity: 0.2;
     z-index: 1500;
   }
 }
@@ -548,12 +548,12 @@ body[data-page='conf']::after {
     position: fixed;
     top: 0;
     left: 0;
-    pointer-events: none;
+    // pointer-events: none;
     //     padding: 10px;
     //  problématique (marge sur les côtés)
     background-color: transparent;
 
-    outline: 1px solid #ccc;
+    // outline: 1px solid #ccc;
 
     transition: all 0.1s ease-out;
 
@@ -649,7 +649,7 @@ body[data-page='conf']::after {
   }
 
   &.is--dragged {
-    background-color: fade-out($vert_sombre, 0.7);
+    // background-color: fade-out(#eee, 0.2);
   }
 
   &.is--pinned > .slide--item {
@@ -670,7 +670,7 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: $vert_sombre;
+  // background-color: #eee;
   z-index: 1001;
   transition: opacity 0.4s ease-out;
   pointer-events: none;
