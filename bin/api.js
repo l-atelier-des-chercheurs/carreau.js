@@ -125,7 +125,7 @@ var api = (function() {
       console.log('Will store data');
       var textd = textifyObj(d);
 
-      writeFileAtomic(mpath, d, err => {
+      writeFileAtomic(mpath, textd, err => {
         if (err) {
           reject(err);
         }
