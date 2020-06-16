@@ -709,12 +709,12 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0A997F;
+  background-color: white;
   opacity: 0;
   z-index: -1;
   transition: opacity 0.4s ease-out; }
   .drop-files-container.is--visible {
-    opacity: 1;
+    opacity: 0.2;
     z-index: 1500; }
 
 .instructions {
@@ -754,7 +754,7 @@ body[data-page='conf']::after {
   z-index: 1;
   width: 100%;
   width: 100vw;
-  height: 56.25vw;
+  height: 100vh;
   /*
   height:   0%;
   padding-bottom:   56.25%;
@@ -766,14 +766,13 @@ body[data-page='conf']::after {
   user-select: none;
   pointer-events: none;
   background-color: transparent;
-  transition: background-color 0.3s ease; }
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1); }
   .slide .slide--item {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    pointer-events: auto;
     background-color: transparent;
-    outline: 1px solid #ccc; }
+    transition: all 0.1s ease-out; }
     .slide .slide--item_iframe {
       background-color: #dedcdc; }
       .slide .slide--item_iframe .slide--item--navbar {
@@ -836,10 +835,10 @@ body[data-page='conf']::after {
     pointer-events: none; }
   .slide .shadowed {
     box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.3); }
-  .slide.is--dragged {
-    background-color: rgba(10, 153, 127, 0.3); }
   .slide.is--pinned > .slide--item {
-    position: fixed; }
+    position: fixed;
+    pointer-events: auto;
+    transform: inherit; }
   .slide.is--far .slide--item {
     display: none !important; }
 
@@ -849,7 +848,6 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0A997F;
   z-index: 1001;
   transition: opacity 0.4s ease-out;
   pointer-events: none;

@@ -161,7 +161,7 @@ function onListAllSlides(d) {
     $('.js--popover_upload').removeClass('is--open');
     $('html,body').animate(
       { scrollTop: firstSlidePosY },
-      900,
+      00,
       $.easing.easeInOutQuint
     );
   }
@@ -347,18 +347,30 @@ function updateSlideContentPosition($s) {
   var posX = dposX * window.innerWidth;
   var posY = dposY * window.innerHeight;
 
+  var rot = d.rot;
+  if (!rot) {
+    rot = Number.parseInt(Math.random() * 30 - 15);
+    d.rot = rot;
+  }
+
+  if (dwidth === 1) {
+    rot = 0;
+  }
+
   return $s
     .attr('data-fileName', d.metaName)
     .find('.slide--item')
     .css({
-      transform:
-        'translate(' + parseInt(posX) + 'px, ' + parseInt(posY) + 'px)',
+      transform: `translate(${parseInt(posX)}px, ${parseInt(
+        posY
+      )}px) rotate(${rot}deg)`,
       width: parseInt(pxWidth),
       height: parseInt(pxHeight),
       display: 'block'
     })
     .attr('data-x', parseInt(posX))
     .attr('data-y', parseInt(posY))
+    .attr('data-rot', parseInt(rot))
     .end();
 }
 
@@ -391,11 +403,11 @@ function initInteractForSlide(s) {
       onmove: function(event) {
         $(s.slide.parentElement).addClass('is--dragged');
         var x = (parseFloat(s.slide.getAttribute('data-x')) || 0) + event.dx,
-          y = (parseFloat(s.slide.getAttribute('data-y')) || 0) + event.dy;
+          y = (parseFloat(s.slide.getAttribute('data-y')) || 0) + event.dy,
+          rot = parseInt(s.slide.getAttribute('data-rot')) || 0;
 
         // translate the element
-        s.slide.style.webkitTransform = s.slide.style.transform =
-          'translate(' + x + 'px, ' + y + 'px)';
+        s.slide.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
 
         // update the posiion attributes
         s.slide.setAttribute('data-x', x);
@@ -407,48 +419,59 @@ function initInteractForSlide(s) {
         updateMediaPosition();
       }
     })
-    .resizable({
-      preserveAspectRatio: s.preserveRatio,
-      edges: { left: true, right: true, bottom: true, top: true },
-      restrict: {
-        restriction: {}
-      }
-    })
-    .on('resizemove', function(event) {
-      $(s.slide.parentElement).addClass('is--resized');
-      var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
-        y = parseFloat(s.slide.getAttribute('data-y')) || 0;
+    // .resizable({
+    //   preserveAspectRatio: s.preserveRatio,
+    //   edges: { left: true, right: true, bottom: true, top: true },
+    //   restrict: {
+    //     restriction: {}
+    //   }
+    // })
+    // .on('resizemove', function(event) {
+    //   $(s.slide.parentElement).addClass('is--resized');
+    //   var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
+    //     y = parseFloat(s.slide.getAttribute('data-y')) || 0,
+    //     rot = parseInt(s.slide.getAttribute('data-rot')) || 0;
 
-      // update the element's style
-      var rectWidth = event.rect.width > 100 ? event.rect.width : 100;
-      var rectHeight = event.rect.height > 100 ? event.rect.height : 100;
+    //   // update the element's style
+    //   var rectWidth = event.rect.width > 100 ? event.rect.width : 100;
+    //   var rectHeight = event.rect.height > 100 ? event.rect.height : 100;
 
-      s.slide.style.width = rectWidth + 'px';
-      s.slide.style.height = rectHeight + 'px';
+    //   s.slide.style.width = rectWidth + 'px';
+    //   s.slide.style.height = rectHeight + 'px';
 
-      // translate when resizing from top or left edges
-      x += event.deltaRect.left;
-      y += event.deltaRect.top;
+    //   // translate when resizing from top or left edges
+    //   x += event.deltaRect.left;
+    //   y += event.deltaRect.top;
 
-      s.slide.style.webkitTransform = s.slide.style.transform =
-        'translate(' + x + 'px,' + y + 'px)';
+    //   s.slide.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
 
-      s.slide.setAttribute('data-x', x);
-      s.slide.setAttribute('data-y', y);
-      //       s.slide.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
-    })
+    //   s.slide.setAttribute('data-x', x);
+    //   s.slide.setAttribute('data-y', y);
+    //   //       s.slide.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
+    // })
     .on('resizeend', function(event) {
       $(s.slide.parentElement).removeClass('is--resized');
       updateMediaSize();
       updateMediaPosition();
     })
-    .on('doubletap', function() {
-      var baseWidth = app.settings.startingWidth * window.innerWidth;
+    .on('doubletap', function(event) {
+      console.log('doubletap');
+      var baseWidth = window.innerWidth;
+
       s.slide.style.width = baseWidth + 'px';
-      updateMediaSize();
+      s.slide.setAttribute('data-x', 0);
+      s.slide.setAttribute('data-y', 0);
+      s.slide.setAttribute('data-rot', 0);
+
+      setTimeout(() => {
+        updateMediaSize();
+        updateMediaPosition();
+      }, 300);
     });
 
   function updateMediaPosition() {
+    console.log(`METHODS • updateMediaPosition`);
+
     var x = parseFloat(s.slide.getAttribute('data-x')) || 0,
       y = parseFloat(s.slide.getAttribute('data-y')) || 0;
 
@@ -465,8 +488,11 @@ function initInteractForSlide(s) {
   }
 
   function updateMediaSize() {
+    console.log(`METHODS • updateMediaSize`);
+
     var w = s.slide.offsetWidth;
     var h = s.slide.offsetHeight;
+
     var relativeW = w / s.slide.parentElement.offsetWidth;
     var relativeH = h / s.slide.parentElement.offsetHeight;
     var mediaSize = {
@@ -478,6 +504,9 @@ function initInteractForSlide(s) {
     if (!s.preserveRatio) mediaSize.height = relativeH;
 
     socket.emit('mediaNewSize', mediaSize);
+    console.log(
+      `METHODS • updateMediaSize with ${JSON.stringify(mediaSize, null, 4)}`
+    );
     return;
   }
 }

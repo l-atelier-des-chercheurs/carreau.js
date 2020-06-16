@@ -478,13 +478,13 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: $vert_sombre;
+  background-color: white;
   opacity: 0;
   z-index: -1;
   transition: opacity 0.4s ease-out;
 
   &.is--visible {
-    opacity: 1;
+    opacity: 0.2;
     z-index: 1500;
   }
 }
@@ -531,7 +531,7 @@ body[data-page='conf']::after {
   z-index: 1;
   width: 100%;
   width: 100vw;
-  height: 56.25vw;
+  height: 100vh;
   /*
   height:   0%;
   padding-bottom:   56.25%;
@@ -546,18 +546,20 @@ body[data-page='conf']::after {
   background-color: transparent;
 
   // that delay for opacity is made to increase responsivity when pinning a slide
-  transition: background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 
   .slide--item {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    pointer-events: auto;
+    // pointer-events: none;
     //     padding: 10px;
     //  problématique (marge sur les côtés)
     background-color: transparent;
 
-    outline: 1px solid #ccc;
+    // outline: 1px solid #ccc;
+
+    transition: all 0.1s ease-out;
 
     &_iframe {
       background-color: #dedcdc;
@@ -651,11 +653,13 @@ body[data-page='conf']::after {
   }
 
   &.is--dragged {
-    background-color: fade-out($vert_sombre, 0.7);
+    // background-color: fade-out(#eee, 0.2);
   }
 
   &.is--pinned > .slide--item {
     position: fixed;
+    pointer-events: auto;
+    transform: inherit;
   }
 
   &.is--far {
@@ -671,7 +675,6 @@ body[data-page='conf']::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: $vert_sombre;
   z-index: 1001;
   transition: opacity 0.4s ease-out;
   pointer-events: none;
